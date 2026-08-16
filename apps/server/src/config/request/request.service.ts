@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Scope } from "@nestjs/common";
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class RequestService {
-    private userId: string | null = null;
+    private userId!: string;
 
     setUserId(userId: string) {
         this.userId = userId;

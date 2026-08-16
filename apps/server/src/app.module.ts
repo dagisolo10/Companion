@@ -1,4 +1,5 @@
 import { AuthMiddleware } from "@/config/auth/auth.middleware";
+import { PrismaModule } from "@/config/prisma/prisma.module";
 import { RequestModule } from "@/config/request/request.module";
 import { SocketIoModule } from "@/config/socket.io/socket.io.module";
 import { SupabaseModule } from "@/config/supabase/supabase.module";
@@ -7,7 +8,7 @@ import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 
 @Module({
-    imports: [SupabaseModule, SocketIoModule, RequestModule, ConfigModule.forRoot({ isGlobal: true }), UserModule],
+    imports: [SupabaseModule, SocketIoModule, RequestModule, ConfigModule.forRoot({ isGlobal: true }), UserModule, PrismaModule],
     providers: [],
     controllers: [],
 })

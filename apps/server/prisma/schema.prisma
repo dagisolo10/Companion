@@ -33,6 +33,8 @@ model PartyMember {
     userId    String
     user      User     @relation(fields: [userId], references: [id])
     party     Party    @relation(fields: [partyId], references: [id])
+
+    @@unique([userId, partyId])
 }
 
 model Quest {
