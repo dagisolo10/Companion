@@ -1,37 +1,48 @@
 import { PartyService } from "@/features/party/party.service";
-import { Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { IsString } from "class-validator";
+
+export class TransferPartyDto {
+    @IsString()
+    partyMemberId!: string;
+}
 
 @Controller("party")
 export class PartyController {
     constructor(private readonly partyService: PartyService) {}
 
-    @Post()
-    async createParty() {
-        await this.partyService.createParty();
+    @Post("create")
+    createParty() {
+        return this.partyService.createParty();
     }
 
     @Get(":code")
-    async getParty(@Param() code: string) {
-        await this.partyService.getParty(code);
+    getParty(@Param("code") code: string) {
+        return this.partyService.getParty(code);
     }
 
     @Get("my")
-    async getMyParties() {
-        await this.partyService.getMyParties();
+    getMyParties() {
+        return this.partyService.getMyParties();
     }
 
     @Get("search/:code")
-    async searchParty(@Param() code: string) {
-        await this.partyService.searchParty(code);
+    searchParty(@Param("code") code: string) {
+        return this.partyService.searchParty(code);
     }
 
-    @Patch(":id")
-    async updateParty(@Param() id: string) {
-        await this.partyService.regeneratePartyCode(id);
+    @Patch("regenerate-code/:id")
+    regeneratePartyCode(@Param("id") id: string) {
+        return this.partyService.regeneratePartyCode(id);
     }
 
-    @Delete(":id")
-    async deleteParty(@Param() id: string) {
-        await this.partyService.deleteParty(id);
+    @Patch("transfer/:id")
+    transferParty(@Param("id") id: string, @Body() data: TransferPartyDto) {
+        return this.partyService.transferParty(id, data);
+    }
+
+    @Delete("delete/:id")
+    deleteParty(@Param("id") id: string) {
+        return this.partyService.deleteParty(id);
     }
 }

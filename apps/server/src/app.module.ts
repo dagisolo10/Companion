@@ -7,9 +7,10 @@ import { UserModule } from "@/features/user/user.module";
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { PartyModule } from "./features/party/party.module";
+import { PartyMemberModule } from './features/party-member/party-member.module';
 
 @Module({
-    imports: [SupabaseModule, SocketIoModule, RequestModule, ConfigModule.forRoot({ isGlobal: true }), UserModule, PrismaModule, PartyModule],
+    imports: [SupabaseModule, SocketIoModule, RequestModule, ConfigModule.forRoot({ isGlobal: true }), UserModule, PrismaModule, PartyModule, PartyMemberModule],
     providers: [],
     controllers: [],
 })

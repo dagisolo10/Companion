@@ -1,6 +1,8 @@
+import { TransferPartyDto } from "./party.controller";
+
 import { PrismaService } from "@/config/prisma/prisma.service";
 import { RequestService } from "@/config/request/request.service";
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { randomInt } from "crypto";
 
 @Injectable()
@@ -56,13 +58,22 @@ export class PartyService {
     async getParty(code: string) {
         const userId = this.requestService.getUserId();
 
-        const party = await this.prisma.party.findUnique({ where: { code }, include: { members: { select: { userId: true } } } });
+        const party = await this.prisma.party.findUnique({ where: { code } });
 
         if (!party) {
             throw new NotFoundException("Party not found");
         }
 
-        if (!party.members.some((m) => m.userId === userId)) {
+        const isMember = await this.prisma.partyMember.findUnique({
+            where: {
+                userId_partyId: {
+                    userId,
+                    partyId: party.id,
+                },
+            },
+        });
+
+        if (!isMember) {
             throw new ForbiddenException("You don't belong in this party");
         }
 
@@ -99,5 +110,34 @@ export class PartyService {
         }
 
         return await this.prisma.party.delete({ where: { id } });
+    }
+
+    async transferParty(id: string, { partyMemberId }: TransferPartyDto) {
+        const userId = this.requestService.getUserId();
+
+        const party = await this.prisma.party.findUnique({ where: { id } });
+
+        if (!party) {
+            throw new NotFoundException("Party not found");
+        }
+
+        if (party.creatorId !== userId) {
+            throw new BadRequestException("Only the party creator can transfer party ownership");
+        }
+
+        const partyMember = await this.prisma.partyMember.findFirst({ where: { id: partyMemberId, partyId: id } });
+
+        if (!partyMember) {
+            throw new NotFoundException("Party member not found");
+        }
+
+        if (partyMember.userId === userId) {
+            throw new BadRequestException("You are already the party creator");
+        }
+
+        return await this.prisma.party.update({
+            where: { id, creatorId: userId },
+            data: { creatorId: partyMember.userId },
+        });
     }
 }
