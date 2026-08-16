@@ -5,3 +5,70 @@ generator client {
 datasource db {
     provider = "postgresql"
 }
+
+model User {
+    id             String        @id @default(uuid())
+    name           String
+    username       String        @unique
+    experience     Int           @default(0)
+    level          Int           @default(1)
+    createdAt      DateTime      @default(now())
+    createdQuests  Quest[]       @relation("CreatedQuests")
+    receivedQuests Quest[]       @relation("ReceivedQuests")
+    partyMembers   PartyMember[]
+}
+
+model Party {
+    id        String        @id @default(uuid())
+    code      String        @unique
+    createdAt DateTime      @default(now())
+    quests    Quest[]
+    members   PartyMember[]
+}
+
+model PartyMember {
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    partyId   String
+    userId    String
+    user      User     @relation(fields: [userId], references: [id])
+    party     Party    @relation(fields: [partyId], references: [id])
+
+    @@unique([userId, partyId])
+}
+
+model Quest {
+    id          String      @id @default(uuid())
+    reward      Int
+    partyId     String
+    creatorId   String
+    recipientId String
+    title       String
+    description String
+    mode        Mode
+    difficulty  Difficulty
+    status      QuestStatus
+    completedAt DateTime?
+    createdAt   DateTime    @default(now())
+    party       Party       @relation(fields: [partyId], references: [id])
+    creator     User        @relation("CreatedQuests", fields: [creatorId], references: [id])
+    recipient   User        @relation("ReceivedQuests", fields: [recipientId], references: [id])
+}
+
+enum QuestStatus {
+    Active
+    Completed
+}
+
+enum Mode {
+    Race
+    Normal
+}
+
+enum Difficulty {
+    Tiny
+    Easy
+    Normal
+    Hard
+    Major
+}
