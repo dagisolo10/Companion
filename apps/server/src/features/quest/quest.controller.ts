@@ -13,12 +13,12 @@ export class QuestController {
         return this.questService.createQuest(data);
     }
 
-    @Get()
+    @Get(":code")
     getQuests(@Param("code") code: string) {
         return this.questService.getPartyQuests(code);
     }
 
-    @Get(":id")
+    @Get(":id/:code")
     getQuest(@Param("id") id: string, @Param("code") code: string) {
         return this.questService.getQuest(id, code);
     }
@@ -28,7 +28,7 @@ export class QuestController {
         return this.questService.updateQuest(id, data);
     }
 
-    @Patch(":id/complete")
+    @Patch(":id/:code/complete")
     completeQuest(@Param("id") id: string, @Param("code") code: string) {
         return this.questService.completeQuest(id, code);
     }

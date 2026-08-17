@@ -1,10 +1,10 @@
 import { CreateQuestDto } from "./dto/create-quest.dto";
 import { UpdateQuestDto } from "./dto/update-quest.dto";
 
+import { Difficulty } from "@prisma/client";
 import { PrismaService } from "@/config/prisma/prisma.service";
 import { RequestService } from "@/config/request/request.service";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
-import { Difficulty } from "@prisma/client";
 
 @Injectable()
 export class QuestService {
@@ -194,25 +194,30 @@ export class QuestService {
             throw new ForbiddenException("Only the quest recipient can complete this quest");
         }
 
-        if (quest.status === "Completed") {
-            throw new BadRequestException("Quest is already completed");
-        }
-
-        return await this.prisma.quest.update({
-            where: { id },
+        const result = await this.prisma.quest.updateMany({
+            where: {
+                id,
+                partyId: party.id,
+                recipientId: userId,
+                status: "Active",
+            },
             data: {
                 status: "Completed",
                 completedAt: new Date(),
             },
         });
+
+        if (result.count === 0) {
+            throw new BadRequestException("Quest is already completed");
+        }
+
+        return await this.prisma.quest.findUnique({ where: { id } });
     }
 
     async updateQuest(id: string, data: UpdateQuestDto) {
         const userId = this.requestService.getUserId();
 
-        const quest = await this.prisma.quest.findUnique({
-            where: { id },
-        });
+        const quest = await this.prisma.quest.findUnique({ where: { id } });
 
         if (!quest) {
             throw new NotFoundException("Quest not found");
@@ -222,11 +227,11 @@ export class QuestService {
             throw new ForbiddenException("You are not allowed to update this quest");
         }
 
-        if (quest.status === "Completed") {
-            throw new BadRequestException("Completed quests can't be updated");
-        }
+        if (data.recipientId !== undefined) {
+            if (!data.recipientId) {
+                throw new BadRequestException("Recipient ID can't be empty");
+            }
 
-        if (data.recipientId) {
             const recipient = await this.prisma.partyMember.findUnique({
                 where: {
                     userId_partyId: {
@@ -241,12 +246,22 @@ export class QuestService {
             }
         }
 
-        return await this.prisma.quest.update({
-            where: { id },
+        const result = await this.prisma.quest.updateMany({
+            where: {
+                id,
+                creatorId: userId,
+                status: "Active",
+            },
             data: {
                 ...data,
                 ...(data.difficulty && { reward: this.QUEST_REWARDS[data.difficulty] }),
             },
         });
+
+        if (result.count === 0) {
+            throw new BadRequestException("Completed quests can't be updated");
+        }
+
+        return await this.prisma.quest.findUnique({ where: { id } });
     }
 }
