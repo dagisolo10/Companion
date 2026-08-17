@@ -116,31 +116,50 @@ export class PartyService {
     async transferParty(id: string, { partyMemberId }: TransferPartyDto) {
         const userId = this.requestService.getUserId();
 
-        return this.prisma.$transaction(
-            async (tx) => {
-                const party = await tx.party.findUnique({ where: { id } });
+        const maxAttempts = 3;
 
-                if (!party) {
-                    throw new NotFoundException("Party not found");
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                return await this.prisma.$transaction(
+                    async (tx) => {
+                        const party = await tx.party.findUnique({ where: { id } });
+
+                        if (!party) {
+                            throw new NotFoundException("Party not found");
+                        }
+
+                        if (party.creatorId !== userId) {
+                            throw new ForbiddenException("Only the party creator can transfer party ownership");
+                        }
+
+                        const partyMember = await tx.partyMember.findFirst({ where: { id: partyMemberId, partyId: party.id } });
+
+                        if (!partyMember) {
+                            throw new NotFoundException("Party member not found");
+                        }
+
+                        if (partyMember.userId === userId) {
+                            throw new BadRequestException("You are already the party creator");
+                        }
+
+                        return tx.party.update({ where: { id: party.id, creatorId: userId }, data: { creatorId: partyMember.userId } });
+                    },
+                    { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+                );
+            } catch (error) {
+                if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034" && attempt < maxAttempts) {
+                    await new Promise((resolve) => setTimeout(resolve, 50 * attempt));
+                    continue;
                 }
 
-                if (party.creatorId !== userId) {
-                    throw new ForbiddenException("Only the party creator can transfer party ownership");
+                if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {
+                    throw new BadRequestException("Party ownership could not be transferred. Please try again");
                 }
 
-                const partyMember = await tx.partyMember.findFirst({ where: { id: partyMemberId, partyId: party.id } });
+                throw error;
+            }
+        }
 
-                if (!partyMember) {
-                    throw new NotFoundException("Party member not found");
-                }
-
-                if (partyMember.userId === userId) {
-                    throw new BadRequestException("You are already the party creator");
-                }
-
-                return tx.party.update({ where: { id: party.id, creatorId: userId }, data: { creatorId: partyMember.userId } });
-            },
-            { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
-        );
+        throw new BadRequestException("Party ownership could not be transferred");
     }
 }
