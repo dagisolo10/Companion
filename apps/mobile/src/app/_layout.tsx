@@ -26,12 +26,13 @@ function ContentLayout() {
         <Stack>
             <Stack.Protected guard={isSignedIn}>
                 <Stack.Screen name="index" options={{ headerShown: false }} />
-                <Stack.Screen name="reset-password" options={{ headerShown: false }} />
             </Stack.Protected>
 
             <Stack.Protected guard={!isSignedIn}>
                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             </Stack.Protected>
+
+            <Stack.Screen name="reset-password" options={{ headerShown: false }} />
         </Stack>
     );
 }

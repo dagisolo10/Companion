@@ -2,6 +2,7 @@ import { AuthContext } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import { PropsWithChildren, useEffect, useState } from "react";
+import { AppState } from "react-native";
 
 export default function AuthProvider({ children }: PropsWithChildren) {
     const [isLoading, setIsLoading] = useState(true);
@@ -9,6 +10,18 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
+
+    useEffect(() => {
+        const listener = AppState.addEventListener("change", (state) => {
+            if (state === "active") {
+                supabase.auth.startAutoRefresh();
+            } else {
+                supabase.auth.stopAutoRefresh();
+            }
+        });
+
+        return () => listener.remove();
+    }, []);
 
     useEffect(() => {
         async function initializeAuth() {
