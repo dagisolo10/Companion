@@ -3,6 +3,7 @@ import { TransferPartyDto } from "./party.controller";
 import { PrismaService } from "@/config/prisma/prisma.service";
 import { RequestService } from "@/config/request/request.service";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 import { randomInt } from "crypto";
 
 @Injectable()
@@ -115,29 +116,31 @@ export class PartyService {
     async transferParty(id: string, { partyMemberId }: TransferPartyDto) {
         const userId = this.requestService.getUserId();
 
-        const party = await this.prisma.party.findUnique({ where: { id } });
+        return this.prisma.$transaction(
+            async (tx) => {
+                const party = await tx.party.findUnique({ where: { id } });
 
-        if (!party) {
-            throw new NotFoundException("Party not found");
-        }
+                if (!party) {
+                    throw new NotFoundException("Party not found");
+                }
 
-        if (party.creatorId !== userId) {
-            throw new BadRequestException("Only the party creator can transfer party ownership");
-        }
+                if (party.creatorId !== userId) {
+                    throw new ForbiddenException("Only the party creator can transfer party ownership");
+                }
 
-        const partyMember = await this.prisma.partyMember.findFirst({ where: { id: partyMemberId, partyId: id } });
+                const partyMember = await tx.partyMember.findFirst({ where: { id: partyMemberId, partyId: party.id } });
 
-        if (!partyMember) {
-            throw new NotFoundException("Party member not found");
-        }
+                if (!partyMember) {
+                    throw new NotFoundException("Party member not found");
+                }
 
-        if (partyMember.userId === userId) {
-            throw new BadRequestException("You are already the party creator");
-        }
+                if (partyMember.userId === userId) {
+                    throw new BadRequestException("You are already the party creator");
+                }
 
-        return await this.prisma.party.update({
-            where: { id, creatorId: userId },
-            data: { creatorId: partyMember.userId },
-        });
+                return tx.party.update({ where: { id: party.id, creatorId: userId }, data: { creatorId: partyMember.userId } });
+            },
+            { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+        );
     }
 }

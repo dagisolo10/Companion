@@ -1,5 +1,6 @@
 import { RemoveMemberDto } from "./party-member.controller";
 
+import { Prisma } from "@prisma/client";
 import { PrismaService } from "@/config/prisma/prisma.service";
 import { RequestService } from "@/config/request/request.service";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
@@ -33,12 +34,20 @@ export class PartyMemberService {
             throw new BadRequestException("You are already a member of this party");
         }
 
-        return await this.prisma.partyMember.create({
-            data: {
-                userId,
-                partyId: party.id,
-            },
-        });
+        try {
+            return await this.prisma.partyMember.create({
+                data: {
+                    userId,
+                    partyId: party.id,
+                },
+            });
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+                throw new BadRequestException("You are already a member of this party");
+            }
+
+            throw error;
+        }
     }
 
     async leaveParty(code: string) {

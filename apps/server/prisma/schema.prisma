@@ -50,7 +50,7 @@ model Quest {
     description String
     mode        Mode
     difficulty  Difficulty
-    status      QuestStatus
+    status      QuestStatus @default(Active)
     completedAt DateTime?
     createdAt   DateTime    @default(now())
     party       Party       @relation(fields: [partyId], references: [id])

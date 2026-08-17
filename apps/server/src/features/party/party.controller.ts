@@ -16,14 +16,14 @@ export class PartyController {
         return this.partyService.createParty();
     }
 
-    @Get(":code")
-    getParty(@Param("code") code: string) {
-        return this.partyService.getParty(code);
-    }
-
     @Get("my")
     getMyParties() {
         return this.partyService.getMyParties();
+    }
+
+    @Get(":code")
+    getParty(@Param("code") code: string) {
+        return this.partyService.getParty(code);
     }
 
     @Get("search/:code")
