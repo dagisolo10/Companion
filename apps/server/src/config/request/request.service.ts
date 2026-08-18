@@ -1,14 +1,12 @@
-import { Injectable, Scope } from "@nestjs/common";
+import { Inject, Injectable, Scope } from "@nestjs/common";
+import { REQUEST } from "@nestjs/core";
+import { type Request } from "express";
 
 @Injectable({ scope: Scope.REQUEST })
 export class RequestService {
-    private userId!: string;
-
-    setUserId(userId: string) {
-        this.userId = userId;
-    }
+    constructor(@Inject(REQUEST) private readonly request: Request) {}
 
     getUserId() {
-        return this.userId;
+        return this.request.userId;
     }
 }

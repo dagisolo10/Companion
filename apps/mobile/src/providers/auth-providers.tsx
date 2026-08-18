@@ -1,4 +1,5 @@
 import { AuthContext } from "@/contexts/auth-context";
+import { useGetUser } from "@/hooks/tan-stack/user";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import { PropsWithChildren, useEffect, useState } from "react";
@@ -10,6 +11,8 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
+
+    useGetUser();
 
     useEffect(() => {
         const listener = AppState.addEventListener("change", (state) => {

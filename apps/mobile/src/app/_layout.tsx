@@ -1,11 +1,15 @@
-import "./global.css";
+import "@/app/global.css";
 
 import { useAuth } from "@/contexts/auth-context";
 import AuthProvider from "@/providers/auth-providers";
+import TokenProvider from "@/providers/token-provider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { router, Stack } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+
+const queryClient = new QueryClient();
 
 function ContentLayout() {
     const { isLoading, isSignedIn } = useAuth();
@@ -40,9 +44,13 @@ function ContentLayout() {
 export default function RootLayout() {
     return (
         <GestureHandlerRootView>
-            <AuthProvider>
-                <ContentLayout />
-            </AuthProvider>
+            <QueryClientProvider client={queryClient}>
+                <AuthProvider>
+                    <TokenProvider>
+                        <ContentLayout />
+                    </TokenProvider>
+                </AuthProvider>
+            </QueryClientProvider>
         </GestureHandlerRootView>
     );
 }

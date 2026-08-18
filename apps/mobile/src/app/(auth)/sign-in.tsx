@@ -1,3 +1,4 @@
+import ErrorMessage from "@/components/error-message";
 import Text from "@/components/ui/text";
 import { useColor } from "@/hooks/use-color";
 import { supabase } from "@/lib/supabase";
@@ -25,28 +26,20 @@ export default function SignIn() {
         if (isSigningIn) return;
 
         setError(null);
+        setIsSigningIn(true);
 
         try {
             const parsed = signInSchema.parse({ email, password });
 
-            setIsSigningIn(true);
-
-            const response = await supabase.auth.signInWithPassword({
-                email: parsed.email,
-                password: parsed.password,
-            });
+            const response = await supabase.auth.signInWithPassword({ email: parsed.email, password: parsed.password });
 
             if (response.error) {
-                setError(response.error.message);
-            } else {
-                router.replace("/");
+                return setError(response.error.message);
             }
+
+            router.replace("/");
         } catch (err) {
-            if (err instanceof z.ZodError) {
-                setError(err.issues[0]!.message);
-            } else {
-                setError("An unexpected error occurred");
-            }
+            setError(err instanceof z.ZodError ? err.issues[0]!.message : "An unexpected error occurred");
         } finally {
             setIsSigningIn(false);
         }
@@ -112,9 +105,4 @@ export default function SignIn() {
             </KeyboardAvoidingView>
         </SafeAreaView>
     );
-}
-
-export function ErrorMessage({ message }: { message?: string | null }) {
-    if (!message) return null;
-    return <Text className="text-destructive text-sm font-semibold">{message}</Text>;
 }

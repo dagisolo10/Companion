@@ -1,5 +1,8 @@
+import ErrorMessage from "@/components/error-message";
 import Text from "@/components/ui/text";
 import { useColor } from "@/hooks/use-color";
+import { api } from "@/lib/api/axios";
+import { requestApi } from "@/lib/api/request-api";
 import { supabase } from "@/lib/supabase";
 import { Link, router } from "expo-router";
 import { useState } from "react";
@@ -22,41 +25,40 @@ export default function SignUp() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    const [error, setError] = useState<string | null>(null);
     const [isSigningUp, setIsSigningUp] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     async function signUpNewUser() {
         if (isSigningUp) return;
 
         setError(null);
+        setIsSigningUp(true);
 
         try {
             const parsed = signUpSchema.parse({ name, email, username, password });
 
-            setIsSigningUp(true);
+            const normalizedName = parsed.name.trim();
+            const normalizedUsername = parsed.username.trim().toLowerCase();
+
+            const available = await requestApi(() => api.get<boolean>(`/user/username/${normalizedUsername}`));
+
+            if (!available) {
+                return setError("Username is already taken");
+            }
 
             const response = await supabase.auth.signUp({
                 email: parsed.email,
                 password: parsed.password,
-                options: {
-                    data: {
-                        name: parsed.name,
-                        username: parsed.username,
-                    },
-                },
+                options: { data: { name: normalizedName, username: normalizedUsername } },
             });
 
             if (response.error) {
-                setError(response.error.message);
-            } else {
-                router.replace("/");
+                return setError(response.error.message);
             }
+
+            router.replace("/");
         } catch (err) {
-            if (err instanceof z.ZodError) {
-                setError(err.issues[0]!.message);
-            } else {
-                setError("An unexpected error occurred");
-            }
+            setError(err instanceof z.ZodError ? err.issues[0]!.message : "An unexpected error occurred");
         } finally {
             setIsSigningUp(false);
         }
@@ -132,9 +134,4 @@ export default function SignUp() {
             </KeyboardAvoidingView>
         </SafeAreaView>
     );
-}
-
-export function ErrorMessage({ message }: { message?: string | null }) {
-    if (!message) return null;
-    return <Text className="text-destructive text-sm font-semibold">{message}</Text>;
 }
