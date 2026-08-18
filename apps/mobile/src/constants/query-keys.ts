@@ -1,6 +1,6 @@
 export const queryKeys = {
     user: {
-        me: () => ["user", "me"],
+        me: (userId?: string) => ["user", "me", userId],
         other: (username: string) => ["user", "other", username],
         username: (username: string) => ["user", "username", username],
     },

@@ -35,10 +35,15 @@ export default function SignUp() {
         setIsSigningUp(true);
 
         try {
-            const parsed = signUpSchema.parse({ name, email, username, password });
+            const parsed = signUpSchema.parse({
+                email,
+                password,
+                name: name.trim(),
+                username: username.trim().toLowerCase(),
+            });
 
-            const normalizedName = parsed.name.trim();
-            const normalizedUsername = parsed.username.trim().toLowerCase();
+            const normalizedName = parsed.name;
+            const normalizedUsername = parsed.username;
 
             const available = await requestApi(() => api.get<boolean>(`/user/username/${normalizedUsername}`));
 
