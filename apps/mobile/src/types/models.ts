@@ -1,15 +1,17 @@
 export type User = {
     id: string;
     name: string;
-    level: number;
+    streak: number;
     username: string;
     createdAt: string;
     experience: number;
+    longestStreak: number;
 };
 
 export type Party = {
     id: string;
     code: string;
+    name: string;
     createdAt: string;
     creatorId: string;
 };
@@ -18,7 +20,7 @@ export type PartyMember = {
     id: string;
     userId: string;
     partyId: string;
-    createdAt: string;
+    joinedAt: string;
 };
 
 export type Quest = {
@@ -34,6 +36,14 @@ export type Quest = {
     mode: Mode;
     status: QuestStatus;
     difficulty: Difficulty;
+};
+
+export type QuestActivity = {
+    completedAt: string;
+    quest: Pick<Quest, "mode" | "title" | "reward" | "description" | "difficulty"> & {
+        party: Pick<Party, "name">;
+        creator: Pick<User, "name" | "username">;
+    };
 };
 
 export type Mode = "Race" | "Normal";

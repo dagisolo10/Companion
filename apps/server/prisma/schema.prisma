@@ -11,7 +11,8 @@ model User {
     name           String
     username       String        @unique
     experience     Int           @default(0)
-    level          Int           @default(1)
+    streak         Int           @default(0)
+    longestStreak  Int           @default(0)
     createdAt      DateTime      @default(now())
     partyMembers   PartyMember[]
     createdQuests  Quest[]       @relation("CreatedQuests")
@@ -21,6 +22,7 @@ model User {
 
 model Party {
     id        String        @id @default(uuid())
+    name      String
     code      String        @unique
     createdAt DateTime      @default(now())
     creatorId String
@@ -30,32 +32,42 @@ model Party {
 }
 
 model PartyMember {
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now())
-    partyId   String
-    userId    String
-    user      User     @relation(fields: [userId], references: [id])
-    party     Party    @relation(fields: [partyId], references: [id])
+    id       String   @id @default(uuid())
+    joinedAt DateTime @default(now())
+    partyId  String
+    userId   String
+    user     User     @relation(fields: [userId], references: [id])
+    party    Party    @relation(fields: [partyId], references: [id])
 
     @@unique([userId, partyId])
 }
 
 model Quest {
-    id          String      @id @default(uuid())
-    reward      Int
-    partyId     String
-    creatorId   String
-    recipientId String
-    title       String
-    description String
-    mode        Mode
-    difficulty  Difficulty
-    status      QuestStatus @default(Active)
-    completedAt DateTime?
-    createdAt   DateTime    @default(now())
-    party       Party       @relation(fields: [partyId], references: [id])
-    creator     User        @relation("CreatedQuests", fields: [creatorId], references: [id])
-    recipient   User        @relation("ReceivedQuests", fields: [recipientId], references: [id])
+    id              String          @id @default(uuid())
+    reward          Int
+    partyId         String
+    creatorId       String
+    recipientId     String
+    title           String
+    description     String
+    mode            Mode
+    difficulty      Difficulty
+    status          QuestStatus     @default(Active)
+    completedAt     DateTime?
+    createdAt       DateTime        @default(now())
+    party           Party           @relation(fields: [partyId], references: [id])
+    creator         User            @relation("CreatedQuests", fields: [creatorId], references: [id])
+    recipient       User            @relation("ReceivedQuests", fields: [recipientId], references: [id])
+    questActivities QuestActivity[]
+}
+
+model QuestActivity {
+    id          String   @id @default(uuid())
+    questId     String
+    completedAt DateTime @default(now())
+    quest       Quest    @relation(fields: [questId], references: [id])
+
+    @@index([questId])
 }
 
 enum QuestStatus {

@@ -1,7 +1,7 @@
-import { Public } from "@/config/auth/auth.decorator";
 import { UpdateUserDto } from "./dto/user.dto";
 import { UserService } from "./user.service";
 
+import { Public } from "@/config/auth/auth.decorator";
 import { Body, Controller, Delete, Get, Param, Patch } from "@nestjs/common";
 
 @Controller("user")

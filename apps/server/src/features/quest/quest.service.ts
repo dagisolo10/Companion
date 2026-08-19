@@ -1,10 +1,10 @@
 import { CreateQuestDto } from "./dto/create-quest.dto";
 import { UpdateQuestDto } from "./dto/update-quest.dto";
 
-import { Difficulty } from "@prisma/client";
 import { PrismaService } from "@/config/prisma/prisma.service";
 import { RequestService } from "@/config/request/request.service";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { Difficulty } from "@prisma/client";
 
 @Injectable()
 export class QuestService {
@@ -70,9 +70,7 @@ export class QuestService {
     async getPartyQuests(code: string) {
         const userId = this.requestService.getUserId();
 
-        const party = await this.prisma.party.findUnique({
-            where: { code },
-        });
+        const party = await this.prisma.party.findUnique({ where: { code } });
 
         if (!party) {
             throw new NotFoundException("Party not found");
@@ -101,9 +99,7 @@ export class QuestService {
     async getMyQuests(code: string) {
         const userId = this.requestService.getUserId();
 
-        const party = await this.prisma.party.findUnique({
-            where: { code },
-        });
+        const party = await this.prisma.party.findUnique({ where: { code } });
 
         if (!party) {
             throw new NotFoundException("Party not found");
@@ -133,9 +129,7 @@ export class QuestService {
     async getQuest(id: string, code: string) {
         const userId = this.requestService.getUserId();
 
-        const party = await this.prisma.party.findUnique({
-            where: { code },
-        });
+        const party = await this.prisma.party.findUnique({ where: { code } });
 
         if (!party) {
             throw new NotFoundException("Party not found");
@@ -171,20 +165,13 @@ export class QuestService {
     async completeQuest(id: string, code: string) {
         const userId = this.requestService.getUserId();
 
-        const party = await this.prisma.party.findUnique({
-            where: { code },
-        });
+        const party = await this.prisma.party.findUnique({ where: { code } });
 
         if (!party) {
             throw new NotFoundException("Party not found");
         }
 
-        const quest = await this.prisma.quest.findFirst({
-            where: {
-                id,
-                partyId: party.id,
-            },
-        });
+        const quest = await this.prisma.quest.findFirst({ where: { id, partyId: party.id } });
 
         if (!quest) {
             throw new NotFoundException("Quest not found");
@@ -194,22 +181,26 @@ export class QuestService {
             throw new ForbiddenException("Only the quest recipient can complete this quest");
         }
 
-        const result = await this.prisma.quest.updateMany({
-            where: {
-                id,
-                partyId: party.id,
-                recipientId: userId,
-                status: "Active",
-            },
-            data: {
-                status: "Completed",
-                completedAt: new Date(),
-            },
-        });
+        await this.prisma.$transaction(async (tx) => {
+            const result = await tx.quest.updateMany({
+                where: {
+                    id,
+                    status: "Active",
+                    partyId: party.id,
+                    recipientId: userId,
+                },
+                data: {
+                    status: "Completed",
+                    completedAt: new Date(),
+                },
+            });
 
-        if (result.count === 0) {
-            throw new BadRequestException("Quest is already completed");
-        }
+            if (result.count === 0) {
+                throw new BadRequestException("Quest is already completed");
+            }
+
+            await tx.questActivity.create({ data: { questId: id } });
+        });
 
         return await this.prisma.quest.findUnique({ where: { id } });
     }

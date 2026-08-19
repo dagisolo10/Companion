@@ -1,7 +1,8 @@
-import { TransferPartyDto } from "./party.controller";
+import { CreatePartyDto, UpdatePartyDto } from "./dto/party.dto";
 
 import { PrismaService } from "@/config/prisma/prisma.service";
 import { RequestService } from "@/config/request/request.service";
+import { TransferPartyDto } from "@/features/party/party.controller";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { randomInt } from "crypto";
@@ -24,7 +25,7 @@ export class PartyService {
         return code;
     }
 
-    async createParty() {
+    async createParty({ name }: CreatePartyDto) {
         const userId = this.requestService.getUserId();
 
         const code = await this.generateUniquePartyCode();
@@ -32,6 +33,7 @@ export class PartyService {
         return await this.prisma.party.create({
             data: {
                 code,
+                name,
                 creatorId: userId,
                 members: { create: { userId } },
             },
@@ -97,6 +99,21 @@ export class PartyService {
         return party;
     }
 
+    async updateParty(id: string, data: UpdatePartyDto) {
+        const userId = this.requestService.getUserId();
+
+        const party = await this.prisma.party.findUnique({ where: { id } });
+
+        if (!party) {
+            throw new NotFoundException("Party not found");
+        }
+
+        if (party.creatorId !== userId) {
+            throw new ForbiddenException("Only the party creator can update party");
+        }
+
+        return await this.prisma.party.update({ where: { id }, data });
+    }
     async deleteParty(id: string) {
         const userId = this.requestService.getUserId();
 

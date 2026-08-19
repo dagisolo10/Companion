@@ -1,3 +1,5 @@
+import { CreatePartyDto, UpdatePartyDto } from "./dto/party.dto";
+
 import { PartyService } from "@/features/party/party.service";
 import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { IsString } from "class-validator";
@@ -12,8 +14,8 @@ export class PartyController {
     constructor(private readonly partyService: PartyService) {}
 
     @Post("create")
-    createParty() {
-        return this.partyService.createParty();
+    createParty(@Body() data: CreatePartyDto) {
+        return this.partyService.createParty(data);
     }
 
     @Get("my")
@@ -34,6 +36,11 @@ export class PartyController {
     @Patch("regenerate-code/:id")
     regeneratePartyCode(@Param("id") id: string) {
         return this.partyService.regeneratePartyCode(id);
+    }
+
+    @Patch(":id")
+    updateParty(@Param("id") id: string, @Body() data: UpdatePartyDto) {
+        return this.partyService.updateParty(id, data);
     }
 
     @Patch("transfer/:id")

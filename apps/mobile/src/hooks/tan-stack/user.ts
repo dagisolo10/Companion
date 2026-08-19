@@ -1,12 +1,12 @@
-import { queryKeys } from "@/constants/query-keys";
-import { useAuth } from "@/contexts/auth-context";
 import { api } from "@/lib/api/axios";
-import { requestApi } from "@/lib/api/request-api";
-import { UpdateUserDto } from "@/types/dto";
 import { User } from "@/types/models";
-import { TMutationOptions, TQueryOptions } from "@/types/options";
+import { UpdateUserDto } from "@/types/dto";
+import { useAuth } from "@/contexts/auth-context";
+import { queryKeys } from "@/constants/query-keys";
+import { requestApi } from "@/lib/api/request-api";
 import { SuccessResponse } from "@/types/response";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { TMutationOptions, TQueryOptions } from "@/types/options";
 
 export function useGetUser(options?: TQueryOptions<User>) {
     const { user } = useAuth();

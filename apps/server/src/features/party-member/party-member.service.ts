@@ -35,12 +35,7 @@ export class PartyMemberService {
         }
 
         try {
-            return await this.prisma.partyMember.create({
-                data: {
-                    userId,
-                    partyId: party.id,
-                },
-            });
+            return await this.prisma.partyMember.create({ data: { userId, partyId: party.id } });
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
                 throw new BadRequestException("You are already a member of this party");
@@ -64,6 +59,8 @@ export class PartyMemberService {
         }
 
         await this.prisma.partyMember.delete({ where: { id: partyMember.id } });
+
+        return { success: true };
     }
 
     async getMembers(code: string) {

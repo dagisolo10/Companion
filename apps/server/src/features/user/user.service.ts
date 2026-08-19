@@ -15,7 +15,6 @@ export class UserService {
 
     async isUsernameAvailable(username: string) {
         const user = await this.prisma.user.findUnique({ where: { username }, select: { id: true } });
-        console.log("isUsernameAvailable", !user);
         return !user;
     }
 

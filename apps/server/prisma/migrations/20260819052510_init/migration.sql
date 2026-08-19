@@ -13,7 +13,6 @@ CREATE TABLE "User" (
     "name" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "experience" INTEGER NOT NULL DEFAULT 0,
-    "level" INTEGER NOT NULL DEFAULT 1,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -24,6 +23,7 @@ CREATE TABLE "Party" (
     "id" TEXT NOT NULL,
     "code" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "creatorId" TEXT NOT NULL,
 
     CONSTRAINT "Party_pkey" PRIMARY KEY ("id")
 );
@@ -49,7 +49,7 @@ CREATE TABLE "Quest" (
     "description" TEXT NOT NULL,
     "mode" "Mode" NOT NULL,
     "difficulty" "Difficulty" NOT NULL,
-    "status" "QuestStatus" NOT NULL,
+    "status" "QuestStatus" NOT NULL DEFAULT 'Active',
     "completedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -61,6 +61,12 @@ CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Party_code_key" ON "Party"("code");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PartyMember_userId_partyId_key" ON "PartyMember"("userId", "partyId");
+
+-- AddForeignKey
+ALTER TABLE "Party" ADD CONSTRAINT "Party_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PartyMember" ADD CONSTRAINT "PartyMember_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

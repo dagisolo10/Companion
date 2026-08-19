@@ -6,14 +6,15 @@ import { SocketIoModule } from "@/config/socket.io/socket.io.module";
 import { SupabaseModule } from "@/config/supabase/supabase.module";
 import { PartyMemberModule } from "@/features/party-member/party-member.module";
 import { PartyModule } from "@/features/party/party.module";
+import { QuestActivityModule } from "@/features/quest-activity/quest-activity.module";
 import { QuestModule } from "@/features/quest/quest.module";
 import { UserModule } from "@/features/user/user.module";
 import { Module } from "@nestjs/common";
-import { APP_GUARD } from "@nestjs/core";
 import { ConfigModule } from "@nestjs/config";
+import { APP_GUARD } from "@nestjs/core";
 
 @Module({
-    imports: [SupabaseModule, SocketIoModule, RequestModule, ConfigModule.forRoot({ isGlobal: true }), UserModule, PrismaModule, PartyModule, PartyMemberModule, QuestModule],
+    imports: [SupabaseModule, SocketIoModule, RequestModule, ConfigModule.forRoot({ isGlobal: true }), UserModule, PrismaModule, PartyModule, PartyMemberModule, QuestModule, QuestActivityModule],
     providers: [{ provide: APP_GUARD, useClass: AuthGuard }],
     controllers: [AppController],
 })

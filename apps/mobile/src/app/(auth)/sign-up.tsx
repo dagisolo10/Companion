@@ -1,6 +1,6 @@
 import ErrorMessage from "@/components/error-message";
 import Text from "@/components/ui/text";
-import { useColor } from "@/hooks/use-color";
+import { useColor } from "@/hooks/custom/use-color";
 import { api } from "@/lib/api/axios";
 import { requestApi } from "@/lib/api/request-api";
 import { supabase } from "@/lib/supabase";
@@ -61,7 +61,7 @@ export default function SignUp() {
                 return setError(response.error.message);
             }
 
-            router.replace("/");
+            router.replace("/(app)");
         } catch (err) {
             setError(err instanceof z.ZodError ? err.issues[0]!.message : "An unexpected error occurred");
         } finally {
@@ -75,23 +75,23 @@ export default function SignUp() {
                 <ScrollView keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
                     <View className="my-auto gap-6 px-6 py-8">
                         <View className="gap-2">
-                            <Text className="text-foreground text-3xl font-bold">Create Account</Text>
+                            <Text className="text-foreground font-jakarta-bold text-3xl">Create Account</Text>
                             <Text className="text-muted-foreground text-base">Sign up to get started with your account</Text>
                         </View>
 
                         <View className="gap-4">
                             <View className="gap-1.5">
-                                <Text className="text-foreground text-sm font-semibold">Name</Text>
+                                <Text className="text-foreground font-jakarta-semibold text-sm">Name</Text>
                                 <TextInput className="border-border bg-card text-foreground h-12 w-full rounded-xl border pr-4 pl-4" value={name} onChangeText={setName} placeholder="Bob" placeholderTextColor="#a3a3a3" autoCorrect={false} />
                             </View>
 
                             <View className="gap-1.5">
-                                <Text className="text-foreground text-sm font-semibold">Username</Text>
+                                <Text className="text-foreground font-jakarta-semibold text-sm">Username</Text>
                                 <TextInput className="border-border bg-card text-foreground h-12 w-full rounded-xl border pr-4 pl-4" value={username} onChangeText={setUsername} placeholder="bob" placeholderTextColor="#a3a3a3" autoCapitalize="none" autoCorrect={false} />
                             </View>
 
                             <View className="gap-1.5">
-                                <Text className="text-foreground text-sm font-semibold">Email</Text>
+                                <Text className="text-foreground font-jakarta-semibold text-sm">Email</Text>
                                 <TextInput
                                     className="border-border bg-card text-foreground h-12 w-full rounded-xl border pr-4 pl-4"
                                     value={email}
@@ -105,7 +105,7 @@ export default function SignUp() {
                             </View>
 
                             <View className="gap-1.5">
-                                <Text className="text-foreground text-sm font-semibold">Password</Text>
+                                <Text className="text-foreground font-jakarta-semibold text-sm">Password</Text>
                                 <TextInput
                                     className="border-border bg-card text-foreground h-12 w-full rounded-xl border pr-4 pl-4"
                                     value={password}
@@ -121,14 +121,14 @@ export default function SignUp() {
                             <ErrorMessage message={error} />
 
                             <Pressable onPress={signUpNewUser} disabled={isSigningUp} className="bg-primary mt-2 h-12 flex-row items-center justify-center gap-2 rounded-xl active:opacity-90 disabled:opacity-50">
-                                {isSigningUp ? <ActivityIndicator color="#ffffff" /> : <Text className="text-primary-foreground text-base font-semibold">Agree & Sign Up</Text>}
+                                {isSigningUp ? <ActivityIndicator color="#ffffff" /> : <Text className="text-primary-foreground font-jakarta-semibold text-base">Agree & Sign Up</Text>}
                             </Pressable>
 
                             <View className="mt-4 flex-row justify-center">
                                 <Link href="/(auth)/sign-in" asChild>
                                     <Pressable>
                                         <Text className="text-muted-foreground text-sm">
-                                            Already have an account? <Text className="text-primary font-semibold">Sign In</Text>
+                                            Already have an account? <Text className="text-primary font-jakarta-semibold">Sign In</Text>
                                         </Text>
                                     </Pressable>
                                 </Link>

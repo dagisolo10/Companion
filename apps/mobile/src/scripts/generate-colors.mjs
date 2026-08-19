@@ -34,12 +34,12 @@ async function generateColors() {
     rootNode.walk((node) => {
         // Top-level :root (Default / Dark mode)
         if (node.type === "rule" && node.selector === ":root" && node.parent.type === "root") {
-            node.walkDecls(/^--/, (decl) => (rawDark[decl.prop.replace(/^--/, "")] = decl.value));
+            node.walkDecls(/^--/, (decl) => (rawLight[decl.prop.replace(/^--/, "")] = decl.value));
         }
 
         // Light mode inside @media (prefers-color-scheme: light)
-        if (node.type === "atrule" && node.name === "media" && node.params.includes("light")) {
-            node.walkDecls(/^--/, (decl) => (rawLight[decl.prop.replace(/^--/, "")] = decl.value));
+        if (node.type === "atrule" && node.name === "media" && node.params.includes("dark")) {
+            node.walkDecls(/^--/, (decl) => (rawDark[decl.prop.replace(/^--/, "")] = decl.value));
         }
     });
 
@@ -52,9 +52,9 @@ async function generateColors() {
         return result;
     };
 
-    const darkColors = processVariables(rawDark);
-    // Merge light overrides on top of base dark variables
-    const lightColors = processVariables({ ...rawDark, ...rawLight });
+    const lightColors = processVariables(rawLight);
+
+    const darkColors = processVariables({ ...rawLight, ...rawDark });
 
     const fileContent = `// Automatically generated from global.css. Do not edit directly.
 export const Colors = ${JSON.stringify({ dark: darkColors, light: lightColors }, null, 4)} as const;

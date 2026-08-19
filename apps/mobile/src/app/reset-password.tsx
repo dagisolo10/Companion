@@ -1,5 +1,5 @@
 import Text from "@/components/ui/text";
-import { useColor } from "@/hooks/use-color";
+import { useColor } from "@/hooks/custom/use-color";
 import { supabase } from "@/lib/supabase";
 import { Link, router } from "expo-router";
 import { useState } from "react";
@@ -57,7 +57,7 @@ export default function ResetPassword() {
 
             if (updateError) throw updateError;
 
-            router.replace("/");
+            router.replace("/(app)");
         } catch (err) {
             if (err instanceof Error) setError(err.message || "Failed to reset password.");
         } finally {
@@ -71,13 +71,13 @@ export default function ResetPassword() {
                 <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="bg-background flex-1 px-6">
                     <View className="bg-background flex-1 justify-center gap-6">
                         <View className="gap-2">
-                            <Text className="text-foreground text-3xl font-bold">Reset Password</Text>
+                            <Text className="text-foreground font-jakarta-bold text-3xl">Reset Password</Text>
                             <Text className="text-muted-foreground text-base">Enter your new password below to secure your account.</Text>
                         </View>
 
                         <View className="gap-4">
                             <View className="gap-1.5">
-                                <Text className="text-foreground text-sm font-semibold">Current Password</Text>
+                                <Text className="text-foreground font-jakarta-semibold text-sm">Current Password</Text>
                                 <View className="relative justify-center">
                                     <TextInput
                                         className="border-border bg-card text-foreground h-12 w-full rounded-xl border px-4 pr-16"
@@ -90,13 +90,13 @@ export default function ResetPassword() {
                                         onChangeText={setCurrentPassword}
                                     />
                                     <Pressable onPress={() => setShowPassword(!showPassword)} className="absolute right-4 py-2">
-                                        <Text className="text-primary text-xs font-semibold">{showPassword ? "Hide" : "Show"}</Text>
+                                        <Text className="text-primary font-jakarta-semibold text-xs">{showPassword ? "Hide" : "Show"}</Text>
                                     </Pressable>
                                 </View>
                             </View>
 
                             <View className="gap-1.5">
-                                <Text className="text-foreground text-sm font-semibold">New Password</Text>
+                                <Text className="text-foreground font-jakarta-semibold text-sm">New Password</Text>
                                 <View className="relative justify-center">
                                     <TextInput
                                         className="border-border bg-card text-foreground h-12 w-full rounded-xl border px-4 pr-16"
@@ -112,7 +112,7 @@ export default function ResetPassword() {
                             </View>
 
                             <View className="gap-1.5">
-                                <Text className="text-foreground text-sm font-semibold">Confirm New Password</Text>
+                                <Text className="text-foreground font-jakarta-semibold text-sm">Confirm New Password</Text>
                                 <TextInput
                                     autoCorrect={false}
                                     autoCapitalize="none"
@@ -125,17 +125,17 @@ export default function ResetPassword() {
                                 />
                             </View>
 
-                            {error ? <Text className="text-destructive text-sm font-semibold">{error}</Text> : null}
+                            {error ? <Text className="text-destructive font-jakarta-semibold text-sm">{error}</Text> : null}
 
                             <Pressable onPress={handleReset} disabled={isSubmitting} className="mt-2 h-12 flex-row items-center justify-center gap-2 rounded-xl bg-blue-400 active:opacity-90 disabled:opacity-50">
-                                {isSubmitting ? <ActivityIndicator color="#ffffff" /> : <Text className="text-base font-semibold text-white">Update Password</Text>}
+                                {isSubmitting ? <ActivityIndicator color="#ffffff" /> : <Text className="font-jakarta-semibold text-base text-white">Update Password</Text>}
                             </Pressable>
 
                             <View className="mt-4 flex-row justify-center">
                                 <Link href="/(auth)/sign-in" asChild>
                                     <Pressable>
                                         <Text className="text-muted-foreground text-sm">
-                                            Remember your password? <Text className="text-primary font-semibold">Sign In</Text>
+                                            Remember your password? <Text className="text-primary font-jakarta-semibold">Sign In</Text>
                                         </Text>
                                     </Pressable>
                                 </Link>
