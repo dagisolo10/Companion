@@ -1,0 +1,23 @@
+{
+    "extends": "expo/tsconfig.base",
+    "compilerOptions": {
+        "strict": true,
+        "types": ["node"],
+        "paths": {
+            "@/*": ["./src/*"],
+            "@/assets/*": ["./assets/*"],
+            "@/fonts/*": ["./assets/fonts/*"]
+        },
+
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noErrorTruncation": true,
+        "noUnusedParameters": true,
+        "noImplicitOverride": true,
+        "allowUnreachableCode": false,
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedSideEffectImports": true,
+        "forceConsistentCasingInFileNames": true
+    },
+    "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+}

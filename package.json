@@ -1,0 +1,33 @@
+{
+    "name": "Companion",
+    "private": true,
+    "scripts": {
+        "dev": "turbo run dev",
+        "lint": "turbo run lint",
+        "build": "turbo run build",
+        "format": "prettier --write .",
+        "check-types": "turbo run check-types"
+    },
+    "devDependencies": {
+        "prettier": "3.9.6",
+        "supabase": "^2.121.0",
+        "turbo": "^2.11.9",
+        "typescript": "7.0.2"
+    },
+    "engines": {
+        "node": ">=24"
+    },
+    "devEngines": {
+        "packageManager": {
+            "name": "bun",
+            "version": "1.4.2"
+        }
+    },
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "overrides": {
+        "lightningcss": "1.30.1"
+    }
+}

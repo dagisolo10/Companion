@@ -1,0 +1,17 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  username      String   @unique
+  experience    Int      @default(0)
+  streak        Int      @default(0)
+  longestStreak Int      @default(0)
+  createdAt     DateTime @default(now())
+}
