@@ -33,8 +33,8 @@ export default function Welcome() {
             <View className="items-center justify-center gap-4 pt-6">
                 <BrandMark icon={Compass} accent="bg-amber" size="lg" />
                 <View className="items-center gap-2">
-                    <Text className="text-center font-jakarta-extrabold text-4xl tracking-tight">Companion</Text>
-                    <Text className="text-muted-foreground max-w-[280px] text-center font-jakarta-medium text-base">Your adventure companion for quests, parties, and leveling up every day.</Text>
+                    <Text className="font-jakarta-extrabold text-center text-4xl tracking-tight">Companion</Text>
+                    <Text className="text-muted-foreground font-jakarta-medium max-w-70 text-center text-base">Your adventure companion for quests, parties, and leveling up every day.</Text>
                 </View>
             </View>
 
