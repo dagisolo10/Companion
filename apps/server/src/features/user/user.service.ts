@@ -1,6 +1,7 @@
 import { PrismaService } from "@/config/prisma/prisma.service.js";
 import { RequestService } from "@/config/request/request.service.js";
 import { SupabaseService } from "@/config/supabase/supabase.service.js";
+import { StreakService } from "@/features/streak/streak.service.js";
 import { UpdateUserDto } from "@/features/user/user.dto.js";
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
@@ -11,10 +12,13 @@ export class UserService {
         private readonly prisma: PrismaService,
         private readonly supabase: SupabaseService,
         private readonly requestService: RequestService,
+        private readonly streakService: StreakService,
     ) {}
 
     async getLeaderboard(take = 100) {
-        return await this.prisma.user.findMany({ take, orderBy: { experience: "desc" } });
+        const users = await this.prisma.user.findMany({ take, orderBy: { experience: "desc" } });
+
+        return await this.streakService.resolveStreaks(users);
     }
 
     async isUsernameAvailable(username: string) {
@@ -55,7 +59,9 @@ export class UserService {
                 });
             }
 
-            return user;
+            const [resolved] = await this.streakService.resolveStreaks([user]);
+
+            return resolved;
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
                 throw new ConflictException("Username is already taken");
@@ -87,7 +93,9 @@ export class UserService {
             throw new NotFoundException("User not found. Try another username");
         }
 
-        return user;
+        const [resolved] = await this.streakService.resolveStreaks([user]);
+
+        return resolved;
     }
 
     async updateAccount(data: UpdateUserDto) {

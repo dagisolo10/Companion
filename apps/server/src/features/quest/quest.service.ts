@@ -1,6 +1,7 @@
 import { PrismaService } from "@/config/prisma/prisma.service.js";
 import { RequestService } from "@/config/request/request.service.js";
 import { CreateQuestDto, Filter, UpdateQuestDto } from "@/features/quest/quest.dto.js";
+import { StreakService } from "@/features/streak/streak.service.js";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { Difficulty, Prisma } from "@prisma/client";
 
@@ -28,6 +29,7 @@ export class QuestService {
     constructor(
         private readonly prisma: PrismaService,
         private readonly requestService: RequestService,
+        private readonly streakService: StreakService,
     ) {}
 
     private readonly QUEST_REWARDS: Record<Difficulty, number> = {
@@ -185,6 +187,8 @@ export class QuestService {
             if (existingActivity) {
                 throw new BadRequestException("You have already completed this quest");
             }
+
+            await this.streakService.bumpStreak(tx, userId);
 
             await tx.questActivity.create({ data: { questId: id, userId, xpAwarded: true } });
 

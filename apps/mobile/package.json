@@ -9,7 +9,7 @@
         "web": "expo start --web",
         "format": "prettier --write .",
         "android": "expo start --android",
-        "colors": "node ./src/scripts/generate-colors.mjs"
+        "colors": "bun run ./src/scripts/generate-colors.ts"
     },
     "dependencies": {
         "@supabase/supabase-js": "^2.112.3",

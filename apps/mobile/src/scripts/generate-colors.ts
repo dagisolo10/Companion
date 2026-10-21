@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import postcss, { type Root } from "postcss";
 
-const CSS_FILE_PATH = path.resolve("../mobile/src/global.css");
+const CSS_FILE_PATH = path.resolve("../mobile/src/app/global.css");
 const OUTPUT_FILE_PATH = path.resolve("../mobile/src/constants/colors.ts");
 
 type ColorMap = Record<string, string>;
@@ -13,7 +13,7 @@ function formatColor(cssString: string): string {
         const color = new Color(cssString.trim());
 
         if (color.alpha < 1) {
-            const [r, g, b] = color.to("srgb").coords.map((c) => Math.round(c ?? 0 * 255));
+            const [r, g, b] = color.to("srgb").coords.map((c) => Math.round((c ?? 0) * 255));
 
             return `rgba(${r}, ${g}, ${b}, ${Number(color.alpha.toFixed(2))})`;
         }

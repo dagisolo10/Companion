@@ -8,13 +8,14 @@ import { PartyMemberModule } from "@/features/party-member/party-member.module.j
 import { PartyModule } from "@/features/party/party.module.js";
 import { QuestActivityModule } from "@/features/quest-activity/quest-activity.module.js";
 import { QuestModule } from "@/features/quest/quest.module.js";
+import { StreakModule } from "@/features/streak/streak.module.js";
 import { UserModule } from "@/features/user/user.module.js";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 
 @Module({
-    imports: [SupabaseModule, RequestModule, ConfigModule.forRoot({ isGlobal: true }), UserModule, PrismaModule, PartyModule, PartyMemberModule, QuestModule, QuestActivityModule, DashboardModule],
+    imports: [SupabaseModule, RequestModule, ConfigModule.forRoot({ isGlobal: true }), UserModule, PrismaModule, PartyModule, PartyMemberModule, QuestModule, QuestActivityModule, DashboardModule, StreakModule],
     providers: [{ provide: APP_GUARD, useClass: AuthGuard }],
     controllers: [AppController],
 })

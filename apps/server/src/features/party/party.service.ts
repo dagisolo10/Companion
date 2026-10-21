@@ -1,5 +1,6 @@
 import { PrismaService } from "@/config/prisma/prisma.service.js";
 import { RequestService } from "@/config/request/request.service.js";
+import { StreakService } from "@/features/streak/streak.service.js";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { ulid } from "ulid";
@@ -11,6 +12,7 @@ export class PartyService {
     constructor(
         private readonly prisma: PrismaService,
         private readonly requestService: RequestService,
+        private readonly streakService: StreakService,
     ) {}
 
     private async generateUniquePartyCode() {
@@ -123,11 +125,16 @@ export class PartyService {
             throw new NotFoundException("Party not found");
         }
 
-        return await this.prisma.partyMember.findMany({
+        const members = await this.prisma.partyMember.findMany({
             where: { partyId: party.id },
             include: { user: true },
             orderBy: { user: { experience: "desc" } },
         });
+
+        const users = await this.streakService.resolveStreaks(members.map(({ user }) => user));
+        const resolvedById = new Map(users.map((user) => [user.id, user]));
+
+        return members.map((member) => ({ ...member, user: resolvedById.get(member.userId) ?? member.user }));
     }
 
     async searchParty(code: string) {

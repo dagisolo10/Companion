@@ -1,7 +1,9 @@
+import Button from "@/components/ui/button";
 import Text from "@/components/ui/text";
 import { cn } from "@/lib/utils";
 import { Party } from "@/types/models";
-import { ChevronDown } from "lucide-react-native";
+import { router } from "expo-router";
+import { ChevronDown, Users } from "lucide-react-native";
 import { useEffect } from "react";
 import { Pressable, View } from "react-native";
 import Animated, { createAnimatedComponent, Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
@@ -31,6 +33,27 @@ export default function PartySelector({ parties, showPartyPicker, selectedPartyC
     const chevronStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${rotation.value}deg` }] }));
     const dynamicDropdownStyle = useAnimatedStyle(() => ({ opacity: progress.value, height: progress.value * menuHeight.value }));
 
+    if (parties.length === 0) {
+        return (
+            <View className="gap-1.5">
+                <Text className="font-jakarta-bold text-sm">Party</Text>
+
+                <View className="border-border bg-muted items-center gap-2.5 rounded-2xl border-2 px-4 py-6">
+                    <View className="border-foreground bg-card rounded-xl border-2 p-2">
+                        <Users size={18} color="#888" strokeWidth={2.5} />
+                    </View>
+                    <View className="items-center gap-0.5">
+                        <Text className="font-jakarta-bold text-muted-foreground text-center text-sm">No parties yet</Text>
+                        <Text className="text-muted-foreground font-jakarta-bold text-center text-xs">Create a party to pick one here.</Text>
+                    </View>
+                    <Button size="sm" onPress={() => router.push("/(app)/(parties)/create")}>
+                        Create Party
+                    </Button>
+                </View>
+            </View>
+        );
+    }
+
     return (
         <View className="gap-1.5">
             <Text className="font-jakarta-bold text-sm">Party</Text>
@@ -41,7 +64,7 @@ export default function PartySelector({ parties, showPartyPicker, selectedPartyC
             </Pressable>
 
             <Animated.View style={[dynamicDropdownStyle]}>
-                <View onLayout={(e) => (menuHeight.value = e.nativeEvent.layout.height)} className="border-foreground bg-card shadow-nb mt-1 rounded-2xl border-2 p-2">
+                <View onLayout={(e) => (menuHeight.value = e.nativeEvent.layout.height + 6)} className="border-foreground bg-card shadow-nb mt-1 rounded-2xl border-2 p-2">
                     {parties.map((party) => (
                         <Pressable key={party.id} onPress={() => onPartySelect(party.code)} className={cn("rounded-xl px-4 py-3", selectedPartyCode === party.code && "bg-amber")}>
                             <Text className={cn("font-jakarta-bold text-sm", selectedPartyCode === party.code && "text-black")}>{party.name}</Text>
