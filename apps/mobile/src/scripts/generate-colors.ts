@@ -1,6 +1,6 @@
 import Color from "colorjs.io";
-import fs from "node:fs";
-import path from "node:path";
+import fs from "fs";
+import path from "path";
 import postcss, { type Root } from "postcss";
 
 const CSS_FILE_PATH = path.resolve("../mobile/src/app/global.css");
