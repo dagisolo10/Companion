@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: Infinity } } });
 
 function ContentLayout() {
     const { isLoading, isSignedIn } = useAuth();
@@ -20,7 +20,7 @@ function ContentLayout() {
     useEffect(() => {
         if (isLoading) return;
 
-        if (!isSignedIn) return router.replace("/(auth)/sign-in");
+        if (!isSignedIn) return router.replace("/(auth)");
 
         router.replace("/(app)");
     }, [isLoading, isSignedIn]);

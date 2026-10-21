@@ -15,9 +15,9 @@ model User {
     longestStreak  Int           @default(0)
     createdAt      DateTime      @default(now())
     partyMembers   PartyMember[]
-    createdQuests  Quest[]       @relation("CreatedQuests")
-    receivedQuests Quest[]       @relation("ReceivedQuests")
-    createdParties Party[]       @relation("CreatedParties")
+    createdQuests  Quest[]         @relation("CreatedQuests")
+    createdParties Party[]         @relation("CreatedParties")
+    questActivities QuestActivity[]
 }
 
 model Party {
@@ -43,31 +43,36 @@ model PartyMember {
 }
 
 model Quest {
-    id              String          @id @default(uuid())
-    reward          Int
-    partyId         String
-    creatorId       String
-    recipientId     String
-    title           String
-    description     String
-    mode            Mode
-    difficulty      Difficulty
-    status          QuestStatus     @default(Active)
-    completedAt     DateTime?
-    createdAt       DateTime        @default(now())
-    party           Party           @relation(fields: [partyId], references: [id])
-    creator         User            @relation("CreatedQuests", fields: [creatorId], references: [id])
-    recipient       User            @relation("ReceivedQuests", fields: [recipientId], references: [id])
+    id          String      @id @default(uuid())
+    reward      Int
+    title       String
+    description String
+    mode        Mode
+    difficulty  Difficulty
+    status      QuestStatus @default(Active)
+    completedAt DateTime?
+    createdAt   DateTime    @default(now())
+
     questActivities QuestActivity[]
+
+    partyId   String
+    creatorId String
+    party     Party  @relation(fields: [partyId], references: [id])
+    creator   User   @relation("CreatedQuests", fields: [creatorId], references: [id])
 }
 
 model QuestActivity {
     id          String   @id @default(uuid())
     questId     String
+    userId      String
+    xpAwarded   Boolean  @default(false)
     completedAt DateTime @default(now())
     quest       Quest    @relation(fields: [questId], references: [id])
+    user        User     @relation(fields: [userId], references: [id])
 
+    @@unique([questId, userId])
     @@index([questId])
+    @@index([userId])
 }
 
 enum QuestStatus {

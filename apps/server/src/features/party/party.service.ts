@@ -1,11 +1,10 @@
-import { CreatePartyDto, UpdatePartyDto } from "./dto/party.dto";
-
-import { PrismaService } from "@/config/prisma/prisma.service";
-import { RequestService } from "@/config/request/request.service";
-import { TransferPartyDto } from "@/features/party/party.controller";
+import { PrismaService } from "@/config/prisma/prisma.service.js";
+import { RequestService } from "@/config/request/request.service.js";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
-import { randomInt } from "crypto";
+import { ulid } from "ulid";
+
+import { CreatePartyDto, TransferPartyDto, UpdatePartyDto } from "./party.dto.js";
 
 @Injectable()
 export class PartyService {
@@ -18,8 +17,8 @@ export class PartyService {
         let code: string;
 
         do {
-            const characters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-            code = Array.from({ length: 6 }, () => characters[randomInt(characters.length)]).join("");
+            const id = ulid();
+            code = id.slice(id.length - 5, id.length - 1);
         } while (await this.prisma.party.findUnique({ where: { code } }));
 
         return code;
@@ -61,32 +60,74 @@ export class PartyService {
     async getParty(code: string) {
         const userId = this.requestService.getUserId();
 
-        const party = await this.prisma.party.findUnique({ where: { code } });
+        const party = await this.prisma.party.findUnique({
+            where: { code },
+            include: {
+                _count: { select: { members: true } },
+                members: { where: { userId }, select: { id: true } },
+            },
+        });
+
+        console.log("party", party);
 
         if (!party) {
             throw new NotFoundException("Party not found");
         }
 
-        const isMember = await this.prisma.partyMember.findUnique({
-            where: {
-                userId_partyId: {
-                    userId,
-                    partyId: party.id,
-                },
-            },
-        });
+        const { members, ...rest } = party;
 
-        if (!isMember) {
-            throw new ForbiddenException("You don't belong in this party");
-        }
-
-        return party;
+        return { ...rest, isMember: members.length > 0 };
     }
 
     async getMyParties() {
         const userId = this.requestService.getUserId();
 
-        return await this.prisma.party.findMany({ where: { members: { some: { userId } } } });
+        const parties = await this.prisma.party.findMany({
+            where: { members: { some: { userId } } },
+            include: {
+                _count: { select: { members: true } },
+            },
+        });
+
+        return parties.map((party) => ({ ...party, isMember: true }));
+    }
+
+    async getAllParties(query?: string) {
+        const userId = this.requestService.getUserId();
+        const trimmed = query?.trim();
+
+        const parties = await this.prisma.party.findMany({
+            where: trimmed
+                ? {
+                      OR: [{ name: { contains: trimmed, mode: "insensitive" } }, { code: { contains: trimmed, mode: "insensitive" } }],
+                  }
+                : undefined,
+            take: 100,
+            orderBy: { createdAt: "desc" },
+            include: {
+                _count: { select: { members: true } },
+                members: { where: { userId }, select: { id: true } },
+            },
+        });
+
+        return parties.map(({ members, ...party }) => ({
+            ...party,
+            isMember: members.length > 0,
+        }));
+    }
+
+    async getPartyLeaderboard(code: string) {
+        const party = await this.prisma.party.findUnique({ where: { code }, select: { id: true } });
+
+        if (!party) {
+            throw new NotFoundException("Party not found");
+        }
+
+        return await this.prisma.partyMember.findMany({
+            where: { partyId: party.id },
+            include: { user: true },
+            orderBy: { user: { experience: "desc" } },
+        });
     }
 
     async searchParty(code: string) {

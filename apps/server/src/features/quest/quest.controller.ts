@@ -1,8 +1,6 @@
-import { CreateQuestDto } from "./dto/create-quest.dto";
-import { UpdateQuestDto } from "./dto/update-quest.dto";
-import { QuestService } from "./quest.service";
-
-import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common";
+import { CreateQuestDto, type Filter, UpdateQuestDto } from "@/features/quest/quest.dto.js";
+import { QuestService } from "@/features/quest/quest.service.js";
+import { Body, Controller, Get, Param, Patch, Post, Query } from "@nestjs/common";
 
 @Controller("quest")
 export class QuestController {
@@ -11,6 +9,11 @@ export class QuestController {
     @Post()
     createQuest(@Body() data: CreateQuestDto) {
         return this.questService.createQuest(data);
+    }
+
+    @Get("my")
+    getMyQuests(@Query("status") status?: Filter) {
+        return this.questService.getMyQuests(status);
     }
 
     @Get(":code")

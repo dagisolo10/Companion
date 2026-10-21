@@ -1,10 +1,27 @@
-import { CreateQuestDto } from "./dto/create-quest.dto";
-import { UpdateQuestDto } from "./dto/update-quest.dto";
-
-import { PrismaService } from "@/config/prisma/prisma.service";
-import { RequestService } from "@/config/request/request.service";
+import { PrismaService } from "@/config/prisma/prisma.service.js";
+import { RequestService } from "@/config/request/request.service.js";
+import { CreateQuestDto, Filter, UpdateQuestDto } from "@/features/quest/quest.dto.js";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
-import { Difficulty } from "@prisma/client";
+import { Difficulty, Prisma } from "@prisma/client";
+
+const questSelect = {
+    creator: {
+        select: {
+            name: true,
+            username: true,
+        },
+    },
+    party: {
+        select: {
+            code: true,
+        },
+    },
+    _count: {
+        select: {
+            questActivities: true,
+        },
+    },
+} satisfies Prisma.QuestInclude;
 
 @Injectable()
 export class QuestService {
@@ -25,7 +42,7 @@ export class QuestService {
         const userId = this.requestService.getUserId();
 
         const party = await this.prisma.party.findUnique({
-            where: { id: data.partyId },
+            where: { code: data.partyId },
         });
 
         if (!party) {
@@ -36,7 +53,7 @@ export class QuestService {
             where: {
                 userId_partyId: {
                     userId,
-                    partyId: data.partyId,
+                    partyId: party.id,
                 },
             },
         });
@@ -45,83 +62,47 @@ export class QuestService {
             throw new ForbiddenException("You are not allowed to create a quest in this party");
         }
 
-        const recipient = await this.prisma.partyMember.findUnique({
-            where: {
-                userId_partyId: {
-                    userId: data.recipientId,
-                    partyId: data.partyId,
-                },
-            },
-        });
-
-        if (!recipient) {
-            throw new BadRequestException("Quest recipient must be a member of this party");
-        }
-
         return await this.prisma.quest.create({
             data: {
-                ...data,
+                title: data.title,
+                description: data.description,
+                mode: data.mode,
+                difficulty: data.difficulty,
+                partyId: party.id,
                 creatorId: userId,
                 reward: this.QUEST_REWARDS[data.difficulty],
             },
+            include: questSelect,
         });
     }
 
     async getPartyQuests(code: string) {
-        const userId = this.requestService.getUserId();
-
         const party = await this.prisma.party.findUnique({ where: { code } });
 
         if (!party) {
             throw new NotFoundException("Party not found");
         }
 
-        const isMember = await this.prisma.partyMember.findUnique({
-            where: {
-                userId_partyId: {
-                    userId,
-                    partyId: party.id,
-                },
-            },
-        });
-
-        if (!isMember) {
-            throw new ForbiddenException("You are not allowed to view quests in this party");
-        }
-
         return await this.prisma.quest.findMany({
-            where: {
-                partyId: party.id,
-            },
+            where: { partyId: party.id },
+            include: questSelect,
         });
     }
 
-    async getMyQuests(code: string) {
+    async getMyQuests(status?: Filter) {
         const userId = this.requestService.getUserId();
-
-        const party = await this.prisma.party.findUnique({ where: { code } });
-
-        if (!party) {
-            throw new NotFoundException("Party not found");
-        }
-
-        const isMember = await this.prisma.partyMember.findUnique({
-            where: {
-                userId_partyId: {
-                    userId,
-                    partyId: party.id,
-                },
-            },
-        });
-
-        if (!isMember) {
-            throw new ForbiddenException("You are not allowed to view quests in this party");
-        }
 
         return await this.prisma.quest.findMany({
             where: {
-                partyId: party.id,
-                recipientId: userId,
+                party: { members: { some: { userId } } },
+                ...(status !== "All" && { status }),
+            },
+            include: {
+                ...questSelect,
+                questActivities: {
+                    where: { userId },
+                    select: { id: true },
+                },
             },
         });
     }
@@ -136,12 +117,7 @@ export class QuestService {
         }
 
         const isMember = await this.prisma.partyMember.findUnique({
-            where: {
-                userId_partyId: {
-                    userId,
-                    partyId: party.id,
-                },
-            },
+            where: { userId_partyId: { userId, partyId: party.id } },
         });
 
         if (!isMember) {
@@ -149,9 +125,23 @@ export class QuestService {
         }
 
         const quest = await this.prisma.quest.findFirst({
-            where: {
-                id,
-                partyId: party.id,
+            where: { id, partyId: party.id },
+            include: {
+                ...questSelect,
+                questActivities: {
+                    orderBy: { completedAt: "desc" },
+                    select: {
+                        id: true,
+                        completedAt: true,
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                username: true,
+                            },
+                        },
+                    },
+                },
             },
         });
 
@@ -171,38 +161,60 @@ export class QuestService {
             throw new NotFoundException("Party not found");
         }
 
-        const quest = await this.prisma.quest.findFirst({ where: { id, partyId: party.id } });
+        const isMember = await this.prisma.partyMember.findUnique({
+            where: { userId_partyId: { userId, partyId: party.id } },
+        });
+
+        if (!isMember) {
+            throw new ForbiddenException("You are not allowed to complete this quest");
+        }
+
+        const quest = await this.prisma.quest.findFirst({
+            where: { id, partyId: party.id },
+        });
 
         if (!quest) {
             throw new NotFoundException("Quest not found");
         }
 
-        if (quest.recipientId !== userId) {
-            throw new ForbiddenException("Only the quest recipient can complete this quest");
-        }
-
         await this.prisma.$transaction(async (tx) => {
-            const result = await tx.quest.updateMany({
-                where: {
-                    id,
-                    status: "Active",
-                    partyId: party.id,
-                    recipientId: userId,
-                },
-                data: {
-                    status: "Completed",
-                    completedAt: new Date(),
-                },
+            const existingActivity = await tx.questActivity.findUnique({
+                where: { questId_userId: { questId: id, userId } },
             });
 
-            if (result.count === 0) {
-                throw new BadRequestException("Quest is already completed");
+            if (existingActivity) {
+                throw new BadRequestException("You have already completed this quest");
             }
 
-            await tx.questActivity.create({ data: { questId: id } });
+            await tx.questActivity.create({ data: { questId: id, userId, xpAwarded: true } });
+
+            await tx.user.update({
+                where: { id: userId },
+                data: { experience: { increment: quest.reward } },
+            });
+
+            const memberCount = await tx.partyMember.count({
+                where: { partyId: party.id },
+            });
+            const activityCount = await tx.questActivity.count({
+                where: { questId: id },
+            });
+
+            if (activityCount >= memberCount) {
+                await tx.quest.updateMany({
+                    where: { id, status: "Active" },
+                    data: {
+                        status: "Completed",
+                        completedAt: new Date(),
+                    },
+                });
+            }
         });
 
-        return await this.prisma.quest.findUnique({ where: { id } });
+        return await this.prisma.quest.findUnique({
+            where: { id },
+            include: questSelect,
+        });
     }
 
     async updateQuest(id: string, data: UpdateQuestDto) {
@@ -218,25 +230,6 @@ export class QuestService {
             throw new ForbiddenException("You are not allowed to update this quest");
         }
 
-        if (data.recipientId !== undefined) {
-            if (!data.recipientId) {
-                throw new BadRequestException("Recipient ID can't be empty");
-            }
-
-            const recipient = await this.prisma.partyMember.findUnique({
-                where: {
-                    userId_partyId: {
-                        userId: data.recipientId,
-                        partyId: quest.partyId,
-                    },
-                },
-            });
-
-            if (!recipient) {
-                throw new BadRequestException("Quest recipient must be a member of this party");
-            }
-        }
-
         const result = await this.prisma.quest.updateMany({
             where: {
                 id,
@@ -244,7 +237,9 @@ export class QuestService {
                 status: "Active",
             },
             data: {
-                ...data,
+                mode: data.mode,
+                title: data.title,
+                description: data.description,
                 ...(data.difficulty && { reward: this.QUEST_REWARDS[data.difficulty] }),
             },
         });
@@ -253,6 +248,9 @@ export class QuestService {
             throw new BadRequestException("Completed quests can't be updated");
         }
 
-        return await this.prisma.quest.findUnique({ where: { id } });
+        return await this.prisma.quest.findUnique({
+            where: { id },
+            include: questSelect,
+        });
     }
 }

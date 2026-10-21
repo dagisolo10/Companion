@@ -14,7 +14,6 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
     useGetUser();
 
-
     useEffect(() => {
         const listener = AppState.addEventListener("change", (state) => {
             if (state === "active") {
@@ -50,9 +49,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
         initializeAuth();
 
-        const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
-            console.log("Auth state changed:", { event }, new Date().toLocaleString("en-US", { hour: "numeric", minute: "numeric", second: "numeric" }));
-
+        const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
             if (session) {
                 setIsSignedIn(true);
                 setUser(session.user);

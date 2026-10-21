@@ -1,10 +1,10 @@
 {
-    "name": "Companion",
+    "name": "companion",
     "private": true,
     "scripts": {
-        "build": "turbo run build",
         "dev": "turbo run dev",
         "lint": "turbo run lint",
+        "build": "turbo run build",
         "format": "prettier --write .",
         "check-types": "turbo run check-types"
     },

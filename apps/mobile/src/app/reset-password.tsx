@@ -1,14 +1,13 @@
+import Button from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import Screen from "@/components/ui/screen";
 import Text from "@/components/ui/text";
-import { useColor } from "@/hooks/custom/use-color";
 import { supabase } from "@/lib/supabase";
 import { Link, router } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Pressable, View } from "react-native";
 
 export default function ResetPassword() {
-    const color = useColor();
-
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [currentPassword, setCurrentPassword] = useState("");
@@ -66,84 +65,49 @@ export default function ResetPassword() {
     }
 
     return (
-        <SafeAreaView className="flex-1" style={{ flex: 1, backgroundColor: color.background }}>
-            <ScrollView keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={{ flex: 1 }}>
-                <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="bg-background flex-1 px-6">
-                    <View className="bg-background flex-1 justify-center gap-6">
-                        <View className="gap-2">
-                            <Text className="text-foreground font-jakarta-bold text-3xl">Reset Password</Text>
-                            <Text className="text-muted-foreground text-base">Enter your new password below to secure your account.</Text>
-                        </View>
+        <Screen fullscreen className="justify-center gap-8">
+            <View className="gap-2">
+                <Text className="font-jakarta-extrabold text-3xl tracking-tight">Reset Password</Text>
+                <Text className="text-muted-foreground font-jakarta-medium text-sm">Enter your new password below to secure your account.</Text>
+            </View>
 
-                        <View className="gap-4">
-                            <View className="gap-1.5">
-                                <Text className="text-foreground font-jakarta-semibold text-sm">Current Password</Text>
-                                <View className="relative justify-center">
-                                    <TextInput
-                                        className="border-border bg-card text-foreground h-12 w-full rounded-xl border px-4 pr-16"
-                                        autoCorrect={false}
-                                        autoCapitalize="none"
-                                        placeholder="••••••••"
-                                        value={currentPassword}
-                                        placeholderTextColor="#a3a3a3"
-                                        secureTextEntry={!showPassword}
-                                        onChangeText={setCurrentPassword}
-                                    />
-                                    <Pressable onPress={() => setShowPassword(!showPassword)} className="absolute right-4 py-2">
-                                        <Text className="text-primary font-jakarta-semibold text-xs">{showPassword ? "Hide" : "Show"}</Text>
-                                    </Pressable>
-                                </View>
-                            </View>
-
-                            <View className="gap-1.5">
-                                <Text className="text-foreground font-jakarta-semibold text-sm">New Password</Text>
-                                <View className="relative justify-center">
-                                    <TextInput
-                                        className="border-border bg-card text-foreground h-12 w-full rounded-xl border px-4 pr-16"
-                                        value={password}
-                                        autoCorrect={false}
-                                        autoCapitalize="none"
-                                        placeholder="••••••••"
-                                        onChangeText={setPassword}
-                                        placeholderTextColor="#a3a3a3"
-                                        secureTextEntry={!showPassword}
-                                    />
-                                </View>
-                            </View>
-
-                            <View className="gap-1.5">
-                                <Text className="text-foreground font-jakarta-semibold text-sm">Confirm New Password</Text>
-                                <TextInput
-                                    autoCorrect={false}
-                                    autoCapitalize="none"
-                                    placeholder="••••••••"
-                                    value={confirmPassword}
-                                    placeholderTextColor="#a3a3a3"
-                                    secureTextEntry={!showPassword}
-                                    onChangeText={setConfirmPassword}
-                                    className="border-border bg-card text-foreground h-12 w-full rounded-xl border px-4"
-                                />
-                            </View>
-
-                            {error ? <Text className="text-destructive font-jakarta-semibold text-sm">{error}</Text> : null}
-
-                            <Pressable onPress={handleReset} disabled={isSubmitting} className="mt-2 h-12 flex-row items-center justify-center gap-2 rounded-xl bg-blue-400 active:opacity-90 disabled:opacity-50">
-                                {isSubmitting ? <ActivityIndicator color="#ffffff" /> : <Text className="font-jakarta-semibold text-base text-white">Update Password</Text>}
-                            </Pressable>
-
-                            <View className="mt-4 flex-row justify-center">
-                                <Link href="/(auth)/sign-in" asChild>
-                                    <Pressable>
-                                        <Text className="text-muted-foreground text-sm">
-                                            Remember your password? <Text className="text-primary font-jakarta-semibold">Sign In</Text>
-                                        </Text>
-                                    </Pressable>
-                                </Link>
-                            </View>
-                        </View>
+            <View className="gap-5">
+                <View className="gap-1.5">
+                    <Text className="font-jakarta-bold text-sm">Current Password</Text>
+                    <View className="relative justify-center">
+                        <Input className="pr-16" autoCorrect={false} autoCapitalize="none" placeholder="••••••••" value={currentPassword} secureTextEntry={!showPassword} onChangeText={setCurrentPassword} />
+                        <Pressable onPress={() => setShowPassword(!showPassword)} className="absolute right-4 py-2">
+                            <Text className="font-jakarta-bold text-xs text-amber">{showPassword ? "Hide" : "Show"}</Text>
+                        </Pressable>
                     </View>
-                </KeyboardAvoidingView>
-            </ScrollView>
-        </SafeAreaView>
+                </View>
+
+                <View className="gap-1.5">
+                    <Text className="font-jakarta-bold text-sm">New Password</Text>
+                    <Input autoCorrect={false} autoCapitalize="none" placeholder="••••••••" value={password} secureTextEntry={!showPassword} onChangeText={setPassword} />
+                </View>
+
+                <View className="gap-1.5">
+                    <Text className="font-jakarta-bold text-sm">Confirm New Password</Text>
+                    <Input autoCorrect={false} autoCapitalize="none" placeholder="••••••••" value={confirmPassword} secureTextEntry={!showPassword} onChangeText={setConfirmPassword} />
+                </View>
+
+                {error ? <Text className="text-destructive text-sm">{error}</Text> : null}
+
+                <Button onPress={handleReset} disabled={isSubmitting} className="mt-1">
+                    {isSubmitting ? "Updating..." : "Update Password"}
+                </Button>
+
+                <View className="mt-2 flex-row justify-center">
+                    <Link href="/(auth)/sign-in" asChild>
+                        <Pressable>
+                            <Text className="text-muted-foreground font-jakarta-medium text-sm">
+                                Remember your password? <Text className="font-jakarta-bold text-amber">Sign In</Text>
+                            </Text>
+                        </Pressable>
+                    </Link>
+                </View>
+            </View>
+        </Screen>
     );
 }

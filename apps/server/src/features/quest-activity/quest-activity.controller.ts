@@ -1,5 +1,4 @@
-import { QuestActivityService } from "./quest-activity.service";
-
+import { QuestActivityService } from "@/features/quest-activity/quest-activity.service.js";
 import { Controller, Get } from "@nestjs/common";
 
 @Controller("quest-activity")

@@ -1,6 +1,6 @@
+import { QuestController } from "@/features/quest/quest.controller.js";
+import { QuestService } from "@/features/quest/quest.service.js";
 import { Module } from "@nestjs/common";
-import { QuestService } from "./quest.service";
-import { QuestController } from "./quest.controller";
 
 @Module({
     controllers: [QuestController],

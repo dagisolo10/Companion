@@ -7,8 +7,6 @@ import { GestureResponderEvent, Pressable, PressableProps } from "react-native";
 interface ButtonProps extends PressableProps, VariantProps<typeof buttonVariants> {
     asChild?: boolean;
     className?: string;
-    textClassName?: string;
-    onPressScale?: () => void;
     children: React.ReactNode;
 }
 
@@ -16,7 +14,7 @@ const buttonVariants = cva("border-foreground rounded-2xl transition-all duratio
     variants: {
         variant: {
             ghost: "bg-transparent",
-            outline: "bg-card border-foreground border-2",
+            outline: "border-foreground border-2",
             success: "bg-lime shadow-nb active:shadow-nb-active border-2",
             default: "bg-amber shadow-nb active:shadow-nb-active border-2",
             secondary: "bg-secondary shadow-nb active:shadow-nb-active border-2",
@@ -49,13 +47,13 @@ const textVariants = {
 
 const textSizes = {
     lg: "text-lg",
-    sm: "text-xs",
+    sm: "text-sm",
     icon: "text-base",
     "icon-lg": "text-base",
     default: "text-base",
 } as const;
 
-export default function Button({ variant = "default", size = "default", children, className, onPress, textClassName, onPressScale, asChild, ...props }: ButtonProps) {
+export default function Button({ variant = "default", size = "default", children, className, onPress, asChild, ...props }: ButtonProps) {
     const handlePress = (e: GestureResponderEvent) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onPress?.(e);
@@ -63,7 +61,7 @@ export default function Button({ variant = "default", size = "default", children
 
     return (
         <Pressable onPress={handlePress} className={cn(buttonVariants({ className, variant, size }))} {...props}>
-            {asChild ? children : <Text className={cn(variant && textVariants[variant], size && textSizes[size], textClassName, "font-jakarta-bold")}>{children}</Text>}
+            {asChild ? <>{children}</> : <Text className={cn(variant && textVariants[variant], size && textSizes[size])}>{children}</Text>}
         </Pressable>
     );
 }

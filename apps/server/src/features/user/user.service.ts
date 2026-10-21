@@ -1,7 +1,7 @@
-import { PrismaService } from "@/config/prisma/prisma.service";
-import { RequestService } from "@/config/request/request.service";
-import { SupabaseService } from "@/config/supabase/supabase.service";
-import { UpdateUserDto } from "@/features/user/dto/user.dto";
+import { PrismaService } from "@/config/prisma/prisma.service.js";
+import { RequestService } from "@/config/request/request.service.js";
+import { SupabaseService } from "@/config/supabase/supabase.service.js";
+import { UpdateUserDto } from "@/features/user/user.dto.js";
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 
@@ -13,8 +13,15 @@ export class UserService {
         private readonly requestService: RequestService,
     ) {}
 
+    async getLeaderboard(take = 100) {
+        return await this.prisma.user.findMany({ take, orderBy: { experience: "desc" } });
+    }
+
     async isUsernameAvailable(username: string) {
-        const user = await this.prisma.user.findUnique({ where: { username }, select: { id: true } });
+        const user = await this.prisma.user.findUnique({
+            where: { username },
+            select: { id: true },
+        });
         return !user;
     }
 
@@ -58,6 +65,21 @@ export class UserService {
         }
     }
 
+    async searchUsers(query: string) {
+        const trimmed = query.trim();
+
+        if (trimmed.length < 2) {
+            return [];
+        }
+
+        return await this.prisma.user.findMany({
+            where: {
+                OR: [{ username: { contains: trimmed, mode: "insensitive" } }, { name: { contains: trimmed, mode: "insensitive" } }],
+            },
+            take: 20,
+        });
+    }
+
     async findUser(username: string) {
         const user = await this.prisma.user.findUnique({ where: { username } });
 
@@ -78,9 +100,14 @@ export class UserService {
                 throw new NotFoundException("User not found");
             }
 
-            const updatedUser = await this.prisma.user.update({ where: { id }, data });
+            const updatedUser = await this.prisma.user.update({
+                where: { id },
+                data,
+            });
 
-            await this.supabase.auth.admin.updateUserById(id, { user_metadata: { name: data.name, username: data.username } });
+            await this.supabase.auth.admin.updateUserById(id, {
+                user_metadata: { name: data.name, username: data.username },
+            });
 
             return updatedUser;
         } catch (error) {

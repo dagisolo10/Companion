@@ -1,13 +1,6 @@
-import { CreatePartyDto, UpdatePartyDto } from "./dto/party.dto";
-
-import { PartyService } from "@/features/party/party.service";
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
-import { IsString } from "class-validator";
-
-export class TransferPartyDto {
-    @IsString()
-    partyMemberId!: string;
-}
+import { CreatePartyDto, TransferPartyDto, UpdatePartyDto } from "@/features/party/party.dto.js";
+import { PartyService } from "@/features/party/party.service.js";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
 
 @Controller("party")
 export class PartyController {
@@ -23,14 +16,24 @@ export class PartyController {
         return this.partyService.getMyParties();
     }
 
-    @Get(":code")
-    getParty(@Param("code") code: string) {
-        return this.partyService.getParty(code);
+    @Get("all")
+    getAllParties(@Query("q") query?: string) {
+        return this.partyService.getAllParties(query);
+    }
+
+    @Get("leaderboard/:code")
+    getPartyLeaderboard(@Param("code") code: string) {
+        return this.partyService.getPartyLeaderboard(code);
     }
 
     @Get("search/:code")
     searchParty(@Param("code") code: string) {
         return this.partyService.searchParty(code);
+    }
+
+    @Get(":code")
+    getParty(@Param("code") code: string) {
+        return this.partyService.getParty(code);
     }
 
     @Patch("regenerate-code/:id")

@@ -1,8 +1,7 @@
-import { UpdateUserDto } from "./dto/user.dto";
-import { UserService } from "./user.service";
-
-import { Public } from "@/config/auth/auth.decorator";
-import { Body, Controller, Delete, Get, Param, Patch } from "@nestjs/common";
+import { Public } from "@/config/auth/auth.decorator.js";
+import { UpdateUserDto } from "@/features/user/user.dto.js";
+import { UserService } from "@/features/user/user.service.js";
+import { Body, Controller, Delete, Get, Param, Patch, Query } from "@nestjs/common";
 
 @Controller("user")
 export class UserController {
@@ -17,6 +16,11 @@ export class UserController {
     @Get("username/:username")
     isUsernameAvailable(@Param("username") username: string) {
         return this.userService.isUsernameAvailable(username);
+    }
+
+    @Get("leaderboard")
+    getLeaderboard(@Query("limit") take?: string) {
+        return this.userService.getLeaderboard(take ? parseInt(take) : undefined);
     }
 
     @Get(":username")

@@ -1,9 +1,8 @@
-import { RemoveMemberDto } from "./party-member.controller";
-
-import { Prisma } from "@prisma/client";
-import { PrismaService } from "@/config/prisma/prisma.service";
-import { RequestService } from "@/config/request/request.service";
+import { PrismaService } from "@/config/prisma/prisma.service.js";
+import { RequestService } from "@/config/request/request.service.js";
+import { RemoveMemberDto } from "@/features/party-member/party-member.dto.js";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class PartyMemberService {
@@ -35,7 +34,9 @@ export class PartyMemberService {
         }
 
         try {
-            return await this.prisma.partyMember.create({ data: { userId, partyId: party.id } });
+            return await this.prisma.partyMember.create({
+                data: { userId, partyId: party.id },
+            });
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
                 throw new BadRequestException("You are already a member of this party");
@@ -48,7 +49,10 @@ export class PartyMemberService {
     async leaveParty(code: string) {
         const userId = this.requestService.getUserId();
 
-        const partyMember = await this.prisma.partyMember.findFirst({ where: { userId, party: { code } }, include: { party: true } });
+        const partyMember = await this.prisma.partyMember.findFirst({
+            where: { userId, party: { code } },
+            include: { party: true },
+        });
 
         if (!partyMember) {
             throw new NotFoundException("Party member not found");
@@ -64,28 +68,16 @@ export class PartyMemberService {
     }
 
     async getMembers(code: string) {
-        const userId = this.requestService.getUserId();
-
         const party = await this.prisma.party.findUnique({ where: { code } });
 
         if (!party) {
             throw new NotFoundException("Party not found");
         }
 
-        const isMember = await this.prisma.partyMember.findUnique({
-            where: {
-                userId_partyId: {
-                    userId,
-                    partyId: party.id,
-                },
-            },
+        return await this.prisma.partyMember.findMany({
+            where: { party: { code } },
+            include: { user: { select: { id: true, name: true, username: true } } },
         });
-
-        if (!isMember) {
-            throw new ForbiddenException("You don't belong to this party");
-        }
-
-        return await this.prisma.partyMember.findMany({ where: { party: { code } } });
     }
 
     async removeMember(code: string, { partyMemberId }: RemoveMemberDto) {
@@ -101,7 +93,9 @@ export class PartyMemberService {
             throw new ForbiddenException("Only the party creator can remove members");
         }
 
-        const partyMember = await this.prisma.partyMember.findFirst({ where: { id: partyMemberId, party: { code } } });
+        const partyMember = await this.prisma.partyMember.findFirst({
+            where: { id: partyMemberId, party: { code } },
+        });
 
         if (!partyMember) {
             throw new NotFoundException("Party member not found");
@@ -111,6 +105,8 @@ export class PartyMemberService {
             throw new BadRequestException("The party creator can't remove themselves. Transfer ownership or delete the party");
         }
 
-        return await this.prisma.partyMember.delete({ where: { id: partyMemberId } });
+        return await this.prisma.partyMember.delete({
+            where: { id: partyMemberId },
+        });
     }
 }

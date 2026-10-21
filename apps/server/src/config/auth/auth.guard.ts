@@ -1,5 +1,5 @@
-import { IS_PUBLIC_KEY } from "@/config/auth/auth.decorator";
-import { SupabaseService } from "@/config/supabase/supabase.service";
+import { IS_PUBLIC_KEY } from "@/config/auth/auth.decorator.js";
+import { SupabaseService } from "@/config/supabase/supabase.service.js";
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { type Request } from "express";

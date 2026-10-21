@@ -1,5 +1,4 @@
-import { RequestService } from "./request.service";
-
+import { RequestService } from "@/config/request/request.service.js";
 import { Global, Module } from "@nestjs/common";
 
 @Global()

@@ -1,4 +1,4 @@
-import { SupabaseService } from "@/config/supabase/supabase.service";
+import { SupabaseService } from "@/config/supabase/supabase.service.js";
 import { Global, Module } from "@nestjs/common";
 
 @Global()

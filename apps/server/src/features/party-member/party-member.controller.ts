@@ -1,12 +1,6 @@
-import { PartyMemberService } from "./party-member.service";
-
+import { RemoveMemberDto } from "@/features/party-member/party-member.dto.js";
+import { PartyMemberService } from "@/features/party-member/party-member.service.js";
 import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
-import { IsString } from "class-validator";
-
-export class RemoveMemberDto {
-    @IsString()
-    partyMemberId!: string;
-}
 
 @Controller("party-member")
 export class PartyMemberController {
