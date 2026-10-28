@@ -15,7 +15,7 @@ import { Alert, Switch, View } from "react-native";
 export default function EditProfile() {
     const userQuery = useGetUser();
 
-    if (userQuery.isFetching) {
+    if (userQuery.isPending) {
         return (
             <Screen className="gap-5">
                 <BackButton label="Edit Profile" />
@@ -54,8 +54,17 @@ function EditProfileForm({ user }: { user: User }) {
 
     if (!name.trim()) activeErrors.push("Name cannot be empty.");
     if (!username.trim()) activeErrors.push("Username cannot be empty.");
-    if (slugValue.length > 0 && slugValue.length < 3) activeErrors.push("Username must be at least 3 characters.");
-    if (slugValue.length >= 3 && slugValue !== user.username && usernameAvailableQuery.data === false) activeErrors.push("Selected username is already taken.");
+
+    if (!slugValue.trim()) {
+        activeErrors.push("Username cannot be empty after formatting.");
+    } else if (slugValue.length < 3) {
+        activeErrors.push("Username must be at least 3 characters.");
+    }
+
+    if (slugValue.length >= 3 && slugValue !== user.username && usernameAvailableQuery.data === false) {
+        activeErrors.push("Selected username is already taken.");
+    }
+
     if (apiError) activeErrors.push(apiError);
 
     function handlePublicToggle(value: boolean) {

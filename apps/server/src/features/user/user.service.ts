@@ -16,7 +16,7 @@ export class UserService {
     ) {}
 
     async getLeaderboard(take = 100) {
-        const users = await this.prisma.user.findMany({ take, orderBy: { experience: "desc" } });
+        const users = await this.prisma.user.findMany({ take, orderBy: { experience: "desc" }, where: { public: true } });
 
         return await this.streakService.resolveStreaks(users);
     }
@@ -43,7 +43,15 @@ export class UserService {
 
                 const userMetadata = supabaseUser.user_metadata;
                 const name = (userMetadata["name"] as string) || "User";
-                const username = this.slugifyUsername((userMetadata["username"] as string) || "username");
+                const rawUsername = (userMetadata["username"] as string) || "username";
+
+                const username = this.slugifyUsername(rawUsername);
+
+                const existingUserWithUsername = await this.prisma.user.findUnique({ where: { username } });
+
+                if (existingUserWithUsername) {
+                    throw new ConflictException("Username is already taken");
+                }
 
                 user = await this.prisma.user.upsert({
                     where: { id },
@@ -121,7 +129,9 @@ export class UserService {
                 await this.supabase.auth.admin.updateUserById(id, { user_metadata: { name, username: slugUsername } });
             }
 
-            return updatedUser;
+            const [resolved] = await this.streakService.resolveStreaks([updatedUser]);
+
+            return resolved;
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
                 throw new BadRequestException("Username already taken. Choose another one");

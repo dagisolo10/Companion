@@ -12,15 +12,16 @@ type LevelCardProps = {
 
 export default function LevelCard({ experience, loading }: LevelCardProps) {
     const color = useColor();
-    const { level, label, nextLevel, nextLevelXp } = getLevel(experience);
+    const { level, label, nextLevel, nextLevelXp, currentLevelMinXp } = getLevel(experience);
     const isMaxLevel = nextLevelXp === null;
-    const progress = isMaxLevel ? 100 : Math.min(100, Math.round((experience / nextLevelXp) * 100));
+
+    const progress = calculateLevelProgress(experience, currentLevelMinXp, nextLevelXp);
 
     return (
         <View className="card gap-3">
             <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center gap-2.5">
-                    <View className="border-foreground bg-purple rounded-xl border-2 p-2">
+                    <View className="border-foreground bg-purple border-2 p-2">
                         <Zap size={20} color={color.white} strokeWidth={2.5} />
                     </View>
                     <View>
@@ -28,7 +29,7 @@ export default function LevelCard({ experience, loading }: LevelCardProps) {
                         <Text className="text-muted-foreground font-jakarta-bold mt-0.5 text-xs">{loading ? "-" : label}</Text>
                     </View>
                 </View>
-                <View className="border-foreground bg-muted rounded-full border-2 px-3 py-1">
+                <View className="border-foreground bg-muted border-2 px-3 py-1">
                     <Text className="font-jakarta-extrabold text-xs">
                         {loading ? "-" : experience} / {loading ? "-" : isMaxLevel ? "MAX" : nextLevelXp} XP
                     </Text>
@@ -43,4 +44,19 @@ export default function LevelCard({ experience, loading }: LevelCardProps) {
             </View>
         </View>
     );
+}
+
+function calculateLevelProgress(totalXp: number, currentLevelMinXp: number, nextLevelMinXp: number | null): number {
+    if (nextLevelMinXp === null || nextLevelMinXp <= currentLevelMinXp) {
+        return 100;
+    }
+
+    const xpIntoCurrentLevel = totalXp - currentLevelMinXp;
+    const levelInterval = nextLevelMinXp - currentLevelMinXp;
+
+    if (levelInterval <= 0) return 100;
+
+    const progress = Math.max(xpIntoCurrentLevel / levelInterval, 0) * 100;
+
+    return Math.min(progress, 100);
 }

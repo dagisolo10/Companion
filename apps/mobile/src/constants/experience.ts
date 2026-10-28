@@ -1,4 +1,4 @@
-type LevelLabel = "Novice" | "Apprentice" | "Initiate" | "Adept" | "Expert" | "Master" | "Grandmaster" | "Champion" | "Legend" | "Mythic";
+export type LevelLabel = "Novice" | "Apprentice" | "Initiate" | "Adept" | "Expert" | "Master" | "Grandmaster" | "Champion" | "Legend" | "Mythic";
 
 type Level = {
     min: number;

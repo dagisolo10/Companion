@@ -28,6 +28,7 @@ type UserData = ReturnType<typeof u>;
 
 const coreUsers = [
     u("3307d138-931b-4c32-a291-cc2761d40509", "Dagisolo", "ayakashi", 18500, 47, 92, new Date("2026-10-21T00:46:37.903Z")),
+    u("3481f414-75c3-48ef-8654-392c44fb0ed4", "Sniper Rollins", "sniper_rollins", 9500, 30, 61, new Date("2026-10-28 04:57:29.528")),
     u("a1b2c3d4-0001-4000-8000-000000000001", "Alex Rivera", "alex", 0, 5, 12),
     u("a1b2c3d4-0002-4000-8000-000000000002", "Jordan Chen", "jordan", 0, 2, 4),
     u("a1b2c3d4-0003-4000-8000-000000000003", "Sam Patel", "sam", 0, 0, 3),
@@ -39,7 +40,7 @@ const coreUsers = [
     u("a1b2c3d4-0009-4000-8000-000000000009", "Harper Wilson", "harper", 0, 7, 14),
 ];
 
-const [ayakashi, alex, jordan, sam, morgan, casey, riley, avery, dakota, harper] = coreUsers;
+const [ayakashi, sniper_rollins, alex, jordan, sam, morgan, casey, riley, avery, dakota, harper] = coreUsers;
 
 // ── Generated global community (the "roster" that shows up in search/leaderboards) ──
 
@@ -444,7 +445,7 @@ const coreParties: PartyData[] = [
         id: "b1b2c3d4-0003-4000-8000-000000000003",
         name: "Daily Grind",
         code: "GRIND01",
-        creatorId: ayakashi.id,
+        creatorId: sniper_rollins.id,
     },
     // Someone else created this one (for leaving)
     {
@@ -462,6 +463,7 @@ type PartyId = string;
 const memberships: { partyId: PartyId; user: UserData }[] = [
     // Night Owls (Ayakashi's party)
     { partyId: nightOwls.id, user: ayakashi },
+    { partyId: nightOwls.id, user: sniper_rollins },
     { partyId: nightOwls.id, user: alex },
     { partyId: nightOwls.id, user: jordan },
     { partyId: nightOwls.id, user: casey },
@@ -469,12 +471,14 @@ const memberships: { partyId: PartyId; user: UserData }[] = [
 
     // Code Warriors (Ayakashi's party)
     { partyId: codeWarriors.id, user: ayakashi },
+    { partyId: codeWarriors.id, user: sniper_rollins },
     { partyId: codeWarriors.id, user: morgan },
     { partyId: codeWarriors.id, user: riley },
     { partyId: codeWarriors.id, user: dakota },
 
     // Daily Grind (Ayakashi's party)
     { partyId: dailyGrind.id, user: ayakashi },
+    { partyId: dailyGrind.id, user: sniper_rollins },
     { partyId: dailyGrind.id, user: harper },
     { partyId: dailyGrind.id, user: sam },
     { partyId: dailyGrind.id, user: alex },
@@ -483,6 +487,7 @@ const memberships: { partyId: PartyId; user: UserData }[] = [
     // Riley's Raiders (someone else's party — Ayakashi can leave this one)
     { partyId: raiders.id, user: riley },
     { partyId: raiders.id, user: ayakashi },
+    { partyId: raiders.id, user: sniper_rollins },
     { partyId: raiders.id, user: harper },
     { partyId: raiders.id, user: dakota },
     { partyId: raiders.id, user: casey },
@@ -645,46 +650,59 @@ const quests: ReturnType<typeof q>[] = [
     // ── Night Owls (Ayakashi created) ──
     // Ayakashi assigned quests to others
     q("c1b2c3d4-0001-4000-8000-000000000001", nightOwls.id, ayakashi, alex, "Morning Run", "Run 3km before sunrise and log your time", "Rush", "Normal", "Completed", 14, 7),
-    q("c1b2c3d4-0002-4000-8000-000000000002", nightOwls.id, ayakashi, jordan, "Read 20 Pages", "Read 20 pages of any book before bed", "Normal", "Easy", "Completed", 10, 3),
-    q("c1b2c3d4-0003-4000-8000-000000000003", nightOwls.id, ayakashi, casey, "Clean Your Room", "Tidy up desk, make bed, and organize closet", "Normal", "Tiny", "Completed", 8, 1),
-    q("c1b2c3d4-0004-4000-8000-000000000004", nightOwls.id, ayakashi, avery, "Ship a Feature", "Complete the profile page redesign and open a PR", "Rush", "Hard", "Active", 4),
-    q("c1b2c3d4-0005-4000-8000-000000000005", nightOwls.id, ayakashi, alex, "Cook Dinner", "Prepare a home-cooked meal for the group", "Normal", "Normal", "Active", 2),
+    q("c1b2c3d4-0002-4000-8000-000000000002", nightOwls.id, sniper_rollins, alex, "Morning Run", "Run 3km before sunrise and log your time", "Rush", "Normal", "Completed", 14, 7),
+    q("c1b2c3d4-0003-4000-8000-000000000003", nightOwls.id, ayakashi, jordan, "Read 20 Pages", "Read 20 pages of any book before bed", "Normal", "Easy", "Completed", 10, 3),
+    q("c1b2c3d4-0004-4000-8000-000000000004", nightOwls.id, sniper_rollins, jordan, "Read 20 Pages", "Read 20 pages of any book before bed", "Normal", "Easy", "Completed", 10, 3),
+    q("c1b2c3d4-0005-4000-8000-000000000005", nightOwls.id, ayakashi, casey, "Clean Your Room", "Tidy up desk, make bed, and organize closet", "Normal", "Tiny", "Completed", 8, 1),
+    q("c1b2c3d4-0006-4000-8000-000000000006", nightOwls.id, sniper_rollins, casey, "Clean Your Room", "Tidy up desk, make bed, and organize closet", "Normal", "Tiny", "Completed", 8, 1),
+    q("c1b2c3d4-0007-4000-8000-000000000007", nightOwls.id, ayakashi, avery, "Ship a Feature", "Complete the profile page redesign and open a PR", "Rush", "Hard", "Active", 4),
+    q("c1b2c3d4-0008-4000-8000-000000000008", nightOwls.id, sniper_rollins, avery, "Ship a Feature", "Complete the profile page redesign and open a PR", "Rush", "Hard", "Active", 4),
+    q("c1b2c3d4-0009-4000-8000-000000000009", nightOwls.id, ayakashi, alex, "Cook Dinner", "Prepare a home-cooked meal for the group", "Normal", "Normal", "Active", 2),
+    q("c1b2c3d4-0010-4000-8000-000000000010", nightOwls.id, sniper_rollins, alex, "Cook Dinner", "Prepare a home-cooked meal for the group", "Normal", "Normal", "Active", 2),
 
     // Others assigned quests TO Ayakashi
-    q("c1b2c3d4-0006-4000-8000-000000000006", nightOwls.id, alex, ayakashi, "Fix the Bug", "Track down and fix the login timeout issue in the auth module", "Rush", "Hard", "Completed", 12, 5),
-    q("c1b2c3d4-0007-4000-8000-000000000007", nightOwls.id, jordan, ayakashi, "Write Documentation", "Document the new API endpoints with examples", "Normal", "Normal", "Completed", 9, 2),
-    q("c1b2c3d4-0008-4000-8000-000000000008", nightOwls.id, casey, ayakashi, "Review PRs", "Review and approve at least 3 open pull requests", "Normal", "Easy", "Active", 3),
-    q("c1b2c3d4-0009-4000-8000-000000000009", nightOwls.id, avery, ayakashi, "Deploy Release", "Push v2.1.0 to production with zero downtime", "Rush", "Major", "Active", 1),
+    q("c1b2c3d4-0011-4000-8000-000000000011", nightOwls.id, alex, ayakashi, "Fix the Bug", "Track down and fix the login timeout issue in the auth module", "Rush", "Hard", "Completed", 12, 5),
+    q("c1b2c3d4-0012-4000-8000-000000000012", nightOwls.id, jordan, ayakashi, "Write Documentation", "Document the new API endpoints with examples", "Normal", "Normal", "Completed", 9, 2),
+    q("c1b2c3d4-0013-4000-8000-000000000013", nightOwls.id, casey, ayakashi, "Review PRs", "Review and approve at least 3 open pull requests", "Normal", "Easy", "Active", 3),
+    q("c1b2c3d4-0014-4000-8000-000000000014", nightOwls.id, avery, ayakashi, "Deploy Release", "Push v2.1.0 to production with zero downtime", "Rush", "Major", "Active", 1),
 
     // ── Code Warriors (Ayakashi created) ──
-    q("c1b2c3d4-0010-4000-8000-000000000010", codeWarriors.id, ayakashi, morgan, "Refactor Auth Module", "Migrate from JWT to session-based auth", "Normal", "Hard", "Completed", 16, 8),
-    q("c1b2c3d4-0011-4000-8000-000000000011", codeWarriors.id, ayakashi, riley, "Write Unit Tests", "Achieve 80% test coverage on the payment module", "Rush", "Major", "Completed", 13, 4),
-    q("c1b2c3d4-0012-4000-8000-000000000012", codeWarriors.id, ayakashi, dakota, "Update CI Pipeline", "Switch from Travis CI to GitHub Actions", "Normal", "Normal", "Active", 5),
-    q("c1b2c3d4-0013-4000-8000-000000000013", codeWarriors.id, ayakashi, morgan, "Code Review", "Review the database migration PR and leave feedback", "Normal", "Tiny", "Active", 2),
+    q("c1b2c3d4-0015-4000-8000-000000000015", codeWarriors.id, ayakashi, morgan, "Refactor Auth Module", "Migrate from JWT to session-based auth", "Normal", "Hard", "Completed", 16, 8),
+    q("c1b2c3d4-0016-4000-8000-000000000016", codeWarriors.id, sniper_rollins, morgan, "Refactor Auth Module", "Migrate from JWT to session-based auth", "Normal", "Hard", "Completed", 16, 8),
+    q("c1b2c3d4-0017-4000-8000-000000000017", codeWarriors.id, ayakashi, riley, "Write Unit Tests", "Achieve 80% test coverage on the payment module", "Rush", "Major", "Completed", 13, 4),
+    q("c1b2c3d4-0018-4000-8000-000000000018", codeWarriors.id, sniper_rollins, riley, "Write Unit Tests", "Achieve 80% test coverage on the payment module", "Rush", "Major", "Completed", 13, 4),
+    q("c1b2c3d4-0019-4000-8000-000000000019", codeWarriors.id, ayakashi, dakota, "Update CI Pipeline", "Switch from Travis CI to GitHub Actions", "Normal", "Normal", "Active", 5),
+    q("c1b2c3d4-0020-4000-8000-000000000020", codeWarriors.id, sniper_rollins, dakota, "Update CI Pipeline", "Switch from Travis CI to GitHub Actions", "Normal", "Normal", "Active", 5),
+    q("c1b2c3d4-0021-4000-8000-000000000021", codeWarriors.id, ayakashi, morgan, "Code Review", "Review the database migration PR and leave feedback", "Normal", "Tiny", "Active", 2),
+    q("c1b2c3d4-0022-4000-8000-000000000022", codeWarriors.id, sniper_rollins, morgan, "Code Review", "Review the database migration PR and leave feedback", "Normal", "Tiny", "Active", 2),
 
     // Others assigned quests TO Ayakashi
-    q("c1b2c3d4-0014-4000-8000-000000000014", codeWarriors.id, morgan, ayakashi, "Build Dashboard", "Create the admin dashboard with real-time analytics", "Rush", "Hard", "Completed", 15, 6),
-    q("c1b2c3d4-0015-4000-8000-000000000015", codeWarriors.id, riley, ayakashi, "Optimize Queries", "Reduce average API response time by 40%", "Normal", "Major", "Completed", 11, 3),
-    q("c1b2c3d4-0016-4000-8000-000000000016", codeWarriors.id, dakota, ayakashi, "Set Up Monitoring", "Configure Datadog alerts for critical endpoints", "Normal", "Easy", "Active", 4),
+    q("c1b2c3d4-0023-4000-8000-000000000023", codeWarriors.id, morgan, ayakashi, "Build Dashboard", "Create the admin dashboard with real-time analytics", "Rush", "Hard", "Completed", 15, 6),
+    q("c1b2c3d4-0024-4000-8000-000000000024", codeWarriors.id, riley, ayakashi, "Optimize Queries", "Reduce average API response time by 40%", "Normal", "Major", "Completed", 11, 3),
+    q("c1b2c3d4-0025-4000-8000-000000000025", codeWarriors.id, dakota, ayakashi, "Set Up Monitoring", "Configure Datadog alerts for critical endpoints", "Normal", "Easy", "Active", 4),
 
     // ── Daily Grind (Ayakashi created) ──
-    q("c1b2c3d4-0017-4000-8000-000000000017", dailyGrind.id, ayakashi, harper, "Walk 10k Steps", "Hit 10,000 steps on the fitness tracker every day for a week", "Normal", "Normal", "Completed", 20, 10),
-    q("c1b2c3d4-0018-4000-8000-000000000018", dailyGrind.id, ayakashi, sam, "Journal Daily", "Write a 200-word journal entry every morning", "Normal", "Easy", "Active", 6),
-    q("c1b2c3d4-0019-4000-8000-000000000019", dailyGrind.id, ayakashi, alex, "Meditate 10 Min", "Complete a guided meditation session using Headspace", "Normal", "Tiny", "Active", 3),
-    q("c1b2c3d4-0020-4000-8000-000000000020", dailyGrind.id, ayakashi, morgan, "No Social Media", "Stay off social media for an entire weekend", "Rush", "Hard", "Active", 1),
+    q("c1b2c3d4-0026-4000-8000-000000000026", dailyGrind.id, ayakashi, harper, "Walk 10k Steps", "Hit 10,000 steps on the fitness tracker every day for a week", "Normal", "Normal", "Completed", 20, 10),
+    q("c1b2c3d4-0027-4000-8000-000000000027", dailyGrind.id, sniper_rollins, harper, "Walk 10k Steps", "Hit 10,000 steps on the fitness tracker every day for a week", "Normal", "Normal", "Completed", 20, 10),
+    q("c1b2c3d4-0028-4000-8000-000000000028", dailyGrind.id, ayakashi, sam, "Journal Daily", "Write a 200-word journal entry every morning", "Normal", "Easy", "Active", 6),
+    q("c1b2c3d4-0029-4000-8000-000000000029", dailyGrind.id, ayakashi, alex, "Meditate 10 Min", "Complete a guided meditation session using Headspace", "Normal", "Tiny", "Active", 3),
+    q("c1b2c3d4-0030-4000-8000-000000000030", dailyGrind.id, sniper_rollins, alex, "Meditate 10 Min", "Complete a guided meditation session using Headspace", "Normal", "Tiny", "Active", 3),
+    q("c1b2c3d4-0031-4000-8000-000000000031", dailyGrind.id, ayakashi, morgan, "No Social Media", "Stay off social media for an entire weekend", "Rush", "Hard", "Active", 1),
+    q("c1b2c3d4-0032-4000-8000-000000000032", dailyGrind.id, sniper_rollins, morgan, "No Social Media", "Stay off social media for an entire weekend", "Rush", "Hard", "Active", 1),
 
     // Others assigned quests TO Ayakashi
-    q("c1b2c3d4-0021-4000-8000-000000000021", dailyGrind.id, harper, ayakashi, "Read a Book", "Finish reading any non-fiction book this month", "Normal", "Normal", "Active", 7),
-    q("c1b2c3d4-0022-4000-8000-000000000022", dailyGrind.id, sam, ayakashi, "Learn Guitar", "Practice chord transitions for 30 minutes daily for a week", "Rush", "Easy", "Active", 5),
-    q("c1b2c3d4-0023-4000-8000-000000000023", dailyGrind.id, alex, ayakashi, "Cold Shower", "Take a cold shower every morning for 5 days straight", "Rush", "Major", "Active", 2),
-    q("c1b2c3d4-0024-4000-8000-000000000024", dailyGrind.id, morgan, ayakashi, "Drink 3L Water", "Track daily water intake and hit 3 liters for a week", "Normal", "Tiny", "Completed", 18, 11),
+    q("c1b2c3d4-0033-4000-8000-000000000033", dailyGrind.id, harper, ayakashi, "Read a Book", "Finish reading any non-fiction book this month", "Normal", "Normal", "Active", 7),
+    q("c1b2c3d4-0034-4000-8000-000000000034", dailyGrind.id, sam, ayakashi, "Learn Guitar", "Practice chord transitions for 30 minutes daily for a week", "Rush", "Easy", "Active", 5),
+    q("c1b2c3d4-0035-4000-8000-000000000035", dailyGrind.id, alex, ayakashi, "Cold Shower", "Take a cold shower every morning for 5 days straight", "Rush", "Major", "Active", 2),
+    q("c1b2c3d4-0036-4000-8000-000000000036", dailyGrind.id, morgan, ayakashi, "Drink 3L Water", "Track daily water intake and hit 3 liters for a week", "Normal", "Tiny", "Completed", 18, 11),
 
     // ── Riley's Raiders (someone else's party — Ayakashi is just a member) ──
-    q("c1b2c3d4-0025-4000-8000-000000000025", raiders.id, riley, harper, "Sprint Planning", "Organize next sprint's backlog and estimate story points", "Normal", "Normal", "Completed", 10, 4),
-    q("c1b2c3d4-0026-4000-8000-000000000026", raiders.id, harper, dakota, "Fix Memory Leak", "Track down and resolve the WebSocket memory leak", "Rush", "Hard", "Active", 5),
-    q("c1b2c3d4-0027-4000-8000-000000000027", raiders.id, riley, ayakashi, "Write Tests", "Add integration tests for the checkout flow", "Normal", "Normal", "Active", 3),
-    q("c1b2c3d4-0028-4000-8000-000000000028", raiders.id, dakota, casey, "Update README", "Rewrite the project README with setup instructions", "Normal", "Tiny", "Completed", 7, 2),
-    q("c1b2c3d4-0029-4000-8000-000000000029", raiders.id, casey, riley, "Debug CI", "Fix the flaky e2e test that keeps failing on main", "Rush", "Easy", "Active", 1),
+    q("c1b2c3d4-0037-4000-8000-000000000037", raiders.id, riley, harper, "Sprint Planning", "Organize next sprint's backlog and estimate story points", "Normal", "Normal", "Completed", 10, 4),
+    q("c1b2c3d4-0038-4000-8000-000000000038", raiders.id, harper, dakota, "Fix Memory Leak", "Track down and resolve the WebSocket memory leak", "Rush", "Hard", "Active", 5),
+    q("c1b2c3d4-0039-4000-8000-000000000039", raiders.id, riley, ayakashi, "Write Tests", "Add integration tests for the checkout flow", "Normal", "Normal", "Active", 3),
+    q("c1b2c3d4-0040-4000-8000-000000000040", raiders.id, dakota, casey, "Update README", "Rewrite the project README with setup instructions", "Normal", "Tiny", "Completed", 7, 2),
+    q("c1b2c3d4-0041-4000-8000-000000000041", raiders.id, casey, riley, "Debug CI", "Fix the flaky e2e test that keeps failing on main", "Rush", "Easy", "Active", 1),
+    q("c1b2c3d4-0042-4000-8000-000000000042", raiders.id, sniper_rollins, sam, "Journal Daily", "Write a 200-word journal entry every morning", "Normal", "Easy", "Active", 6),
 ];
 
 // ── Generated quests for the global parties ──

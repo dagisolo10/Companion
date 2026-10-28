@@ -4,11 +4,12 @@ type GetLevelReturn = {
     level: number;
     label: LevelLabel;
     nextLevel: number;
+    currentLevelMinXp: number;
     nextLevelXp: number | null;
 };
 
 export function getLevel(experience: number): GetLevelReturn {
-    for (const [level, { max, label }] of Object.entries(LEVEL_XP_RANGES)) {
+    for (const [level, { min, max, label }] of Object.entries(LEVEL_XP_RANGES)) {
         const currentLevel = Number(level);
 
         if (experience <= max && experience >= 0) {
@@ -17,6 +18,7 @@ export function getLevel(experience: number): GetLevelReturn {
             return {
                 label,
                 level: currentLevel,
+                currentLevelMinXp: min,
                 nextLevel: currentLevel + 1,
                 nextLevelXp: nextLevel?.min ?? null,
             };

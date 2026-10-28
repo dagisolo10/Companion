@@ -24,8 +24,8 @@ export class QuestActivityService {
             },
             select: {
                 id: true,
-                completedAt: true,
                 xpAwarded: true,
+                completedAt: true,
                 user: {
                     select: {
                         id: true,
@@ -36,11 +36,11 @@ export class QuestActivityService {
                 quest: {
                     select: {
                         id: true,
+                        mode: true,
                         title: true,
-                        description: true,
                         reward: true,
                         difficulty: true,
-                        mode: true,
+                        description: true,
                         creator: {
                             select: {
                                 name: true,

@@ -13,7 +13,7 @@ export default function StreakCard({ streak, longestStreak, loading }: StreakCar
     return (
         <View className="card bg-amber flex-row items-center justify-between p-3.5">
             <View className="flex-1 flex-row items-center gap-3">
-                <View className="rounded-xl border-2 border-black bg-white p-2">
+                <View className="border-2 border-black bg-white p-2">
                     <Flame size={20} color="#DC2626" fill="#DC2626" strokeWidth={2.5} />
                 </View>
 
@@ -23,7 +23,7 @@ export default function StreakCard({ streak, longestStreak, loading }: StreakCar
                 </View>
             </View>
 
-            <View className="border-foreground rounded-full border bg-black px-3 py-1">
+            <View className="border-foreground border bg-black px-3 py-1">
                 <Text className="font-jakarta-extrabold text-xs text-white">Best: {loadValue(loading, longestStreak)}</Text>
             </View>
         </View>

@@ -1,4 +1,4 @@
-import { queryKeys, queryRoots } from "@/constants/query-keys";
+import { queryKeys, queryRoots, useInvalidateAll } from "@/constants/query-keys";
 import { useAuth } from "@/contexts/auth-context";
 import { api } from "@/lib/api/axios";
 import { requestApi } from "@/lib/api/request-api";
@@ -19,17 +19,40 @@ export function useGetUser(options?: TQueryOptions<User>) {
     });
 }
 
-export function useDeleteUser(options?: TMutationOptions<SuccessResponse>) {
-    const queryClient = useQueryClient();
-
-    return useMutation({
+export function useIsUsernameAvailable(username: string, options?: TQueryOptions<boolean>) {
+    return useQuery({
         ...options,
-        mutationFn: async () => requestApi(() => api.delete<SuccessResponse>("/user")),
-        onSuccess: (data, ...args) => {
-            queryClient.invalidateQueries({ queryKey: queryRoots.user });
-            options?.onSuccess?.(data, ...args);
-        },
-        onError: (error, ...args) => options?.onError?.(error, ...args),
+        placeholderData: keepPreviousData,
+        queryKey: queryKeys.user.username(username),
+        queryFn: async () => requestApi(() => api.get<boolean>(`/user/username/${username}`)),
+    });
+}
+
+export function useFindUser(username: string, options?: TQueryOptions<User>) {
+    return useQuery({
+        ...options,
+        queryKey: queryKeys.user.other(username),
+        queryFn: async () => requestApi(() => api.get<User>(`/user/${username}`)),
+    });
+}
+
+export function useSearchUsers(query: string, options?: TQueryOptions<User[]>) {
+    return useQuery({
+        ...options,
+        initialData: [],
+        placeholderData: keepPreviousData,
+        queryKey: queryKeys.user.search(query),
+        queryFn: async () => requestApi(() => api.get<User[]>("/user/search", { params: { query } })),
+    });
+}
+
+export function useGetLeaderboard(options?: TQueryOptions<User[]>) {
+    return useQuery({
+        ...options,
+        initialData: [],
+        placeholderData: keepPreviousData,
+        queryKey: queryKeys.user.leaderboard(),
+        queryFn: async () => requestApi(() => api.get<User[]>("/user/leaderboard")),
     });
 }
 
@@ -39,19 +62,27 @@ export function useUpdateUser(options?: TMutationOptions<User, UpdateUserDto>) {
     return useMutation({
         ...options,
         mutationFn: async (data: UpdateUserDto) => requestApi(() => api.patch<User>("/user", data)),
+        onError: (error, ...args) => options?.onError?.(error, ...args),
         onSuccess: (user, ...args) => {
             queryClient.setQueryData<User>(queryKeys.user.me(user.id), user);
+            queryClient.invalidateQueries({ queryKey: queryRoots.user });
+            queryClient.invalidateQueries({ queryKey: queryRoots.quest });
+            queryClient.invalidateQueries({ queryKey: queryRoots.partyMember });
             options?.onSuccess?.(user, ...args);
         },
-        onError: (error, ...args) => options?.onError?.(error, ...args),
     });
 }
 
-export function useIsUsernameAvailable(username: string, options?: TQueryOptions<boolean>) {
-    return useQuery({
+export function useDeleteUser(options?: TMutationOptions<SuccessResponse>) {
+    const invalidateALl = useInvalidateAll();
+
+    return useMutation({
         ...options,
-        placeholderData: keepPreviousData,
-        queryKey: queryKeys.user.username(username),
-        queryFn: async () => requestApi(() => api.get<boolean>(`/user/username/${username}`)),
+        mutationFn: async () => requestApi(() => api.delete<SuccessResponse>("/user")),
+        onSuccess: (data, ...args) => {
+            invalidateALl();
+            options?.onSuccess?.(data, ...args);
+        },
+        onError: (error, ...args) => options?.onError?.(error, ...args),
     });
 }
