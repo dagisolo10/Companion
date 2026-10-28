@@ -1,15 +1,16 @@
-import BrandMark from "@/components/brand-mark";
+import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react-native";
 import ErrorMessage from "@/components/error-message";
-import Button from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import Screen from "@/components/ui/screen";
-import Text from "@/components/ui/text";
-import { supabase } from "@/lib/supabase";
-import { Link, router } from "expo-router";
-import { Compass } from "lucide-react-native";
-import { useState } from "react";
+import { useColor } from "@/hooks/custom/use-color";
+import { InputField } from "@/components/ui/input";
 import { Pressable, View } from "react-native";
+import Screen from "@/components/ui/screen";
+import Button from "@/components/ui/button";
+import { Link, router } from "expo-router";
+import { supabase } from "@/lib/supabase";
+import Text from "@/components/ui/text";
+import { useState } from "react";
 import { z } from "zod";
+
 
 const signInSchema = z.object({
     email: z.string().email("Please enter a valid email address"),
@@ -17,8 +18,11 @@ const signInSchema = z.object({
 });
 
 export default function SignIn() {
+    const color = useColor();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
     const [isSigningIn, setIsSigningIn] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -48,37 +52,48 @@ export default function SignIn() {
 
     return (
         <Screen fullscreen className="justify-center gap-8">
-            <View className="items-center gap-3">
-                <BrandMark icon={Compass} accent="bg-amber" size="lg" />
-            </View>
-
-            <View className="gap-2">
-                <Text className="text-center font-jakarta-extrabold text-3xl tracking-tight">Welcome Back</Text>
-                <Text className="text-muted-foreground text-center font-jakarta-medium text-sm">Sign in to your account to continue</Text>
+            <View className="max-w-86 items-start">
+                <Text className="font-bebas text-6xl">Welcome Back</Text>
+                <Text className="text-muted-foreground text-xl font-medium">Sign in to your account to continue</Text>
             </View>
 
             <View className="gap-5">
-                <View className="gap-1.5">
-                    <Text className="font-jakarta-bold text-sm">Email</Text>
-                    <Input value={email} autoComplete="email" autoCapitalize="none" onChangeText={setEmail} placeholder="bob@gmail.com" keyboardType="email-address" />
-                </View>
+                <InputField icon={Mail} value={email} autoComplete="email" autoCapitalize="none" onChangeText={setEmail} placeholder="bob@gmail.com" keyboardType="email-address" />
 
                 <View className="gap-1.5">
-                    <Text className="font-jakarta-bold text-sm">Password</Text>
-                    <Input value={password} onChangeText={setPassword} placeholder="••••••••" secureTextEntry autoCapitalize="none" autoCorrect={false} />
+                    <Link className="self-end" href="/forgot-password" asChild>
+                        <Pressable>
+                            <Text>Forgot Password?</Text>
+                        </Pressable>
+                    </Link>
+
+                    <InputField
+                        icon={Lock}
+                        right={
+                            <Pressable onPress={() => setShowPassword(!showPassword)} className="absolute top-1/2 right-4 -translate-y-1/2">
+                                {showPassword ? <EyeOff size={20} color={color.mutedForeground} /> : <Eye size={20} color={color.mutedForeground} />}
+                            </Pressable>
+                        }
+                        value={password}
+                        autoCorrect={false}
+                        autoCapitalize="none"
+                        placeholder="••••••••"
+                        secureTextEntry={!showPassword}
+                        onChangeText={setPassword}
+                    />
                 </View>
 
                 <ErrorMessage message={error} />
 
-                <Button onPress={signInWithPassword} disabled={isSigningIn} className="mt-1">
-                    {isSigningIn ? "Signing In..." : "Sign In"}
+                <Button onPress={signInWithPassword} disabled={isSigningIn} size={"lg"} className="mt-1" right={ArrowRight}>
+                    <Text className="font-bebas text-center text-3xl">{isSigningIn ? "Signing In..." : "Sign In"}</Text>
                 </Button>
 
                 <View className="mt-2 flex-row justify-center">
                     <Link href="/(auth)/sign-up" asChild>
                         <Pressable>
-                            <Text className="text-muted-foreground font-jakarta-medium text-sm">
-                                Don&apos;t have an account? <Text className="font-jakarta-bold text-amber">Sign Up</Text>
+                            <Text className="text-muted-foreground text-lg font-medium">
+                                Don&apos;t have an account? <Text className="font-bold underline">Sign Up</Text>
                             </Text>
                         </Pressable>
                     </Link>

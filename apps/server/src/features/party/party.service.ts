@@ -1,11 +1,10 @@
-import { PrismaService } from "@/config/prisma/prisma.service.js";
-import { RequestService } from "@/config/request/request.service.js";
+import { PrismaService } from "@/common/prisma/prisma.service.js";
+import { RequestService } from "@/common/request/request.service.js";
+import { CreatePartyDto, TransferPartyDto, UpdatePartyDto } from "@/features/party/party.dto.js";
 import { StreakService } from "@/features/streak/streak.service.js";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { ulid } from "ulid";
-
-import { CreatePartyDto, TransferPartyDto, UpdatePartyDto } from "./party.dto.js";
 
 @Injectable()
 export class PartyService {
@@ -69,8 +68,6 @@ export class PartyService {
                 members: { where: { userId }, select: { id: true } },
             },
         });
-
-        console.log("party", party);
 
         if (!party) {
             throw new NotFoundException("Party not found");

@@ -1,5 +1,5 @@
 {
-    "name": "companion",
+    "name": "Companion",
     "private": true,
     "scripts": {
         "dev": "turbo run dev",

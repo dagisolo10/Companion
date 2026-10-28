@@ -12,8 +12,8 @@ export class QuestController {
     }
 
     @Get("my")
-    getMyQuests(@Query("status") status?: Filter) {
-        return this.questService.getMyQuests(status);
+    getMyQuests(@Query("status") status?: Filter, @Query("take") take?: string) {
+        return this.questService.getMyQuests(status, take ? parseInt(take) : undefined);
     }
 
     @Get(":code")

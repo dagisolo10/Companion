@@ -1,14 +1,14 @@
 {
     "expo": {
         "name": "Companion",
-        "slug": "companion",
+        "slug": "Companion",
         "version": "1.0.0",
+        "scheme": "companion",
         "orientation": "portrait",
         "icon": "./assets/images/icon.png",
-        "scheme": "companion",
         "userInterfaceStyle": "automatic",
         "ios": {
-            "supportsTablet": true
+            "icon": "./assets/expo.icon"
         },
         "android": {
             "adaptiveIcon": {
@@ -20,7 +20,7 @@
             "predictiveBackGestureEnabled": false
         },
         "web": {
-            "output": "static",
+            "output": "server",
             "favicon": "./assets/images/favicon.png"
         },
         "plugins": [
@@ -28,18 +28,23 @@
             [
                 "expo-splash-screen",
                 {
-                    "image": "./assets/images/splash-icon.png",
-                    "imageWidth": 200,
-                    "resizeMode": "contain",
-                    "backgroundColor": "#ffffff",
-                    "dark": {
-                        "backgroundColor": "#000000"
-                    }
+                    "imageWidth": 76,
+                    "backgroundColor": "#208AEF",
+                    "image": "./assets/images/splash-icon.png"
+                }
+            ],
+            [
+                "expo-font",
+                {
+                    "fonts": ["./assets/fonts/BebasNeue-Regular.ttf"]
                 }
             ],
             "expo-sqlite",
-            "expo-font",
-            "expo-web-browser"
+
+            "expo-web-browser",
+            "expo-image",
+            "expo-status-bar",
+            "expo-asset"
         ],
         "experiments": {
             "typedRoutes": true,

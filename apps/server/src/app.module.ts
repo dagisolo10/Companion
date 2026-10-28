@@ -1,8 +1,8 @@
 import { AppController } from "@/app.controller.js";
-import { AuthGuard } from "@/config/auth/auth.guard.js";
-import { PrismaModule } from "@/config/prisma/prisma.module.js";
-import { RequestModule } from "@/config/request/request.module.js";
-import { SupabaseModule } from "@/config/supabase/supabase.module.js";
+import { AuthGuard } from "@/common/auth/auth.guard.js";
+import { PrismaModule } from "@/common/prisma/prisma.module.js";
+import { RequestModule } from "@/common/request/request.module.js";
+import { SupabaseModule } from "@/common/supabase/supabase.module.js";
 import { DashboardModule } from "@/features/dashboard/dashboard.module.js";
 import { PartyMemberModule } from "@/features/party-member/party-member.module.js";
 import { PartyModule } from "@/features/party/party.module.js";

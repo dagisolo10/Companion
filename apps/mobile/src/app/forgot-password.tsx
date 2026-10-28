@@ -1,0 +1,61 @@
+import { useMutation } from "@tanstack/react-query";
+import { InputField } from "@/components/ui/input";
+import { Pressable, View } from "react-native";
+import Screen from "@/components/ui/screen";
+import Button from "@/components/ui/button";
+import { Mail } from "lucide-react-native";
+import { Link, router } from "expo-router";
+import { supabase } from "@/lib/supabase";
+import Text from "@/components/ui/text";
+import { useState } from "react";
+
+
+export default function ForgotPassword() {
+    const [email, setEmail] = useState("");
+    const resetPasswordForEmailMt = useMutation({
+        onSuccess: () => router.replace("/reset-password"),
+        mutationFn: async () => {
+            if (!email) throw new Error("Please enter your email.");
+
+            await supabase.auth.resetPasswordForEmail(email, { redirectTo: "companion:/reset-password" });
+        },
+    });
+
+    return (
+        <Screen fullscreen className="justify-center gap-8">
+            <View className="max-w-86 items-start">
+                <Text className="font-bebas text-6xl">Forgot Password</Text>
+                <Text className="text-muted-foreground text-xl font-medium">Enter your email address and we&apos;ll send you a code to verify ownership.</Text>
+            </View>
+
+            {false ? (
+                <View className="gap-5">
+                    <Text className="text-sm">Check your email for a code to reset your password.</Text>
+                    <Button onPress={() => router.replace("/(auth)/sign-in")}>
+                        <Text>Back to Sign In</Text>
+                    </Button>
+                </View>
+            ) : (
+                <View className="gap-5">
+                    <InputField icon={Mail} value={email} onChangeText={setEmail} placeholder="bob@gmail.com" keyboardType="email-address" autoComplete="email" autoCapitalize="none" />
+
+                    {resetPasswordForEmailMt.error ? <Text className="text-destructive text-sm">{resetPasswordForEmailMt.error.message}</Text> : null}
+
+                    <Button onPress={() => resetPasswordForEmailMt.mutateAsync()} disabled={resetPasswordForEmailMt.isPending} size={"lg"} className="mt-1">
+                        <Text className="font-bebas text-3xl">{resetPasswordForEmailMt.isPending ? "Sending..." : "Send Code"}</Text>
+                    </Button>
+
+                    <View className="mt-2 flex-row justify-center">
+                        <Link href="/(auth)/sign-in" asChild>
+                            <Pressable>
+                                <Text className="text-muted-foreground text-lg font-medium">
+                                    Remember your password? <Text className="font-bold underline">Sign In</Text>
+                                </Text>
+                            </Pressable>
+                        </Link>
+                    </View>
+                </View>
+            )}
+        </Screen>
+    );
+}

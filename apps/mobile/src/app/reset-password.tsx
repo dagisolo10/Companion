@@ -1,108 +1,70 @@
-import Button from "@/components/ui/button";
+import { useMutation } from "@tanstack/react-query";
+import { Eye, EyeOff } from "lucide-react-native";
+import { Pressable, View } from "react-native";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
-import Text from "@/components/ui/text";
-import { supabase } from "@/lib/supabase";
+import Button from "@/components/ui/button";
 import { Link, router } from "expo-router";
+import { supabase } from "@/lib/supabase";
+import Text from "@/components/ui/text";
 import { useState } from "react";
-import { Pressable, View } from "react-native";
+
 
 export default function ResetPassword() {
     const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [currentPassword, setCurrentPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [confirmPassword, setConfirmPassword] = useState("");
 
-    async function handleReset() {
-        if (isSubmitting) return;
+    const resetPasswordMt = useMutation({
+        onSuccess: () => router.replace("/(auth)/sign-in"),
+        mutationFn: async () => {
+            if (!password || !confirmPassword) throw new Error("Please fill in all fields.");
+            if (password.length < 6) throw new Error("Password must be at least 6 characters.");
+            if (password !== confirmPassword) throw new Error("Passwords do not match.");
 
-        setError(null);
-
-        if (!password || !confirmPassword) {
-            setError("Please fill in all fields.");
-            return;
-        }
-
-        if (password.length < 6) {
-            setError("Password must be at least 6 characters.");
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            setError("Passwords do not match.");
-            return;
-        }
-
-        setIsSubmitting(true);
-
-        try {
-            const { data } = await supabase.auth.getUser();
-
-            const user = data.user;
-
-            if (!user?.email) {
-                throw new Error("User session not found.");
-            }
-
-            const { error: reAuthError } = await supabase.auth.signInWithPassword({ email: user.email, password: currentPassword });
-
-            if (reAuthError) {
-                throw new Error("Current password is incorrect.");
-            }
-
-            const { error: updateError } = await supabase.auth.updateUser({ password });
-
-            if (updateError) throw updateError;
-
-            router.replace("/(app)");
-        } catch (err) {
-            if (err instanceof Error) setError(err.message || "Failed to reset password.");
-        } finally {
-            setIsSubmitting(false);
-        }
-    }
+            await supabase.auth.updateUser({ password });
+        },
+    });
 
     return (
         <Screen fullscreen className="justify-center gap-8">
             <View className="gap-2">
-                <Text className="font-jakarta-extrabold text-3xl tracking-tight">Reset Password</Text>
-                <Text className="text-muted-foreground font-jakarta-medium text-sm">Enter your new password below to secure your account.</Text>
+                <Text className="text-3xl font-extrabold tracking-tight">Set New Password</Text>
+                <Text className="text-muted-foreground text-sm font-medium">Enter your new password below.</Text>
             </View>
 
             <View className="gap-5">
                 <View className="gap-1.5">
-                    <Text className="font-jakarta-bold text-sm">Current Password</Text>
+                    <Text className="text-sm font-bold">New Password</Text>
                     <View className="relative justify-center">
-                        <Input className="pr-16" autoCorrect={false} autoCapitalize="none" placeholder="••••••••" value={currentPassword} secureTextEntry={!showPassword} onChangeText={setCurrentPassword} />
+                        <Input className="pr-12" autoCorrect={false} autoCapitalize="none" placeholder="••••••••" value={password} secureTextEntry={!showPassword} onChangeText={setPassword} />
                         <Pressable onPress={() => setShowPassword(!showPassword)} className="absolute right-4 py-2">
-                            <Text className="font-jakarta-bold text-xs text-amber">{showPassword ? "Hide" : "Show"}</Text>
+                            {showPassword ? <EyeOff size={20} color="#f59e0b" /> : <Eye size={20} color="#f59e0b" />}
                         </Pressable>
                     </View>
                 </View>
 
                 <View className="gap-1.5">
-                    <Text className="font-jakarta-bold text-sm">New Password</Text>
-                    <Input autoCorrect={false} autoCapitalize="none" placeholder="••••••••" value={password} secureTextEntry={!showPassword} onChangeText={setPassword} />
+                    <Text className="text-sm font-bold">Confirm New Password</Text>
+                    <View className="relative justify-center">
+                        <Input className="pr-12" autoCorrect={false} autoCapitalize="none" placeholder="••••••••" value={confirmPassword} secureTextEntry={!showPassword} onChangeText={setConfirmPassword} />
+                        <Pressable onPress={() => setShowPassword(!showPassword)} className="absolute right-4 py-2">
+                            {showPassword ? <EyeOff size={20} color="#f59e0b" /> : <Eye size={20} color="#f59e0b" />}
+                        </Pressable>
+                    </View>
                 </View>
 
-                <View className="gap-1.5">
-                    <Text className="font-jakarta-bold text-sm">Confirm New Password</Text>
-                    <Input autoCorrect={false} autoCapitalize="none" placeholder="••••••••" value={confirmPassword} secureTextEntry={!showPassword} onChangeText={setConfirmPassword} />
-                </View>
+                {resetPasswordMt.error ? <Text className="text-destructive text-sm">{resetPasswordMt.error.message}</Text> : null}
 
-                {error ? <Text className="text-destructive text-sm">{error}</Text> : null}
-
-                <Button onPress={handleReset} disabled={isSubmitting} className="mt-1">
-                    {isSubmitting ? "Updating..." : "Update Password"}
+                <Button onPress={() => resetPasswordMt.mutateAsync()} disabled={resetPasswordMt.isPending} size={"lg"} className="mt-1">
+                    <Text>{resetPasswordMt.isPending ? "Updating..." : "Update Password"}</Text>
                 </Button>
 
                 <View className="mt-2 flex-row justify-center">
                     <Link href="/(auth)/sign-in" asChild>
                         <Pressable>
-                            <Text className="text-muted-foreground font-jakarta-medium text-sm">
-                                Remember your password? <Text className="font-jakarta-bold text-amber">Sign In</Text>
+                            <Text className="text-muted-foreground text-sm font-medium">
+                                Remember your password? <Text className="text-amber font-bold">Sign In</Text>
                             </Text>
                         </Pressable>
                     </Link>

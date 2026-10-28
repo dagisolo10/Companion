@@ -1,17 +1,18 @@
-import BrandMark from "@/components/brand-mark";
+import { ArrowRight, AtSign, Eye, EyeOff, Lock, Mail, User2 } from "lucide-react-native";
 import ErrorMessage from "@/components/error-message";
-import Button from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useColor } from "@/hooks/custom/use-color";
+import { requestApi } from "@/lib/api/request-api";
+import { InputField } from "@/components/ui/input";
+import { Pressable, View } from "react-native";
 import Screen from "@/components/ui/screen";
+import Button from "@/components/ui/button";
+import { Link, router } from "expo-router";
+import { supabase } from "@/lib/supabase";
 import Text from "@/components/ui/text";
 import { api } from "@/lib/api/axios";
-import { requestApi } from "@/lib/api/request-api";
-import { supabase } from "@/lib/supabase";
-import { Link, router } from "expo-router";
-import { Compass } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, View } from "react-native";
 import { z } from "zod";
+
 
 const signUpSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -21,10 +22,13 @@ const signUpSchema = z.object({
 });
 
 export default function SignUp() {
+    const color = useColor();
+
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
     const [isSigningUp, setIsSigningUp] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -72,47 +76,41 @@ export default function SignUp() {
 
     return (
         <Screen fullscreen className="justify-center gap-8">
-            <View className="items-center gap-3">
-                <BrandMark icon={Compass} accent="bg-amber" size="lg" />
-            </View>
-
-            <View className="gap-2">
-                <Text className="text-center font-jakarta-extrabold text-3xl tracking-tight">Create Account</Text>
-                <Text className="text-muted-foreground text-center font-jakarta-medium text-sm">Sign up to get started with your account</Text>
+            <View className="max-w-86 items-start gap-1">
+                <Text className="font-bebas text-6xl">Create Your Account</Text>
+                <Text className="text-muted-foreground text-xl font-medium">Sign up to get started with your account</Text>
             </View>
 
             <View className="gap-5">
-                <View className="gap-1.5">
-                    <Text className="font-jakarta-bold text-sm">Name</Text>
-                    <Input value={name} onChangeText={setName} placeholder="Bob" autoCorrect={false} />
-                </View>
-
-                <View className="gap-1.5">
-                    <Text className="font-jakarta-bold text-sm">Username</Text>
-                    <Input value={username} onChangeText={setUsername} placeholder="bob" autoCapitalize="none" autoCorrect={false} />
-                </View>
-
-                <View className="gap-1.5">
-                    <Text className="font-jakarta-bold text-sm">Email</Text>
-                    <Input value={email} onChangeText={setEmail} placeholder="bob@gmail.com" keyboardType="email-address" autoComplete="email" autoCapitalize="none" />
-                </View>
-
-                <View className="gap-1.5">
-                    <Text className="font-jakarta-bold text-sm">Password</Text>
-                    <Input value={password} onChangeText={setPassword} placeholder="••••••••" secureTextEntry autoCapitalize="none" autoCorrect={false} />
-                </View>
+                <InputField icon={User2} value={name} onChangeText={setName} placeholder="Bob" autoCorrect={false} />
+                <InputField icon={AtSign} value={username} onChangeText={setUsername} placeholder="bob" autoCapitalize="none" autoCorrect={false} />
+                <InputField icon={Mail} value={email} onChangeText={setEmail} placeholder="bob@gmail.com" keyboardType="email-address" autoComplete="email" autoCapitalize="none" />
+                <InputField
+                    icon={Lock}
+                    right={
+                        <Pressable onPress={() => setShowPassword(!showPassword)} className="absolute top-1/2 right-4 -translate-y-1/2">
+                            {showPassword ? <EyeOff size={20} color={color.mutedForeground} /> : <Eye size={20} color={color.mutedForeground} />}
+                        </Pressable>
+                    }
+                    value={password}
+                    autoCorrect={false}
+                    autoCapitalize="none"
+                    placeholder="••••••••"
+                    secureTextEntry={!showPassword}
+                    onChangeText={setPassword}
+                />
 
                 <ErrorMessage message={error} />
 
-                <Button onPress={signUpNewUser} disabled={isSigningUp} className="mt-1">
-                    {isSigningUp ? "Signing Up..." : "Agree & Sign Up"}
+                <Button onPress={signUpNewUser} disabled={isSigningUp} size={"lg"} className="mt-1" right={ArrowRight}>
+                    <Text className="font-bebas text-center text-3xl">{isSigningUp ? "Signing Up..." : "Agree & Sign Up"}</Text>
                 </Button>
 
                 <View className="mt-2 flex-row justify-center">
                     <Link href="/(auth)/sign-in" asChild>
                         <Pressable>
-                            <Text className="text-muted-foreground font-jakarta-medium text-sm">
-                                Already have an account? <Text className="font-jakarta-bold text-amber">Sign In</Text>
+                            <Text className="text-muted-foreground text-lg font-medium">
+                                Already have an account? <Text className="font-bold underline">Sign In</Text>
                             </Text>
                         </Pressable>
                     </Link>

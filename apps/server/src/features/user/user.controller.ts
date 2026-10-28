@@ -1,4 +1,4 @@
-import { Public } from "@/config/auth/auth.decorator.js";
+import { Public } from "@/common/auth/public.decorator.js";
 import { UpdateUserDto } from "@/features/user/user.dto.js";
 import { UserService } from "@/features/user/user.service.js";
 import { Body, Controller, Delete, Get, Param, Patch, Query } from "@nestjs/common";
@@ -21,6 +21,11 @@ export class UserController {
     @Get("leaderboard")
     getLeaderboard(@Query("limit") take?: string) {
         return this.userService.getLeaderboard(take ? parseInt(take) : undefined);
+    }
+
+    @Get("search")
+    searchUsers(@Query("query") query: string) {
+        return this.userService.searchUsers(query);
     }
 
     @Get(":username")

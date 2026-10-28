@@ -1,6 +1,7 @@
-import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react-native";
 import { View } from "react-native";
+import { cn } from "cn";
+
 
 type BrandMarkProps = {
     icon: LucideIcon;
@@ -11,9 +12,9 @@ type BrandMarkProps = {
 };
 
 const sizes = {
-    sm: { box: "size-10 rounded-xl", icon: 20 },
-    md: { box: "size-14 rounded-2xl", icon: 28 },
-    lg: { box: "size-20 rounded-3xl", icon: 40 },
+    sm: { box: "size-10", icon: 20 },
+    md: { box: "size-14", icon: 28 },
+    lg: { box: "size-20", icon: 40 },
 } as const;
 
 export default function BrandMark({ icon: Icon, accent = "bg-amber", size = "md", className, iconColor = "#000000" }: BrandMarkProps) {

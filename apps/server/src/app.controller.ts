@@ -1,8 +1,10 @@
+import { Public } from "@/common/auth/public.decorator.js";
 import { Controller, Get } from "@nestjs/common";
 
 @Controller()
 export class AppController {
-    @Get("hello")
+    @Public()
+    @Get()
     hello() {
         return {
             text: "Nest API working 🟢",

@@ -13,6 +13,7 @@ model User {
     experience     Int           @default(0)
     streak         Int           @default(0)
     longestStreak  Int           @default(0)
+    public         Boolean       @default(true)
     createdAt      DateTime      @default(now())
     partyMembers   PartyMember[]
     createdQuests  Quest[]         @relation("CreatedQuests")
@@ -65,7 +66,7 @@ model QuestActivity {
     id          String   @id @default(uuid())
     questId     String
     userId      String
-    xpAwarded   Boolean  @default(false)
+    xpAwarded   Int      @default(0)
     completedAt DateTime @default(now())
     quest       Quest    @relation(fields: [questId], references: [id])
     user        User     @relation(fields: [userId], references: [id])
@@ -81,7 +82,7 @@ enum QuestStatus {
 }
 
 enum Mode {
-    Race
+    Rush
     Normal
 }
 

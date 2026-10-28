@@ -1,16 +1,19 @@
-import Text from "@/components/ui/text";
-import { cn } from "@/lib/utils";
+import { GestureResponderEvent, Pressable, PressableProps, View } from "react-native";
 import { VariantProps, cva } from "class-variance-authority";
+import { useColor } from "@/hooks/custom/use-color";
+import { LucideIcon } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
-import { GestureResponderEvent, Pressable, PressableProps } from "react-native";
+import { cn } from "cn";
+
 
 interface ButtonProps extends PressableProps, VariantProps<typeof buttonVariants> {
     asChild?: boolean;
+    right?: LucideIcon;
     className?: string;
     children: React.ReactNode;
 }
 
-const buttonVariants = cva("border-foreground rounded-2xl transition-all duration-300 active:translate-y-0.5 flex-row items-center justify-center gap-1 disabled:pointer-events-none disabled:opacity-70", {
+const buttonVariants = cva("border-foreground group/button transition-all duration-300 flex-row items-center justify-center gap-1 disabled:pointer-events-none disabled:opacity-70", {
     variants: {
         variant: {
             ghost: "bg-transparent",
@@ -36,32 +39,40 @@ const buttonVariants = cva("border-foreground rounded-2xl transition-all duratio
     },
 });
 
-const textVariants = {
-    default: "text-black",
-    ghost: "text-foreground",
-    success: "text-foreground",
-    outline: "text-foreground",
-    secondary: "text-secondary-foreground",
-    destructive: "text-destructive-foreground",
-} as const;
+const sizeConfig = {
+    sm: { wrapper: "size-10", iconSize: 15 },
+    default: { wrapper: "size-12", iconSize: 18 },
+    lg: { wrapper: "size-16", iconSize: 24 },
+    icon: { wrapper: "size-12", iconSize: 18 },
+    "icon-lg": { wrapper: "size-13", iconSize: 20 },
+};
 
-const textSizes = {
-    lg: "text-lg",
-    sm: "text-sm",
-    icon: "text-base",
-    "icon-lg": "text-base",
-    default: "text-base",
-} as const;
+export default function Button({ variant = "default", size = "default", children, className, onPress, asChild, right: RightIcon, ...props }: ButtonProps) {
+    const color = useColor();
 
-export default function Button({ variant = "default", size = "default", children, className, onPress, asChild, ...props }: ButtonProps) {
     const handlePress = (e: GestureResponderEvent) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onPress?.(e);
     };
 
+    const currentSizeConfig = sizeConfig[size || "default"];
+
+    const content = RightIcon ? (
+        <View className="flex-row items-center justify-between">
+            <View className="flex-1">{children}</View>
+            <View className={cn("bg-foreground items-center justify-center overflow-hidden", currentSizeConfig.wrapper)}>
+                <View className="transition-transform duration-300 group-active/button:translate-x-1 group-active/button:scale-110">
+                    <RightIcon size={currentSizeConfig.iconSize} color={color.background} />
+                </View>
+            </View>
+        </View>
+    ) : (
+        children
+    );
+
     return (
-        <Pressable onPress={handlePress} className={cn(buttonVariants({ className, variant, size }))} {...props}>
-            {asChild ? <>{children}</> : <Text className={cn(variant && textVariants[variant], size && textSizes[size])}>{children}</Text>}
+        <Pressable onPress={handlePress} className={cn(buttonVariants({ className, variant, size }), RightIcon ? "p-0" : "")} {...props}>
+            {content}
         </Pressable>
     );
 }

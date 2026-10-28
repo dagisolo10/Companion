@@ -1,18 +1,28 @@
-import { ApiError, hasApiError } from "@/lib/api/error";
-import { isAxiosError } from "axios";
+import { AxiosResponse, isAxiosError } from "axios";
 
-export async function requestApi<T>(request: () => Promise<{ data: T | ApiError }>): Promise<T> {
+type ApiError = {
+    error: string;
+    message: string;
+    statusCode: number;
+};
+
+function isApiErrorResponse(result: unknown): result is ApiError {
+    return typeof result === "object" && result !== null && "error" in result && "message" in result && "statusCode" in result;
+}
+
+export async function requestApi<T>(request: () => Promise<AxiosResponse<T>>): Promise<T> {
     try {
         const { data } = await request();
 
-        if (hasApiError(data)) throw data.message;
+        if (isApiErrorResponse(data)) {
+            throw data;
+        }
 
         return data;
     } catch (error) {
         if (isAxiosError(error) && error.response?.data) {
-            const serverData = error.response.data as { message?: string | string[] };
-            const message = Array.isArray(serverData.message) ? serverData.message[0] : serverData.message;
-            throw message || "Network request failed. Try again.";
+            const serverData = error.response.data;
+            throw serverData || "Network request failed. Try again.";
         }
 
         throw error;

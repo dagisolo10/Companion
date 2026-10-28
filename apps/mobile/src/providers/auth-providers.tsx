@@ -1,9 +1,11 @@
-import { AppState } from "react-native";
-import { supabase } from "@/lib/supabase";
-import { User } from "@supabase/supabase-js";
-import { useGetUser } from "@/hooks/tan-stack/user";
-import { AuthContext } from "@/contexts/auth-context";
 import { PropsWithChildren, useEffect, useState } from "react";
+import { injectTokenResolver } from "@/lib/api/axios";
+import { AuthContext } from "@/contexts/auth-context";
+import { useGetUser } from "@/hooks/tan-stack/user";
+import { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
+import { AppState } from "react-native";
+
 
 export default function AuthProvider({ children }: PropsWithChildren) {
     const [isLoading, setIsLoading] = useState(true);
@@ -13,6 +15,10 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     const [token, setToken] = useState<string | null>(null);
 
     useGetUser();
+
+    useEffect(() => {
+        injectTokenResolver(() => token);
+    }, [token]);
 
     useEffect(() => {
         const listener = AppState.addEventListener("change", (state) => {

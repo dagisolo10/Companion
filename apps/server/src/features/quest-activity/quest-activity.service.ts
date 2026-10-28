@@ -1,5 +1,5 @@
-import { PrismaService } from "@/config/prisma/prisma.service.js";
-import { RequestService } from "@/config/request/request.service.js";
+import { PrismaService } from "@/common/prisma/prisma.service.js";
+import { RequestService } from "@/common/request/request.service.js";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
@@ -9,7 +9,7 @@ export class QuestActivityService {
         private readonly requestService: RequestService,
     ) {}
 
-    async getMyQuestActivities() {
+    async getMyQuestActivities(take = 50) {
         const userId = this.requestService.getUserId();
 
         return this.prisma.questActivity.findMany({
@@ -18,12 +18,14 @@ export class QuestActivityService {
                     party: { members: { some: { userId } } },
                 },
             },
+            take,
             orderBy: {
                 completedAt: "desc",
             },
             select: {
                 id: true,
                 completedAt: true,
+                xpAwarded: true,
                 user: {
                     select: {
                         id: true,

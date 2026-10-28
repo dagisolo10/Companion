@@ -1,6 +1,7 @@
-import { PrismaService } from "@/config/prisma/prisma.service.js";
-import { RequestService } from "@/config/request/request.service.js";
+import { PrismaService } from "@/common/prisma/prisma.service.js";
+import { RequestService } from "@/common/request/request.service.js";
 import { Injectable } from "@nestjs/common";
+import { startOfDay, startOfMonth, startOfWeek } from "date-fns";
 
 @Injectable()
 export class DashboardService {
@@ -13,21 +14,14 @@ export class DashboardService {
         const userId = this.requestService.getUserId();
 
         const now = new Date();
-        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - now.getDay());
-        startOfWeek.setHours(0, 0, 0, 0);
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
         const activities = await this.prisma.questActivity.findMany({
             where: {
                 userId,
             },
             select: {
+                xpAwarded: true,
                 completedAt: true,
-                quest: {
-                    select: { reward: true },
-                },
             },
         });
 
@@ -41,20 +35,20 @@ export class DashboardService {
         const allTimeCompleted = activities.length;
 
         for (const activity of activities) {
-            const xp = activity.quest.reward;
+            const xp = activity.xpAwarded;
             const date = activity.completedAt;
 
             allTimeXp += xp;
 
-            if (date >= startOfDay) {
+            if (date >= startOfDay(now)) {
                 todayCompleted++;
                 todayXp += xp;
             }
-            if (date >= startOfWeek) {
+            if (date >= startOfWeek(now)) {
                 weekCompleted++;
                 weekXp += xp;
             }
-            if (date >= startOfMonth) {
+            if (date >= startOfMonth(now)) {
                 monthCompleted++;
                 monthXp += xp;
             }

@@ -1,6 +1,7 @@
 import { create } from "axios";
 
-const baseURL = "http://172.20.10.4:3000";
+
+const baseURL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const api = create({ baseURL, withCredentials: true });
 

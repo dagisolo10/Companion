@@ -15,6 +15,7 @@
     --shadow-nb: 3px 3px 0px 0px var(--color-shadow-nb);
     --shadow-nb-sm: 2px 2px 0px 0px var(--color-shadow-nb);
     --shadow-nb-active: 0px 0px 0px 0px var(--color-shadow-nb);
+    --shadow-nb-destructive: 3px 3px 0px 0px var(--color-destructive);
 
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -52,16 +53,11 @@
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
 
-    --font-jakarta-bold: PlusJakartaSansBold;
-    --font-jakarta-light: PlusJakartaSansLight;
-    --font-jakarta-medium: PlusJakartaSansMedium;
-    --font-jakarta-regular: PlusJakartaSansRegular;
-    --font-jakarta-semibold: PlusJakartaSansSemiBold;
-    --font-jakarta-extrabold: PlusJakartaSansExtraBold;
+    --font-bebas: BebasNeue;
 }
 
 @utility card {
-    @apply border-foreground bg-card shadow-nb rounded-2xl border-2 p-4;
+    @apply border-foreground bg-card shadow-nb border-2 p-4;
 }
 
 :root {

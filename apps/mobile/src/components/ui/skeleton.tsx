@@ -1,7 +1,8 @@
-import { cn } from "@/lib/utils";
-import { useEffect } from "react";
+import Animated, { Extrapolation, interpolate, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 import { View } from "react-native";
-import Animated, { useSharedValue, withRepeat, withTiming, useAnimatedStyle, interpolate, Extrapolation } from "react-native-reanimated";
+import { useEffect } from "react";
+import { cn } from "cn";
+
 
 function SkeletonBlock({ className }: { className?: string }) {
     const opacity = useSharedValue(0.3);
@@ -14,12 +15,12 @@ function SkeletonBlock({ className }: { className?: string }) {
         opacity: interpolate(opacity.value, [0.3, 1], [0.3, 0.7], Extrapolation.CLAMP),
     }));
 
-    return <Animated.View style={animatedStyle} className={cn("bg-muted rounded-xl", className)} />;
+    return <Animated.View style={animatedStyle} className={cn("bg-muted", className)} />;
 }
 
 export function SkeletonCard({ lines = 3, className }: { lines?: number; className?: string }) {
     return (
-        <View className={cn("shadow-nb-sm border-foreground gap-3 rounded-2xl border-2 p-4", className)}>
+        <View className={cn("shadow-nb-sm border-foreground gap-3 border-2 p-4", className)}>
             <SkeletonBlock className="h-4 w-3/4" />
             <SkeletonBlock className="h-3 w-1/2" />
             {lines > 2 && <SkeletonBlock className="h-3 w-full" />}
@@ -29,8 +30,8 @@ export function SkeletonCard({ lines = 3, className }: { lines?: number; classNa
 
 export function SkeletonStat() {
     return (
-        <View className="border-foreground bg-card shadow-nb flex-1 gap-3 rounded-2xl border-2 p-4">
-            <SkeletonBlock className="h-5 w-16 rounded-md" />
+        <View className="border-foreground bg-card shadow-nb flex-1 gap-3 border-2 p-4">
+            <SkeletonBlock className="h-5 w-16" />
             <View className="gap-1">
                 <SkeletonBlock className="h-7 w-14" />
                 <SkeletonBlock className="h-3 w-20" />
@@ -41,27 +42,27 @@ export function SkeletonStat() {
 
 export function SkeletonLevelCard() {
     return (
-        <View className="border-foreground shadow-nb gap-3 rounded-2xl border-2 p-4">
+        <View className="border-foreground shadow-nb gap-3 border-2 p-4">
             <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center gap-2.5">
-                    <SkeletonBlock className="h-10 w-10 rounded-xl" />
+                    <SkeletonBlock className="h-10 w-10" />
                     <View className="gap-1">
                         <SkeletonBlock className="h-5 w-20" />
                         <SkeletonBlock className="h-3 w-16" />
                     </View>
                 </View>
-                <SkeletonBlock className="h-6 w-24 rounded-full" />
+                <SkeletonBlock className="h-6 w-24" />
             </View>
-            <SkeletonBlock className="h-4 w-full rounded-full" />
+            <SkeletonBlock className="h-4 w-full" />
         </View>
     );
 }
 
 export function SkeletonStreakCard() {
     return (
-        <View className="border-foreground bg-amber shadow-nb rounded-2xl border-2 p-3.5">
+        <View className="border-foreground bg-amber shadow-nb border-2 p-3.5">
             <View className="flex-row items-center gap-3">
-                <SkeletonBlock className="h-10 w-10 rounded-xl" />
+                <SkeletonBlock className="h-10 w-10" />
                 <View className="flex-1 gap-1">
                     <SkeletonBlock className="h-3 w-24" />
                     <SkeletonBlock className="h-4 w-32" />

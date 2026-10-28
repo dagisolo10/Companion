@@ -1,6 +1,6 @@
-import { PrismaService } from "@/config/prisma/prisma.service.js";
-import { RequestService } from "@/config/request/request.service.js";
-import { SupabaseService } from "@/config/supabase/supabase.service.js";
+import { PrismaService } from "@/common/prisma/prisma.service.js";
+import { RequestService } from "@/common/request/request.service.js";
+import { SupabaseService } from "@/common/supabase/supabase.service.js";
 import { StreakService } from "@/features/streak/streak.service.js";
 import { UpdateUserDto } from "@/features/user/user.dto.js";
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
@@ -80,7 +80,7 @@ export class UserService {
 
         return await this.prisma.user.findMany({
             where: {
-                OR: [{ username: { contains: trimmed, mode: "insensitive" } }, { name: { contains: trimmed, mode: "insensitive" } }],
+                AND: [{ public: true }, { OR: [{ username: { contains: trimmed, mode: "insensitive" } }, { name: { contains: trimmed, mode: "insensitive" } }] }],
             },
             take: 20,
         });
@@ -89,7 +89,7 @@ export class UserService {
     async findUser(username: string) {
         const user = await this.prisma.user.findUnique({ where: { username } });
 
-        if (!user) {
+        if (!user || !user.public) {
             throw new NotFoundException("User not found. Try another username");
         }
 
@@ -113,9 +113,9 @@ export class UserService {
                 data,
             });
 
-            await this.supabase.auth.admin.updateUserById(id, {
-                user_metadata: { name: data.name, username: data.username },
-            });
+            if (data.name !== undefined || data.username !== undefined) {
+                await this.supabase.auth.admin.updateUserById(id, { user_metadata: { name: data.name, username: data.username } });
+            }
 
             return updatedUser;
         } catch (error) {

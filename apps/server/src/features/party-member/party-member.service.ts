@@ -1,5 +1,5 @@
-import { PrismaService } from "@/config/prisma/prisma.service.js";
-import { RequestService } from "@/config/request/request.service.js";
+import { PrismaService } from "@/common/prisma/prisma.service.js";
+import { RequestService } from "@/common/request/request.service.js";
 import { RemoveMemberDto } from "@/features/party-member/party-member.dto.js";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";

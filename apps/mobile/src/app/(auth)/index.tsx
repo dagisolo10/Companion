@@ -1,10 +1,11 @@
+import { ArrowRight, Compass, Swords, Trophy, Users } from "lucide-react-native";
 import BrandMark from "@/components/brand-mark";
-import Button from "@/components/ui/button";
 import Screen from "@/components/ui/screen";
+import Button from "@/components/ui/button";
 import Text from "@/components/ui/text";
-import { Link } from "expo-router";
-import { Compass, Swords, Trophy, Users, Zap } from "lucide-react-native";
 import { View } from "react-native";
+import { Link } from "expo-router";
+
 
 const features = [
     {
@@ -29,12 +30,12 @@ const features = [
 
 export default function Welcome() {
     return (
-        <Screen fullscreen className="justify-between gap-10">
-            <View className="items-center justify-center gap-4 pt-6">
+        <Screen nonScrollable fullscreen className="justify-between gap-8 py-16">
+            <View className="items-center justify-center gap-4">
                 <BrandMark icon={Compass} accent="bg-amber" size="lg" />
                 <View className="items-center gap-2">
-                    <Text className="font-jakarta-extrabold text-center text-4xl tracking-tight">Companion</Text>
-                    <Text className="text-muted-foreground font-jakarta-medium max-w-70 text-center text-base">Your adventure companion for quests, parties, and leveling up every day.</Text>
+                    <Text className="font-bebas text-center text-6xl">Companion</Text>
+                    <Text className="text-muted-foreground text-center text-lg font-medium">Your adventure companion for quests, parties, and leveling up every day.</Text>
                 </View>
             </View>
 
@@ -43,8 +44,8 @@ export default function Welcome() {
                     <View key={title} className="card flex-row items-center gap-3.5">
                         <BrandMark icon={icon} accent={accent} size="sm" />
                         <View className="flex-1">
-                            <Text className="font-jakarta-extrabold text-base">{title}</Text>
-                            <Text className="text-muted-foreground font-jakarta-medium text-xs leading-snug">{description}</Text>
+                            <Text className="text-xl font-bold">{title}</Text>
+                            <Text className="text-muted-foreground text-sm leading-snug font-medium">{description}</Text>
                         </View>
                     </View>
                 ))}
@@ -52,14 +53,14 @@ export default function Welcome() {
 
             <View className="gap-3">
                 <Link href="/(auth)/sign-up" asChild>
-                    <Button size="lg">
-                        Get Started <Zap size={18} color="#000000" strokeWidth={2.5} />
+                    <Button size="lg" right={ArrowRight}>
+                        <Text className="font-bebas text-center text-3xl">Get Started</Text>
                     </Button>
                 </Link>
 
                 <Link href="/(auth)/sign-in" asChild>
                     <Button variant="outline" size="lg">
-                        I already have an account
+                        <Text className="font-bebas text-center text-3xl">I already have an account</Text>
                     </Button>
                 </Link>
             </View>

@@ -1,9 +1,11 @@
-import { PrismaService } from "@/config/prisma/prisma.service.js";
-import { RequestService } from "@/config/request/request.service.js";
+import { PrismaService } from "@/common/prisma/prisma.service.js";
+import { RequestService } from "@/common/request/request.service.js";
 import { CreateQuestDto, Filter, UpdateQuestDto } from "@/features/quest/quest.dto.js";
 import { StreakService } from "@/features/streak/streak.service.js";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
-import { Difficulty, Prisma } from "@prisma/client";
+import { Difficulty, Mode, Prisma } from "@prisma/client";
+
+const NORMAL_XP_RATES = [1, 0.75, 0.5, 0.25];
 
 const questSelect = {
     creator: {
@@ -15,6 +17,7 @@ const questSelect = {
     party: {
         select: {
             code: true,
+            name: true,
         },
     },
     _count: {
@@ -91,7 +94,7 @@ export class QuestService {
         });
     }
 
-    async getMyQuests(status?: Filter) {
+    async getMyQuests(status?: Filter, take = 100) {
         const userId = this.requestService.getUserId();
 
         return await this.prisma.quest.findMany({
@@ -99,6 +102,7 @@ export class QuestService {
                 party: { members: { some: { userId } } },
                 ...(status !== "All" && { status }),
             },
+            take,
             include: {
                 ...questSelect,
                 questActivities: {
@@ -154,6 +158,16 @@ export class QuestService {
         return quest;
     }
 
+    private calculateXpAwarded(reward: number, mode: Mode, rank: number): number {
+        if (mode === Mode.Rush) {
+            return rank === 1 ? reward : 0;
+        }
+
+        const rate = NORMAL_XP_RATES[Math.min(rank, NORMAL_XP_RATES.length) - 1];
+
+        return Math.round(reward * rate);
+    }
+
     async completeQuest(id: string, code: string) {
         const userId = this.requestService.getUserId();
 
@@ -180,6 +194,8 @@ export class QuestService {
         }
 
         await this.prisma.$transaction(async (tx) => {
+            await tx.$queryRaw`SELECT "id" FROM "Quest" WHERE "id" = ${id} FOR UPDATE`;
+
             const existingActivity = await tx.questActivity.findUnique({
                 where: { questId_userId: { questId: id, userId } },
             });
@@ -188,13 +204,17 @@ export class QuestService {
                 throw new BadRequestException("You have already completed this quest");
             }
 
+            const priorCompletions = await tx.questActivity.count({ where: { questId: id } });
+
+            const xpAwarded = this.calculateXpAwarded(quest.reward, quest.mode, priorCompletions + 1);
+
             await this.streakService.bumpStreak(tx, userId);
 
-            await tx.questActivity.create({ data: { questId: id, userId, xpAwarded: true } });
+            await tx.questActivity.create({ data: { questId: id, userId, xpAwarded } });
 
             await tx.user.update({
                 where: { id: userId },
-                data: { experience: { increment: quest.reward } },
+                data: { experience: { increment: xpAwarded } },
             });
 
             const memberCount = await tx.partyMember.count({
