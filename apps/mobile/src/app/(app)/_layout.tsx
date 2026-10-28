@@ -1,10 +1,17 @@
-import { Stack } from "expo-router";
+import { NativeTabs } from "expo-router/native-tabs";
 
-
-export default function AppLayout() {
+export default function AppTabsLayout() {
     return (
-        <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-        </Stack>
+        <NativeTabs>
+            <NativeTabs.Trigger name="(home)">
+                <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Icon sf="house.fill" />
+            </NativeTabs.Trigger>
+
+            <NativeTabs.Trigger name="(profile)">
+                <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Icon sf="person.crop.circle.fill" />
+            </NativeTabs.Trigger>
+        </NativeTabs>
     );
 }

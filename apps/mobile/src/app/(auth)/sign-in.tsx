@@ -35,7 +35,7 @@ export default function SignIn() {
             }
         },
         onSuccess: () => {
-            router.replace("/(app)");
+            router.replace("/(app)/(home)");
         },
     });
 

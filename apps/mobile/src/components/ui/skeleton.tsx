@@ -1,29 +1,37 @@
-import Animated, { Extrapolation, interpolate, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
-import { View } from "react-native";
-import { useEffect } from "react";
 import { cn } from "cn";
+import { useEffect } from "react";
+import { View } from "react-native";
+import Animated, { Extrapolation, interpolate, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withTiming } from "react-native-reanimated";
 
-
-function SkeletonBlock({ className }: { className?: string }) {
+function SkeletonBlock({ className, index = 0, delay = 200 }: { className?: string; index?: number; delay?: number }) {
     const opacity = useSharedValue(0.3);
 
     useEffect(() => {
-        opacity.value = withRepeat(withTiming(1, { duration: 800 }), -1, true);
-    }, [opacity]);
+        const staggerDelay = index * delay;
+        opacity.value = withDelay(staggerDelay, withRepeat(withTiming(1, { duration: 800 }), -1, true));
+    }, [delay, index, opacity]);
 
     const animatedStyle = useAnimatedStyle(() => ({
-        opacity: interpolate(opacity.value, [0.3, 1], [0.3, 0.7], Extrapolation.CLAMP),
+        opacity: interpolate(opacity.value, [0.1, 1], [0.1, 0.2], Extrapolation.CLAMP),
     }));
 
-    return <Animated.View style={animatedStyle} className={cn("bg-muted", className)} />;
+    return <Animated.View style={animatedStyle} className={cn("bg-foreground", className)} />;
 }
 
 export function SkeletonCard({ lines = 3, className }: { lines?: number; className?: string }) {
+    const lineArray = Array.from({ length: lines });
+
+    const getWidthClass = (i: number) => {
+        if (i === 0) return "h-4 w-3/4";
+        if (i === 1) return "h-3 w-1/2";
+        return "h-3 w-full";
+    };
+
     return (
         <View className={cn("shadow-nb-sm border-foreground gap-3 border-2 p-4", className)}>
-            <SkeletonBlock className="h-4 w-3/4" />
-            <SkeletonBlock className="h-3 w-1/2" />
-            {lines > 2 && <SkeletonBlock className="h-3 w-full" />}
+            {lineArray.map((_, index) => (
+                <SkeletonBlock key={index} index={index} className={getWidthClass(index)} />
+            ))}
         </View>
     );
 }

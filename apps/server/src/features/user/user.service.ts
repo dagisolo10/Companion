@@ -22,10 +22,7 @@ export class UserService {
     }
 
     async isUsernameAvailable(username: string) {
-        const user = await this.prisma.user.findUnique({
-            where: { username },
-            select: { id: true },
-        });
+        const user = await this.prisma.user.findUnique({ where: { username }, select: { id: true } });
         return !user;
     }
 
@@ -46,7 +43,7 @@ export class UserService {
 
                 const userMetadata = supabaseUser.user_metadata;
                 const name = (userMetadata["name"] as string) || "User";
-                const username = (userMetadata["username"] as string) || "username";
+                const username = this.slugifyUsername((userMetadata["username"] as string) || "username");
 
                 user = await this.prisma.user.upsert({
                     where: { id },
@@ -101,6 +98,7 @@ export class UserService {
     async updateAccount(data: UpdateUserDto) {
         try {
             const id = this.requestService.getUserId();
+            const { name, public: isPublic, username } = data;
 
             const user = await this.prisma.user.findUnique({ where: { id } });
 
@@ -108,13 +106,19 @@ export class UserService {
                 throw new NotFoundException("User not found");
             }
 
+            const slugUsername = username ? this.slugifyUsername(username) : undefined;
+
             const updatedUser = await this.prisma.user.update({
                 where: { id },
-                data,
+                data: {
+                    name,
+                    public: isPublic,
+                    username: slugUsername,
+                },
             });
 
-            if (data.name !== undefined || data.username !== undefined) {
-                await this.supabase.auth.admin.updateUserById(id, { user_metadata: { name: data.name, username: data.username } });
+            if (name !== undefined || slugUsername !== undefined) {
+                await this.supabase.auth.admin.updateUserById(id, { user_metadata: { name, username: slugUsername } });
             }
 
             return updatedUser;
@@ -143,5 +147,13 @@ export class UserService {
         await this.prisma.user.delete({ where: { id } });
 
         return { success: true };
+    }
+
+    private slugifyUsername(username: string) {
+        return username
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "_")
+            .replace(/[^\w-]/g, "");
     }
 }

@@ -59,7 +59,7 @@ export default function SignUp() {
             }
         },
         onSuccess: () => {
-            router.replace("/(app)");
+            router.replace("/(app)/(home)");
         },
     });
 
