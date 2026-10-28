@@ -46,26 +46,7 @@ export class QuestService {
     async createQuest(data: CreateQuestDto) {
         const userId = this.requestService.getUserId();
 
-        const party = await this.prisma.party.findUnique({
-            where: { code: data.partyId },
-        });
-
-        if (!party) {
-            throw new NotFoundException("Party not found");
-        }
-
-        const isMember = await this.prisma.partyMember.findUnique({
-            where: {
-                userId_partyId: {
-                    userId,
-                    partyId: party.id,
-                },
-            },
-        });
-
-        if (!isMember) {
-            throw new ForbiddenException("You are not allowed to create a quest in this party");
-        }
+        const party = await this.checkMemberShip(userId, data.code, "You are not allowed to create a quest in this party");
 
         return await this.prisma.quest.create({
             data: {
@@ -82,16 +63,13 @@ export class QuestService {
     }
 
     async getPartyQuests(code: string) {
-        const party = await this.prisma.party.findUnique({ where: { code } });
+        const p = await this.prisma.party.findUnique({ where: { code } });
 
-        if (!party) {
+        if (!p) {
             throw new NotFoundException("Party not found");
         }
 
-        return await this.prisma.quest.findMany({
-            where: { partyId: party.id },
-            include: questSelect,
-        });
+        return await this.prisma.quest.findMany({ where: { partyId: p.id }, include: questSelect });
     }
 
     async getMyQuests(status?: Filter, take = 100) {
@@ -116,19 +94,7 @@ export class QuestService {
     async getQuest(id: string, code: string) {
         const userId = this.requestService.getUserId();
 
-        const party = await this.prisma.party.findUnique({ where: { code } });
-
-        if (!party) {
-            throw new NotFoundException("Party not found");
-        }
-
-        const isMember = await this.prisma.partyMember.findUnique({
-            where: { userId_partyId: { userId, partyId: party.id } },
-        });
-
-        if (!isMember) {
-            throw new ForbiddenException("You are not allowed to view this quest in this party");
-        }
+        const party = await this.checkMemberShip(userId, code, "You are not allowed to view this quest in this party");
 
         const quest = await this.prisma.quest.findFirst({
             where: { id, partyId: party.id },
@@ -171,23 +137,9 @@ export class QuestService {
     async completeQuest(id: string, code: string) {
         const userId = this.requestService.getUserId();
 
-        const party = await this.prisma.party.findUnique({ where: { code } });
+        const party = await this.checkMemberShip(userId, code, "You are not allowed to complete this quest");
 
-        if (!party) {
-            throw new NotFoundException("Party not found");
-        }
-
-        const isMember = await this.prisma.partyMember.findUnique({
-            where: { userId_partyId: { userId, partyId: party.id } },
-        });
-
-        if (!isMember) {
-            throw new ForbiddenException("You are not allowed to complete this quest");
-        }
-
-        const quest = await this.prisma.quest.findFirst({
-            where: { id, partyId: party.id },
-        });
+        const quest = await this.prisma.quest.findFirst({ where: { id, partyId: party.id } });
 
         if (!quest) {
             throw new NotFoundException("Quest not found");
@@ -276,5 +228,28 @@ export class QuestService {
             where: { id },
             include: questSelect,
         });
+    }
+
+    private async checkMemberShip(userId: string, code: string, error: string) {
+        const party = await this.prisma.party.findUnique({ where: { code } });
+
+        if (!party) {
+            throw new NotFoundException("Party not found");
+        }
+
+        const isMember = await this.prisma.partyMember.findUnique({
+            where: {
+                userId_partyId: {
+                    userId,
+                    partyId: party.id,
+                },
+            },
+        });
+
+        if (!isMember) {
+            throw new ForbiddenException(error);
+        }
+
+        return party;
     }
 }

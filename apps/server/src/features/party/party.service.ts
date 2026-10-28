@@ -147,30 +147,14 @@ export class PartyService {
     async updateParty(id: string, data: UpdatePartyDto) {
         const userId = this.requestService.getUserId();
 
-        const party = await this.prisma.party.findUnique({ where: { id } });
-
-        if (!party) {
-            throw new NotFoundException("Party not found");
-        }
-
-        if (party.creatorId !== userId) {
-            throw new ForbiddenException("Only the party creator can update party");
-        }
+        await this.checkOwnership(userId, id, "Only the party creator can update party");
 
         return await this.prisma.party.update({ where: { id }, data });
     }
     async deleteParty(id: string) {
         const userId = this.requestService.getUserId();
 
-        const party = await this.prisma.party.findUnique({ where: { id } });
-
-        if (!party) {
-            throw new NotFoundException("Party not found");
-        }
-
-        if (party.creatorId !== userId) {
-            throw new ForbiddenException("Only the party creator can delete party");
-        }
+        await this.checkOwnership(userId, id, "Only the party creator can delete party");
 
         return await this.prisma.party.delete({ where: { id } });
     }
@@ -223,5 +207,17 @@ export class PartyService {
         }
 
         throw new BadRequestException("Party ownership could not be transferred");
+    }
+
+    private async checkOwnership(userId: string, id: string, error: string) {
+        const party = await this.prisma.party.findUnique({ where: { id } });
+
+        if (!party) {
+            throw new NotFoundException("Party not found");
+        }
+
+        if (party.creatorId !== userId) {
+            throw new ForbiddenException(error);
+        }
     }
 }

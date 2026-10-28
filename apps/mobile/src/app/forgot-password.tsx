@@ -1,14 +1,13 @@
-import { useMutation } from "@tanstack/react-query";
-import { InputField } from "@/components/ui/input";
-import { Pressable, View } from "react-native";
-import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
-import { Mail } from "lucide-react-native";
-import { Link, router } from "expo-router";
-import { supabase } from "@/lib/supabase";
+import { InputField } from "@/components/ui/input";
+import Screen from "@/components/ui/screen";
 import Text from "@/components/ui/text";
+import { supabase } from "@/lib/supabase";
+import { useMutation } from "@tanstack/react-query";
+import { Link, router } from "expo-router";
+import { Mail } from "lucide-react-native";
 import { useState } from "react";
-
+import { Pressable, View } from "react-native";
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState("");
@@ -46,7 +45,7 @@ export default function ForgotPassword() {
                     </Button>
 
                     <View className="mt-2 flex-row justify-center">
-                        <Link href="/(auth)/sign-in" asChild>
+                        <Link asChild href="/(auth)/sign-in">
                             <Pressable>
                                 <Text className="text-muted-foreground text-lg font-medium">
                                     Remember your password? <Text className="font-bold underline">Sign In</Text>

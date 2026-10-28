@@ -1,16 +1,16 @@
-import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react-native";
 import ErrorMessage from "@/components/error-message";
-import { useColor } from "@/hooks/custom/use-color";
-import { InputField } from "@/components/ui/input";
-import { Pressable, View } from "react-native";
-import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
-import { Link, router } from "expo-router";
-import { supabase } from "@/lib/supabase";
+import { InputField } from "@/components/ui/input";
+import Screen from "@/components/ui/screen";
 import Text from "@/components/ui/text";
+import { useColor } from "@/hooks/custom/use-color";
+import { supabase } from "@/lib/supabase";
+import { useMutation } from "@tanstack/react-query";
+import { Link, router } from "expo-router";
+import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react-native";
 import { useState } from "react";
+import { Pressable, View } from "react-native";
 import { z } from "zod";
-
 
 const signInSchema = z.object({
     email: z.string().email("Please enter a valid email address"),
@@ -24,31 +24,20 @@ export default function SignIn() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
-    const [isSigningIn, setIsSigningIn] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
-    async function signInWithPassword() {
-        if (isSigningIn) return;
-
-        setError(null);
-        setIsSigningIn(true);
-
-        try {
+    const signInWithPasswordMt = useMutation({
+        mutationFn: async () => {
             const parsed = signInSchema.parse({ email, password });
 
-            const response = await supabase.auth.signInWithPassword({ email: parsed.email, password: parsed.password });
+            const { error } = await supabase.auth.signInWithPassword({ ...parsed });
 
-            if (response.error) {
-                return setError(response.error.message);
+            if (error) {
+                throw error;
             }
-
+        },
+        onSuccess: () => {
             router.replace("/(app)");
-        } catch (err) {
-            setError(err instanceof z.ZodError ? err.issues[0]!.message : "An unexpected error occurred");
-        } finally {
-            setIsSigningIn(false);
-        }
-    }
+        },
+    });
 
     return (
         <Screen fullscreen className="justify-center gap-8">
@@ -74,8 +63,8 @@ export default function SignIn() {
                                 {showPassword ? <EyeOff size={20} color={color.mutedForeground} /> : <Eye size={20} color={color.mutedForeground} />}
                             </Pressable>
                         }
-                        value={password}
                         autoCorrect={false}
+                        value={password}
                         autoCapitalize="none"
                         placeholder="••••••••"
                         secureTextEntry={!showPassword}
@@ -83,10 +72,10 @@ export default function SignIn() {
                     />
                 </View>
 
-                <ErrorMessage message={error} />
+                <ErrorMessage message={signInWithPasswordMt.error?.message} />
 
-                <Button onPress={signInWithPassword} disabled={isSigningIn} size={"lg"} className="mt-1" right={ArrowRight}>
-                    <Text className="font-bebas text-center text-3xl">{isSigningIn ? "Signing In..." : "Sign In"}</Text>
+                <Button onPress={() => signInWithPasswordMt.mutateAsync()} disabled={signInWithPasswordMt.isPending} size={"lg"} className="mt-1" right={ArrowRight}>
+                    <Text className="font-bebas text-center text-3xl">{signInWithPasswordMt.isPending ? "Signing In..." : "Sign In"}</Text>
                 </Button>
 
                 <View className="mt-2 flex-row justify-center">

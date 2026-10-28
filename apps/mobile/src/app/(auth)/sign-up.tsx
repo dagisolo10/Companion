@@ -1,18 +1,18 @@
-import { ArrowRight, AtSign, Eye, EyeOff, Lock, Mail, User2 } from "lucide-react-native";
 import ErrorMessage from "@/components/error-message";
-import { useColor } from "@/hooks/custom/use-color";
-import { requestApi } from "@/lib/api/request-api";
-import { InputField } from "@/components/ui/input";
-import { Pressable, View } from "react-native";
-import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
-import { Link, router } from "expo-router";
-import { supabase } from "@/lib/supabase";
+import { InputField } from "@/components/ui/input";
+import Screen from "@/components/ui/screen";
 import Text from "@/components/ui/text";
+import { useColor } from "@/hooks/custom/use-color";
 import { api } from "@/lib/api/axios";
+import { requestApi } from "@/lib/api/request-api";
+import { supabase } from "@/lib/supabase";
+import { useMutation } from "@tanstack/react-query";
+import { Link, router } from "expo-router";
+import { ArrowRight, AtSign, Eye, EyeOff, Lock, Mail, User2 } from "lucide-react-native";
 import { useState } from "react";
+import { Pressable, View } from "react-native";
 import { z } from "zod";
-
 
 const signUpSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -30,16 +30,8 @@ export default function SignUp() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
-    const [isSigningUp, setIsSigningUp] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
-    async function signUpNewUser() {
-        if (isSigningUp) return;
-
-        setError(null);
-        setIsSigningUp(true);
-
-        try {
+    const signUpNewUserMt = useMutation({
+        mutationFn: async () => {
             const parsed = signUpSchema.parse({
                 email,
                 password,
@@ -53,7 +45,7 @@ export default function SignUp() {
             const available = await requestApi(() => api.get<boolean>(`/user/username/${normalizedUsername}`));
 
             if (!available) {
-                return setError("Username is already taken");
+                throw new Error("Username is already taken");
             }
 
             const response = await supabase.auth.signUp({
@@ -63,16 +55,13 @@ export default function SignUp() {
             });
 
             if (response.error) {
-                return setError(response.error.message);
+                throw new Error(response.error.message);
             }
-
+        },
+        onSuccess: () => {
             router.replace("/(app)");
-        } catch (err) {
-            setError(err instanceof z.ZodError ? err.issues[0]!.message : "An unexpected error occurred");
-        } finally {
-            setIsSigningUp(false);
-        }
-    }
+        },
+    });
 
     return (
         <Screen fullscreen className="justify-center gap-8">
@@ -100,10 +89,10 @@ export default function SignUp() {
                     onChangeText={setPassword}
                 />
 
-                <ErrorMessage message={error} />
+                <ErrorMessage message={signUpNewUserMt.error?.message} />
 
-                <Button onPress={signUpNewUser} disabled={isSigningUp} size={"lg"} className="mt-1" right={ArrowRight}>
-                    <Text className="font-bebas text-center text-3xl">{isSigningUp ? "Signing Up..." : "Agree & Sign Up"}</Text>
+                <Button onPress={() => signUpNewUserMt.mutateAsync()} disabled={signUpNewUserMt.isPending} size={"lg"} className="mt-1" right={ArrowRight}>
+                    <Text className="font-bebas text-center text-3xl">{signUpNewUserMt.isPending ? "Signing Up..." : "Agree & Sign Up"}</Text>
                 </Button>
 
                 <View className="mt-2 flex-row justify-center">

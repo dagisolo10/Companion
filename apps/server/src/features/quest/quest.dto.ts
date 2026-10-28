@@ -4,7 +4,7 @@ import { IsEnum, IsString } from "class-validator";
 
 export class CreateQuestDto {
     @IsString()
-    partyId!: string;
+    code!: string;
 
     @IsString()
     title!: string;
@@ -21,4 +21,4 @@ export class CreateQuestDto {
 
 export type Filter = "All" | QuestStatus;
 
-export class UpdateQuestDto extends OmitType(PartialType(CreateQuestDto), ["partyId"]) {}
+export class UpdateQuestDto extends OmitType(PartialType(CreateQuestDto), ["code"]) {}
