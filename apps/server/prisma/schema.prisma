@@ -7,17 +7,17 @@ datasource db {
 }
 
 model User {
-    id             String        @id @default(uuid())
-    name           String
-    username       String        @unique
-    experience     Int           @default(0)
-    streak         Int           @default(0)
-    longestStreak  Int           @default(0)
-    public         Boolean       @default(true)
-    createdAt      DateTime      @default(now())
-    partyMembers   PartyMember[]
-    createdQuests  Quest[]         @relation("CreatedQuests")
-    createdParties Party[]         @relation("CreatedParties")
+    id              String          @id @default(uuid())
+    name            String
+    username        String          @unique
+    experience      Int             @default(0)
+    streak          Int             @default(0)
+    longestStreak   Int             @default(0)
+    public          Boolean         @default(true)
+    createdAt       DateTime        @default(now())
+    partyMembers    PartyMember[]
+    createdQuests   Quest[]         @relation("CreatedQuests")
+    createdParties  Party[]         @relation("CreatedParties")
     questActivities QuestActivity[]
 }
 
@@ -51,9 +51,11 @@ model Quest {
     description String
     mode        Mode
     difficulty  Difficulty
-    status      QuestStatus @default(Active)
+    status      QuestStatus @default(Upcoming)
     completedAt DateTime?
     createdAt   DateTime    @default(now())
+    startsAt    DateTime
+    expiresAt   DateTime?
 
     questActivities QuestActivity[]
 
@@ -80,6 +82,8 @@ model QuestActivity {
 enum QuestStatus {
     Active
     Completed
+    Upcoming
+    Expired
 }
 
 enum Mode {

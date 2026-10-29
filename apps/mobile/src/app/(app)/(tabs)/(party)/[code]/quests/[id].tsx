@@ -1,25 +1,25 @@
-import { AlertCircle, Award, CheckCircle2, Edit3, Flame, Save, Users, Users2Icon, Zap } from "lucide-react-native";
-import { useCompleteQuest, useGetQuest, useUpdateQuest } from "@/hooks/tan-stack/quest";
-import { formatDateTime, relativeTime } from "@/utils/formatters";
-import QuestStatusBadge from "@/components/quest-status-badge";
-import DifficultyBadge from "@/components/difficulty-badge";
-import { router, useLocalSearchParams } from "expo-router";
-import { SkeletonCard } from "@/components/ui/skeleton";
-import { Alert, Pressable, View } from "react-native";
-import { useColor } from "@/hooks/custom/use-color";
 import BackButton from "@/components/back-button";
-import { useAuth } from "@/contexts/auth-context";
-import { Difficulty, Mode } from "@/types/models";
-import { Input } from "@/components/ui/input";
-import { UpdateQuestDto } from "@/types/dto";
-import Screen from "@/components/ui/screen";
+import DifficultyBadge from "@/components/difficulty-badge";
+import QuestStatusBadge from "@/components/quest-status-badge";
+import QuestScheduleCard from "@/components/quest/quert-schedule-card";
 import Button from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import Screen from "@/components/ui/screen";
+import { SkeletonCard } from "@/components/ui/skeleton";
 import Text from "@/components/ui/text";
-import { useState } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { useColor } from "@/hooks/custom/use-color";
+import { useCompleteQuest, useGetQuest, useUpdateQuest } from "@/hooks/tan-stack/quest";
+import { UpdateQuestDto } from "@/types/dto";
+import { Difficulty, Mode } from "@/types/models";
+import { formatDateTime, relativeTime } from "@/utils/formatters";
 import { cn } from "cn";
+import { useLocalSearchParams } from "expo-router";
+import { AlertCircle, Award, CheckCircle2, Edit3, Flame, Save, Users, Zap } from "lucide-react-native";
+import { useState } from "react";
+import { Alert, Pressable, View } from "react-native";
 
 import { DIFFICULTIES, REWARD_MAP } from "./create";
-
 
 const MODE_ICON = { Normal: Flame, Rush: Zap };
 
@@ -122,6 +122,7 @@ export default function QuestDetail() {
     const ModeIcon = MODE_ICON[quest.mode];
     const isCreator = user?.id === quest.creatorId;
     const isActive = quest.status === "Active";
+    const canEdit = quest.status === "Upcoming";
     const hasCompleted = questActivities.some((activity) => activity.user.id === user?.id);
 
     return (
@@ -131,7 +132,7 @@ export default function QuestDetail() {
             {errors.general && (
                 <View className="border-foreground shadow-nb flex-row items-center gap-2.5 border-2 bg-red-100 p-3.5">
                     <AlertCircle size={18} color="#DC2626" strokeWidth={2.5} />
-                    <Text className="font-jakarta-bold flex-1 text-xs text-red-700">{errors.general}</Text>
+                    <Text className="flex-1 text-xs font-bold text-red-700">{errors.general}</Text>
                 </View>
             )}
 
@@ -266,6 +267,8 @@ export default function QuestDetail() {
                         </View>
                     </View>
 
+                    <QuestScheduleCard quest={quest} />
+
                     <View className="shadow-nb border-foreground gap-3 border-2 p-4">
                         <View className="flex-row items-center gap-2">
                             <CheckCircle2 size={18} color={color.foreground} strokeWidth={2.5} />
@@ -291,24 +294,21 @@ export default function QuestDetail() {
                         <Text className="text-sm font-extrabold text-black">+{quest.reward} XP</Text>
                     </View>
 
-                    {isActive && (
+                    {isActive && quest.canParticipate !== false && (
                         <Button variant="success" onPress={handleComplete} disabled={completeQuestMutation.isPending || hasCompleted} asChild>
                             <CheckCircle2 size={18} color="#000" strokeWidth={2.5} />
                             <Text className="font-extrabold text-black">{hasCompleted ? "Quest Completed" : completeQuestMutation.isPending ? "Completing..." : "Complete Quest"}</Text>
                         </Button>
                     )}
 
-                    {isCreator && isActive && (
+                    {isActive && quest.canParticipate === false && <Text className="text-muted-foreground text-center text-xs font-bold">You joined after this quest started, so you can’t participate.</Text>}
+
+                    {isCreator && canEdit && (
                         <Button variant="outline" onPress={startEditing} asChild>
                             <Edit3 size={16} color="#000" strokeWidth={2.5} />
                             <Text className="text-sm font-bold">Edit Quest</Text>
                         </Button>
                     )}
-
-                    <Button onPress={() => router.back()} asChild>
-                        <Users2Icon size={18} color="#000" strokeWidth={2.5} />
-                        <Text className="font-extrabold text-black">Go To Party</Text>
-                    </Button>
                 </>
             )}
         </Screen>

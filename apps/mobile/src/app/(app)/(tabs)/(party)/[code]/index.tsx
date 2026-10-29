@@ -20,7 +20,6 @@ import { Share, View } from "react-native";
 import { useEffect, useState } from "react";
 import { cn } from "cn";
 
-
 const AVATAR_COLORS = ["bg-lime", "bg-pink", "bg-amber", "bg-purple"];
 
 export default function PartyDetailScreen() {
@@ -87,6 +86,7 @@ export default function PartyDetailScreen() {
     const quests = questsQuery.data;
     const isCreator = userQuery.data?.id === party.creatorId;
     const activeQuests = quests.filter((q) => q.status === "Active");
+    const upcomingQuests = quests.filter((q) => q.status === "Upcoming");
     const completedQuests = quests.filter((q) => q.status === "Completed");
     const memberPreview = members.slice(0, 5);
 
@@ -189,6 +189,14 @@ export default function PartyDetailScreen() {
             </View>
 
             <View className="gap-3">
+                {upcomingQuests.length > 0 && (
+                    <View className="gap-3">
+                        <SectionHeader title="Upcoming Quests" icon={Target} badge={`${upcomingQuests.length}`} badgeColor="bg-purple" />
+                        {upcomingQuests.slice(0, 3).map((quest) => (
+                            <QuestCard key={quest.id} quest={quest} showComplete={false} onPress={() => router.push({ pathname: "/(app)/(tabs)/(party)/[code]/quests/[id]", params: { id: quest.id, code } })} />
+                        ))}
+                    </View>
+                )}
                 <SectionHeader title="Active Quests" icon={Target} badge={`${activeQuests.length}`} badgeColor="bg-lime" />
 
                 {activeQuests.length === 0 ? (

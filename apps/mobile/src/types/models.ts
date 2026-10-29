@@ -40,9 +40,11 @@ export type Quest = {
     creator: UserInfo;
     creatorId: string;
     createdAt: string;
+    startsAt: string;
     description: string;
     status: QuestStatus;
     difficulty: Difficulty;
+    expiresAt: string | null;
     completedAt: string | null;
     questActivities?: { id: string }[];
     _count: { questActivities: number };
@@ -54,6 +56,7 @@ export type QuestCompleter = Pick<User, "id" | "name" | "username">;
 
 export type QuestDetail = Omit<Quest, "questActivities"> & {
     questActivities: { id: string; completedAt: string; user: QuestCompleter }[];
+    canParticipate?: boolean;
 };
 
 export type QuestActivity = {
@@ -69,7 +72,7 @@ export type QuestActivity = {
 
 export type Mode = "Rush" | "Normal";
 export type Filter = "All" | QuestStatus;
-export type QuestStatus = "Active" | "Completed";
+export type QuestStatus = "Upcoming" | "Active" | "Completed" | "Expired";
 export type Difficulty = "Tiny" | "Easy" | "Normal" | "Hard" | "Major";
 
 export type DashboardData = {

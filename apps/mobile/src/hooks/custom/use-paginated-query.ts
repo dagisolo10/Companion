@@ -4,7 +4,6 @@ import { PaginatedResult } from "@/types/response";
 import { api } from "@/lib/api/axios";
 import { useMemo } from "react";
 
-
 export function usePaginatedQuery<T extends { id: string }>(queryKey: readonly unknown[], path: string, params: Record<string, string | number | boolean | undefined> = {}, enabled = true) {
     const query = useInfiniteQuery({
         enabled,

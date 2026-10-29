@@ -4,7 +4,6 @@ import { View } from "react-native";
 import { useEffect } from "react";
 import { cn } from "cn";
 
-
 export default function ProgressBar({ color, value }: { color?: string; value: number }) {
     const width = useSharedValue(0);
 

@@ -1,6 +1,5 @@
 import { NativeTabs } from "expo-router/native-tabs";
 
-
 export default function AppTabsLayout() {
     return (
         <NativeTabs>

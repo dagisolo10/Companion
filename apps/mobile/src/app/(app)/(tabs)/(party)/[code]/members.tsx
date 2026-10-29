@@ -16,7 +16,6 @@ import Text from "@/components/ui/text";
 import { useState } from "react";
 import { cn } from "cn";
 
-
 const AVATAR_COLORS = ["bg-lime", "bg-pink", "bg-amber", "bg-purple"];
 
 export default function PartyMembersScreen() {
@@ -78,41 +77,47 @@ export default function PartyMembersScreen() {
 
     return (
         <Screen nonScrollable>
-          <FlatList
-            style={{ flex: 1 }}
-            data={members}
-            keyExtractor={(member) => member.id}
-            contentContainerStyle={{ gap: 12, paddingBottom: 24, flexGrow: 1 }}
-            showsVerticalScrollIndicator={false}
-            onEndReached={() => { if (membersQuery.hasNextPage && !membersQuery.isFetchingNextPage) void membersQuery.fetchNextPage(); }}
-            onEndReachedThreshold={0.5}
-            ListHeaderComponent={<View className="mb-2 gap-5"><BackButton label="Members" />
-            {isCurrentUserCreator && (
-                <View className="gap-3">
-                    <Button variant="outline" asChild onPress={() => setShowTransferInput(!showTransferInput)}>
-                        <Shield size={16} color="#000000" strokeWidth={2.5} />
-                        <Text className="text-sm font-bold">Transfer Ownership</Text>
-                    </Button>
+            <FlatList
+                style={{ flex: 1 }}
+                data={members}
+                keyExtractor={(member) => member.id}
+                contentContainerStyle={{ gap: 12, paddingBottom: 24, flexGrow: 1 }}
+                showsVerticalScrollIndicator={false}
+                onEndReached={() => {
+                    if (membersQuery.hasNextPage && !membersQuery.isFetchingNextPage) void membersQuery.fetchNextPage();
+                }}
+                onEndReachedThreshold={0.5}
+                ListHeaderComponent={
+                    <View className="mb-2 gap-5">
+                        <BackButton label="Members" />
+                        {isCurrentUserCreator && (
+                            <View className="gap-3">
+                                <Button variant="outline" asChild onPress={() => setShowTransferInput(!showTransferInput)}>
+                                    <Shield size={16} color="#000000" strokeWidth={2.5} />
+                                    <Text className="text-sm font-bold">Transfer Ownership</Text>
+                                </Button>
 
-                    {showTransferInput && (
-                        <View className="gap-2">
-                            <Input placeholder="Enter username to transfer to" value={transferUsername} onChangeText={setTransferUsername} autoCapitalize="none" autoCorrect={false} />
-                            {searchResult && matchedMember && (
-                                <View className="border-lime bg-card flex-row items-center justify-between border-2 p-3">
-                                    <Text className="text-sm font-bold">
-                                        {searchResult.name} (@{searchResult.username})
-                                    </Text>
-                                    <Button size="sm" onPress={handleTransferByUsername} disabled={transferPartyMutation.isPending}>
-                                        {transferPartyMutation.isPending ? "..." : "Transfer"}
-                                    </Button>
-                                </View>
-                            )}
-                            {searchResult && !matchedMember && <Text className="text-muted-foreground text-xs font-bold">User is not in this party.</Text>}
-                        </View>
-                    )}
-                </View>
-            )}</View>}
-            renderItem={({ item: member, index }) => {
+                                {showTransferInput && (
+                                    <View className="gap-2">
+                                        <Input placeholder="Enter username to transfer to" value={transferUsername} onChangeText={setTransferUsername} autoCapitalize="none" autoCorrect={false} />
+                                        {searchResult && matchedMember && (
+                                            <View className="border-lime bg-card flex-row items-center justify-between border-2 p-3">
+                                                <Text className="text-sm font-bold">
+                                                    {searchResult.name} (@{searchResult.username})
+                                                </Text>
+                                                <Button size="sm" onPress={handleTransferByUsername} disabled={transferPartyMutation.isPending}>
+                                                    {transferPartyMutation.isPending ? "..." : "Transfer"}
+                                                </Button>
+                                            </View>
+                                        )}
+                                        {searchResult && !matchedMember && <Text className="text-muted-foreground text-xs font-bold">User is not in this party.</Text>}
+                                    </View>
+                                )}
+                            </View>
+                        )}
+                    </View>
+                }
+                renderItem={({ item: member, index }) => {
                     const isCreator = member.userId === party?.creatorId;
                     const bgColor = AVATAR_COLORS[index % AVATAR_COLORS.length];
                     const initial = member.user.name.charAt(0).toUpperCase();
@@ -149,19 +154,23 @@ export default function PartyMembersScreen() {
                         </View>
                     );
                 }}
-            ListEmptyComponent={<EmptyState icon={Users} title="No members" description="This party has no members yet." />}
-            ListFooterComponent={<>{membersQuery.isFetchingNextPage && <ActivityIndicator />}
-            <ConfirmDialog
-                visible={!!removeTarget}
-                title="Remove Member"
-                description="Are you sure you want to remove this member from the party?"
-                confirmLabel={removeMemberMutation.isPending ? "Removing..." : "Remove"}
-                destructive
-                loading={removeMemberMutation.isPending}
-                onConfirm={() => removeTarget && handleRemove(removeTarget)}
-                onCancel={() => setRemoveTarget(null)}
-            /></>}
-          />
+                ListEmptyComponent={<EmptyState icon={Users} title="No members" description="This party has no members yet." />}
+                ListFooterComponent={
+                    <>
+                        {membersQuery.isFetchingNextPage && <ActivityIndicator />}
+                        <ConfirmDialog
+                            visible={!!removeTarget}
+                            title="Remove Member"
+                            description="Are you sure you want to remove this member from the party?"
+                            confirmLabel={removeMemberMutation.isPending ? "Removing..." : "Remove"}
+                            destructive
+                            loading={removeMemberMutation.isPending}
+                            onConfirm={() => removeTarget && handleRemove(removeTarget)}
+                            onCancel={() => setRemoveTarget(null)}
+                        />
+                    </>
+                }
+            />
         </Screen>
     );
 }

@@ -5,7 +5,6 @@ import Text from "@/components/ui/text";
 import { View } from "react-native";
 import { cn } from "cn";
 
-
 const AVATAR_COLORS = ["bg-lime", "bg-pink", "bg-amber", "bg-purple"];
 
 const PODIUM: Record<number, { badge: string; medalColor: string; text: string }> = {

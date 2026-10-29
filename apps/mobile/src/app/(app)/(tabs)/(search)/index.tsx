@@ -11,7 +11,6 @@ import { getLevel } from "@/utils/helper-functions";
 import Text from "@/components/ui/text";
 import { cn } from "cn";
 
-
 const AVATAR_COLORS = ["bg-lime", "bg-pink", "bg-amber", "bg-purple"];
 
 export default function SearchScreen() {
@@ -33,28 +32,43 @@ export default function SearchScreen() {
             showsVerticalScrollIndicator={false}
             contentInsetAdjustmentBehavior="automatic"
             contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 16, gap: 12, flexGrow: 1 }}
-            onEndReached={() => { if (usersQuery.hasNextPage && !usersQuery.isFetchingNextPage) void usersQuery.fetchNextPage(); }}
+            onEndReached={() => {
+                if (usersQuery.hasNextPage && !usersQuery.isFetchingNextPage) void usersQuery.fetchNextPage();
+            }}
             onEndReachedThreshold={0.5}
-            ListEmptyComponent={usersQuery.isFetching ? <View className="gap-3"><SkeletonCard lines={1} /><SkeletonCard lines={1} /></View> : debouncedQuery.trim().length < 2 ? <EmptyState icon={Search} title="Search players" description="Type at least 2 characters to find players by name or username." /> : usersQuery.isError ? <ErrorMessage message={usersQuery.error.message || "Failed to search players."} /> : showEmpty ? <EmptyState icon={UserRound} title="No players found" description={`No one matches "${debouncedQuery}".`} /> : undefined}
+            ListEmptyComponent={
+                usersQuery.isFetching ? (
+                    <View className="gap-3">
+                        <SkeletonCard lines={1} />
+                        <SkeletonCard lines={1} />
+                    </View>
+                ) : debouncedQuery.trim().length < 2 ? (
+                    <EmptyState icon={Search} title="Search players" description="Type at least 2 characters to find players by name or username." />
+                ) : usersQuery.isError ? (
+                    <ErrorMessage message={usersQuery.error.message || "Failed to search players."} />
+                ) : showEmpty ? (
+                    <EmptyState icon={UserRound} title="No players found" description={`No one matches "${debouncedQuery}".`} />
+                ) : undefined
+            }
             renderItem={({ item: user, index }) => {
-                        const bgColor = AVATAR_COLORS[index % AVATAR_COLORS.length];
-                        const initial = user.name.charAt(0).toUpperCase();
+                const bgColor = AVATAR_COLORS[index % AVATAR_COLORS.length];
+                const initial = user.name.charAt(0).toUpperCase();
 
-                        return (
-                            <View>
-                                <Pressable onPress={() => router.push({ pathname: "/(app)/user/[username]", params: { username: user.username } })} className="shadow-nb-sm border-foreground bg-card flex-row items-center gap-3 border-2 p-4">
-                                    <View className={cn(bgColor, "border-foreground shadow-nb-sm h-12 w-12 items-center justify-center border-2")}>
-                                        <Text className="text-lg font-extrabold text-black">{initial}</Text>
-                                    </View>
-                                    <View className="flex-1">
-                                        <Text className="text-lg font-bold">{user.name}</Text>
-                                        <Text className="text-muted-foreground text-xs font-bold">@{user.username}</Text>
-                                    </View>
-                                    <Text className="text-muted-foreground text-xs font-extrabold">Lv {getLevel(user.experience).level}</Text>
-                                </Pressable>
+                return (
+                    <View>
+                        <Pressable onPress={() => router.push({ pathname: "/(app)/user/[username]", params: { username: user.username } })} className="shadow-nb-sm border-foreground bg-card flex-row items-center gap-3 border-2 p-4">
+                            <View className={cn(bgColor, "border-foreground shadow-nb-sm h-12 w-12 items-center justify-center border-2")}>
+                                <Text className="text-lg font-extrabold text-black">{initial}</Text>
                             </View>
-                        );
-                    }}
+                            <View className="flex-1">
+                                <Text className="text-lg font-bold">{user.name}</Text>
+                                <Text className="text-muted-foreground text-xs font-bold">@{user.username}</Text>
+                            </View>
+                            <Text className="text-muted-foreground text-xs font-extrabold">Lv {getLevel(user.experience).level}</Text>
+                        </Pressable>
+                    </View>
+                );
+            }}
             ListFooterComponent={usersQuery.isFetchingNextPage ? <ActivityIndicator /> : undefined}
         />
     );

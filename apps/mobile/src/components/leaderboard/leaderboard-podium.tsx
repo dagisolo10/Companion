@@ -5,7 +5,6 @@ import Text from "@/components/ui/text";
 import { router } from "expo-router";
 import { cn } from "cn";
 
-
 const AVATAR_COLORS = ["bg-lime", "bg-amber", "bg-pink", "bg-purple"];
 const PODIUM_HEIGHTS: Record<number, string> = { 1: "h-32", 2: "h-24", 3: "h-16" };
 const PODIUM_COLORS: Record<number, string> = { 1: "bg-lime", 2: "bg-amber", 3: "bg-pink" };

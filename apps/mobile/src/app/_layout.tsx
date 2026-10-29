@@ -7,7 +7,6 @@ import { useAuth } from "@/contexts/auth-context";
 import { router, Stack } from "expo-router";
 import { useEffect } from "react";
 
-
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 2 } } });
 
 function RootNavigator() {

@@ -6,7 +6,6 @@ import { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import { AppState } from "react-native";
 
-
 export default function AuthProvider({ children }: PropsWithChildren) {
     const [isLoading, setIsLoading] = useState(true);
     const [isSignedIn, setIsSignedIn] = useState(false);

@@ -6,6 +6,16 @@ export function formatDateTime(date: string | Date) {
     });
 }
 
+export function formatDateTimeWithTime(date: string | Date) {
+    return new Date(date).toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+    });
+}
+
 export function relativeTime(date: string | Date): string {
     const now = Date.now();
     const then = new Date(date).getTime();

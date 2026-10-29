@@ -2,7 +2,6 @@ import Button from "@/components/ui/button";
 import { Modal, View } from "react-native";
 import Text from "@/components/ui/text";
 
-
 type ConfirmDialogProps = {
     title: string;
     visible: boolean;

@@ -1,6 +1,5 @@
 import { create } from "axios";
 
-
 const baseURL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const api = create({ baseURL, withCredentials: true });

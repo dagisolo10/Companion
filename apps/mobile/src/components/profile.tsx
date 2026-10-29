@@ -11,7 +11,6 @@ import { User } from "@/types/models";
 import { View } from "react-native";
 import { cn } from "cn";
 
-
 export default function ProfileView({ user, visibility = false }: { user: User; visibility?: boolean }) {
     const color = useColor();
     const isPublic = user.public;

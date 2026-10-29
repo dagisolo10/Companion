@@ -12,7 +12,6 @@ import { Trophy } from "lucide-react-native";
 import Screen from "@/components/ui/screen";
 import Text from "@/components/ui/text";
 
-
 export default function PartyLeaderboardScreen() {
     const { code } = useLocalSearchParams<{ code: string }>();
 

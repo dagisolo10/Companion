@@ -8,7 +8,6 @@ import { router } from "expo-router";
 import { View } from "react-native";
 import { useState } from "react";
 
-
 export default function CreatePartyScreen() {
     const [name, setName] = useState("");
     const createPartyMutation = useCreateParty({

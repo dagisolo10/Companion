@@ -1,0 +1,9 @@
+ALTER TABLE "Quest"
+ALTER COLUMN "status"
+SET DEFAULT 'Upcoming';
+
+ALTER TABLE "Quest"
+ADD COLUMN "startsAt" TIMESTAMP(3) NOT NULL;
+
+ALTER TABLE "Quest"
+ADD COLUMN "expiresAt" TIMESTAMP(3);

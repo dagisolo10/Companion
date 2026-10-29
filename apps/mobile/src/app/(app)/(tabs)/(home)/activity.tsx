@@ -10,7 +10,6 @@ import Screen from "@/components/ui/screen";
 import Text from "@/components/ui/text";
 import { useMemo } from "react";
 
-
 const GROUPS = [
     { key: "today" as const, label: "Today" },
     { key: "yesterday" as const, label: "Yesterday" },

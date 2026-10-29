@@ -428,7 +428,7 @@ type PartyData = {
     public: boolean;
 };
 
-const coreParties: PartyData[] = [
+const coreParties: Omit<PartyData, "public">[] = [
     // Ayakashi created these 3
     {
         id: "b1b2c3d4-0001-4000-8000-000000000001",
@@ -581,7 +581,7 @@ const uniquePartyCode = () => {
     return code;
 };
 
-const generatedParties: PartyData[] = [];
+const generatedParties: Omit<PartyData, "public">[] = [];
 for (let i = 0; i < PARTY_THEMES.length; i++) {
     const creator = generatedUsers[Math.floor(rand() * generatedUsers.length)]!;
     generatedParties.push({
@@ -640,6 +640,8 @@ for (const [partyId, roster] of partyRosters) {
     }
 }
 
+const seedQuestStartsAt = new Date();
+
 const q = (id: string, partyId: PartyId, creator: UserData, _completer: UserData, title: string, description: string, mode: "Rush" | "Normal", difficulty: Difficulty, status: "Active" | "Completed", createdAtDaysAgo: number, completedDaysAgo?: number) => ({
     id,
     partyId,
@@ -651,6 +653,7 @@ const q = (id: string, partyId: PartyId, creator: UserData, _completer: UserData
     reward: REWARD[difficulty],
     status,
     createdAt: daysAgo(createdAtDaysAgo),
+    startsAt: seedQuestStartsAt,
     completedAt: completedDaysAgo !== undefined ? daysAgo(completedDaysAgo) : null,
 });
 
@@ -790,6 +793,7 @@ async function main() {
         id: `d1b2c3d4-${String(i + 1).padStart(4, "0")}-4000-8000-000000000001`,
         partyId: m.partyId,
         userId: m.user.id,
+        joinedAt: new Date(seedQuestStartsAt.getTime() - 60_000),
     }));
     await prisma.partyMember.createMany({ data: memberData });
     console.log(`Created ${memberData.length} party memberships.`);

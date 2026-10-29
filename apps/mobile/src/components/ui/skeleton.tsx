@@ -3,7 +3,6 @@ import { View } from "react-native";
 import { useEffect } from "react";
 import { cn } from "cn";
 
-
 export function SkeletonBlock({ className, index = 0, delay = 200 }: { className?: string; index?: number; delay?: number }) {
     const opacity = useSharedValue(0.3);
 

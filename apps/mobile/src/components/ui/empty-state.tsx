@@ -4,7 +4,6 @@ import Button from "@/components/ui/button";
 import Text from "@/components/ui/text";
 import { View } from "react-native";
 
-
 type EmptyStateProps = {
     title: string;
     icon: LucideIcon;

@@ -2,7 +2,6 @@ import { LucideIcon } from "lucide-react-native";
 import { View } from "react-native";
 import { cn } from "cn";
 
-
 type BrandMarkProps = {
     icon: LucideIcon;
     accent?: string;

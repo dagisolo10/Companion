@@ -11,7 +11,6 @@ import Text from "@/components/ui/text";
 import { router } from "expo-router";
 import { cn } from "cn";
 
-
 export default function Profile() {
     const scheme = useColorScheme();
 

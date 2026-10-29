@@ -9,7 +9,6 @@ import { requestApi } from "@/lib/api/request-api";
 import { queryKeys } from "@/constants/query-keys";
 import { api } from "@/lib/api/axios";
 
-
 export function useGetMyParties(options?: TQueryOptions<PartyDetail[]>) {
     return useQuery({
         ...options,

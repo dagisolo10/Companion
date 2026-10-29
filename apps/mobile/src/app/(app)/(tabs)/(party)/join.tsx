@@ -12,7 +12,6 @@ import { router } from "expo-router";
 import { View } from "react-native";
 import { useState } from "react";
 
-
 export default function JoinPartyScreen() {
     const [code, setCode] = useState("");
     const trimmedCode = code.trim().toUpperCase();

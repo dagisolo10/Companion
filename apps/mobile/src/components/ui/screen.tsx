@@ -4,7 +4,6 @@ import { useColor } from "@/hooks/custom/use-color";
 import { PropsWithChildren } from "react";
 import { cn } from "cn";
 
-
 type ScreenProps = PropsWithChildren & {
     header?: boolean;
     className?: string;

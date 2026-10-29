@@ -1,7 +1,6 @@
 import { useColor } from "@/hooks/custom/use-color";
 import { router, Stack } from "expo-router";
 
-
 export default function SearchLayout() {
     const color = useColor();
 

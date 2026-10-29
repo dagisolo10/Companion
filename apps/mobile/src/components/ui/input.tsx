@@ -4,7 +4,6 @@ import { LucideIcon } from "lucide-react-native";
 import { ReactNode } from "react";
 import { cn } from "cn";
 
-
 type InputProps = TextInputProps & {
     className?: string;
 };

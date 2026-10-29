@@ -8,7 +8,6 @@ import Text from "@/components/ui/text";
 import { View } from "react-native";
 import { useState } from "react";
 
-
 export default function VerifyReset() {
     const [token, setToken] = useState("");
     const { email } = useLocalSearchParams<{ email: string }>();

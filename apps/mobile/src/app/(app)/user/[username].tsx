@@ -5,7 +5,6 @@ import BackButton from "@/components/back-button";
 import Screen from "@/components/ui/screen";
 import Text from "@/components/ui/text";
 
-
 export default function PlayerProfileScreen() {
     const { username } = useLocalSearchParams<{ username: string }>();
     const userQuery = useFindUser(username!, { enabled: !!username });

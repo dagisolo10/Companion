@@ -12,7 +12,6 @@ import { useRef, useState } from "react";
 import Text from "@/components/ui/text";
 import { User } from "@/types/models";
 
-
 export default function EditProfile() {
     const userQuery = useGetUser();
 

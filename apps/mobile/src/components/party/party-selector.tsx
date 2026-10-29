@@ -10,7 +10,6 @@ import { router } from "expo-router";
 import { useEffect } from "react";
 import { cn } from "cn";
 
-
 type PartySelectorProps = {
     parties: Party[];
     loading: boolean;

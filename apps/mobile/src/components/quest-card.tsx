@@ -4,6 +4,7 @@ import Text from "@/components/ui/text";
 import { useColor } from "@/hooks/custom/use-color";
 import { Quest } from "@/types/models";
 import { Award, CheckCircle2 } from "lucide-react-native";
+import QuestStatusBadge from "@/components/quest-status-badge";
 import { Pressable, View } from "react-native";
 
 type QuestCardProps = {
@@ -26,6 +27,9 @@ export default function QuestCard({ quest, onPress, onComplete, showComplete = t
                     </Text>
                 </View>
                 <DifficultyBadge difficulty={quest.difficulty} />
+            </View>
+            <View className="flex-row">
+                <QuestStatusBadge status={quest.status} />
             </View>
             <View className="flex-row items-center justify-between border-t-2 border-zinc-800 pt-2">
                 <View className="flex-row items-center gap-1.5">

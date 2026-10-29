@@ -1,21 +1,20 @@
-import { AlertCircle, Award, PlusCircle } from "lucide-react-native";
-import PartySelector from "@/components/party/party-selector";
+import BackButton from "@/components/back-button";
 import DifficultyBadge from "@/components/difficulty-badge";
-import { router, useLocalSearchParams } from "expo-router";
+import PartySelector from "@/components/party/party-selector";
+import SectionHeader from "@/components/section-header";
+import Button from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import Screen from "@/components/ui/screen";
+import Text from "@/components/ui/text";
 import { useGetMyParties } from "@/hooks/tan-stack/party";
 import { useCreateQuest } from "@/hooks/tan-stack/quest";
-import SectionHeader from "@/components/section-header";
-import BackButton from "@/components/back-button";
-import { Difficulty, Mode } from "@/types/models";
-import { Pressable, View } from "react-native";
-import { Input } from "@/components/ui/input";
 import { CreateQuestDto } from "@/types/dto";
-import Screen from "@/components/ui/screen";
-import Button from "@/components/ui/button";
-import Text from "@/components/ui/text";
-import { useState } from "react";
+import { Difficulty, Mode } from "@/types/models";
 import { cn } from "cn";
-
+import { router, useLocalSearchParams } from "expo-router";
+import { AlertCircle, Award, PlusCircle } from "lucide-react-native";
+import { useState } from "react";
+import { Pressable, View } from "react-native";
 
 export const DIFFICULTIES: Difficulty[] = ["Tiny", "Easy", "Normal", "Hard", "Major"];
 export const REWARD_MAP: Record<Difficulty, number> = { Tiny: 5, Easy: 10, Normal: 25, Hard: 50, Major: 100 };
@@ -28,6 +27,7 @@ export default function CreateQuest() {
     const [description, setDescription] = useState("");
     const [mode, setMode] = useState<Mode>("Normal");
     const [difficulty, setDifficulty] = useState<Difficulty>("Normal");
+    const [expirationHours, setExpirationHours] = useState<number | null>(null);
     const [showPartyPicker, setShowPartyPicker] = useState(false);
 
     const [errors, setErrors] = useState<{ party?: string; title?: string; description?: string; general?: string }>({});
@@ -54,6 +54,7 @@ export default function CreateQuest() {
             description: description.trim(),
             mode,
             difficulty,
+            ...(expirationHours !== null && { expirationHours }),
         };
 
         createQuestMutation.mutate(dto, {
@@ -148,6 +149,26 @@ export default function CreateQuest() {
                             </Pressable>
                         );
                     })}
+                </View>
+            </View>
+
+            <View className="gap-1.5">
+                <SectionHeader title="Expiration" />
+                <Text className="text-muted-foreground text-xs">The 15-minute cooldown starts first. The timer begins when the quest becomes active.</Text>
+                <View className="flex-row flex-wrap gap-2">
+                    {(
+                        [
+                            { label: "No expiration", hours: null },
+                            { label: "12 hours", hours: 12 },
+                            { label: "1 day", hours: 24 },
+                            { label: "3 days", hours: 72 },
+                            { label: "7 days", hours: 168 },
+                        ] as const
+                    ).map((option) => (
+                        <Pressable key={option.label} onPress={() => setExpirationHours(option.hours)} className={cn("border-foreground min-w-48 border-2 px-3 py-2", expirationHours === option.hours ? "bg-amber shadow-nb" : "bg-card")}>
+                            <Text className={cn("text-xs font-bold", expirationHours === option.hours && "text-black")}>{option.label}</Text>
+                        </Pressable>
+                    ))}
                 </View>
             </View>
 

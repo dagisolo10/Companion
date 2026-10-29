@@ -20,7 +20,6 @@ import Text from "@/components/ui/text";
 import { router } from "expo-router";
 import { View } from "react-native";
 
-
 export default function Home() {
     const color = useColor();
 

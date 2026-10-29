@@ -1,23 +1,22 @@
-import { useCompleteQuest, useGetMyQuestsInfinite } from "@/hooks/tan-stack/quest";
-import { SkeletonQuestCard } from "@/components/ui/skeleton";
-import { CheckCircle2, Sparkles } from "lucide-react-native";
-import ErrorMessage from "@/components/error-message";
-import EmptyState from "@/components/ui/empty-state";
 import BackButton from "@/components/back-button";
+import ErrorMessage from "@/components/error-message";
 import QuestCard from "@/components/quest-card";
-import { Filter, Quest } from "@/types/models";
-import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
-import { ActivityIndicator, Alert, FlatList, View } from "react-native";
+import EmptyState from "@/components/ui/empty-state";
+import Screen from "@/components/ui/screen";
+import { SkeletonQuestCard } from "@/components/ui/skeleton";
 import Text from "@/components/ui/text";
-import { router } from "expo-router";
-import { useState } from "react";
+import { useCompleteQuest, useGetMyQuestsInfinite } from "@/hooks/tan-stack/quest";
+import { Filter, Quest } from "@/types/models";
 import { cn } from "cn";
-
+import { router } from "expo-router";
+import { CheckCircle2, Sparkles } from "lucide-react-native";
+import { useState } from "react";
+import { ActivityIndicator, Alert, FlatList, ScrollView, View } from "react-native";
 
 export default function MyQuests() {
     const [filter, setFilter] = useState<Filter>("All");
-    const tabs: Filter[] = ["All", "Active", "Completed"];
+    const tabs: Filter[] = ["All", "Upcoming", "Active", "Completed", "Expired"];
 
     const questsQuery = useGetMyQuestsInfinite(filter);
     const completeQuestMutation = useCompleteQuest();
@@ -47,13 +46,44 @@ export default function MyQuests() {
             <FlatList
                 style={{ flex: 1 }}
                 data={questsQuery.data}
-                keyExtractor={(quest) => quest.id}
-                contentContainerStyle={{ gap: 12, paddingBottom: 24, flexGrow: 1 }}
-                showsVerticalScrollIndicator={false}
-                onEndReached={() => { if (questsQuery.hasNextPage && !questsQuery.isFetchingNextPage) void questsQuery.fetchNextPage(); }}
                 onEndReachedThreshold={0.5}
-                ListHeaderComponent={<View className="mb-5 gap-5"><BackButton label="My Quests" /><View className="flex-row gap-2">{tabs.map((tab) => <Button key={tab} variant={filter === tab ? "default" : "secondary"} onPress={() => setFilter(tab)} className={cn("flex-1")}><Text className={cn("text-center text-sm font-extrabold", filter === tab ? "text-black" : "text-foreground")}>{tab}</Text></Button>)}</View></View>}
-                ListEmptyComponent={isLoading ? <View className="gap-3"><SkeletonQuestCard /><SkeletonQuestCard /><SkeletonQuestCard /></View> : <EmptyState icon={filter === "Completed" ? CheckCircle2 : Sparkles} actionLabel={filter === "All" ? "Browse Parties" : undefined} onAction={filter === "All" ? () => router.push("/(app)/(tabs)/(party)") : undefined} title={filter === "Completed" ? "No completed quests" : filter === "Active" ? "No active quests" : "No quests yet"} description={filter === "All" ? "Join a party to start questing!" : `You have no ${filter.toLowerCase()} quests.`} />}
+                keyExtractor={(quest) => quest.id}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ gap: 12, paddingBottom: 24, flexGrow: 1 }}
+                onEndReached={() => {
+                    if (questsQuery.hasNextPage && !questsQuery.isFetchingNextPage) void questsQuery.fetchNextPage();
+                }}
+                ListHeaderComponent={
+                    <View className="mb-5 gap-5">
+                        <BackButton label="My Quests" />
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                            <View className="flex-row gap-2">
+                                {tabs.map((tab) => (
+                                    <Button key={tab} variant={filter === tab ? "default" : "secondary"} onPress={() => setFilter(tab)} className="px-4">
+                                        <Text className={cn("text-center text-sm font-extrabold", filter === tab ? "text-black" : "text-foreground")}>{tab}</Text>
+                                    </Button>
+                                ))}
+                            </View>
+                        </ScrollView>
+                    </View>
+                }
+                ListEmptyComponent={
+                    isLoading ? (
+                        <View className="gap-3">
+                            <SkeletonQuestCard />
+                            <SkeletonQuestCard />
+                            <SkeletonQuestCard />
+                        </View>
+                    ) : (
+                        <EmptyState
+                            icon={filter === "Completed" ? CheckCircle2 : Sparkles}
+                            actionLabel={filter === "All" ? "Browse Parties" : undefined}
+                            onAction={filter === "All" ? () => router.push("/(app)/(tabs)/(party)") : undefined}
+                            title={`No ${filter === "All" ? "" : filter.toLowerCase() + " "}quests`}
+                            description={filter === "All" ? "Join a party to start questing!" : `You have no ${filter.toLowerCase()} quests.`}
+                        />
+                    )
+                }
                 renderItem={({ item: quest }) => (
                     <QuestCard
                         quest={quest}

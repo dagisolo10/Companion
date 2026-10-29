@@ -3,7 +3,6 @@ import type { QueryClient, QueryKey } from "@tanstack/react-query";
 import type { PartyLeaderboardMember } from "@/types/leaderboard";
 import { queryKeys, queryRoots } from "@/constants/query-keys";
 
-
 function isQuestDetailKey(key: QueryKey) {
     return key.length === 3 && key[0] === "quest" && key[1] !== "my" && key[1] !== "party";
 }

@@ -12,7 +12,6 @@ import Text from "@/components/ui/text";
 import { Party } from "@/types/models";
 import { useState } from "react";
 
-
 export default function PartySettingsScreen() {
     const { code } = useLocalSearchParams<{ code: string }>();
     const partyQuery = useGetParty(code!);

@@ -1,6 +1,5 @@
 import { Difficulty, Mode } from "@/types/models";
 
-
 export type UpdateUserDto = {
     name?: string;
     public?: boolean;
@@ -13,6 +12,7 @@ export type CreateQuestDto = {
     code: string;
     description: string;
     difficulty: Difficulty;
+    expirationHours?: number;
 };
 
 export type RemoveMemberDto = { partyMemberId: string };

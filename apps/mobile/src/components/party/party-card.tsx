@@ -3,7 +3,6 @@ import { Pressable, View } from "react-native";
 import Text from "@/components/ui/text";
 import { Party } from "@/types/models";
 
-
 type PartyCardProps = {
     party: Party;
     memberCount?: number;

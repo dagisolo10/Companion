@@ -9,7 +9,6 @@ import { supabase } from "@/lib/supabase";
 import Text from "@/components/ui/text";
 import { useState } from "react";
 
-
 export default function ResetPassword() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);

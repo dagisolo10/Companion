@@ -8,7 +8,6 @@ import { requestApi } from "@/lib/api/request-api";
 import { api } from "@/lib/api/axios";
 import { usePaginatedQuery } from "@/hooks/custom/use-paginated-query";
 
-
 export function useGetPartyQuests(code: string, status?: Filter, options?: TQueryOptions<Quest[]>) {
     return useQuery({
         ...options,
@@ -40,6 +39,10 @@ export function useGetMyQuests(status?: Filter, take?: number, options?: TQueryO
 export function useGetQuest(id: string, code: string, options?: TQueryOptions<QuestDetail>) {
     return useQuery({
         ...options,
+        refetchInterval: (query) => {
+            const quest = query.state.data;
+            return quest && (quest.status === "Upcoming" || (quest.status === "Active" && !!quest.expiresAt)) ? 15_000 : false;
+        },
         queryKey: queryKeys.quest.byId(id, code),
         queryFn: async () => requestApi(() => api.get<QuestDetail>(`/quest/${id}/${code}`)),
     });
