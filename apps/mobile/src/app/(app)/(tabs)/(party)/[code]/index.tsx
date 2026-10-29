@@ -1,4 +1,4 @@
-import { AlertTriangle, Check, CheckCircle2, Copy, LogOut, Plus, ScrollText, Settings, Share2, Target, Trophy, UserPlus, Users } from "lucide-react-native";
+import { AlertTriangle, Check, CheckCircle2, Copy, Globe, LockKeyhole, LogOut, Plus, ScrollText, Settings, Share2, Target, Trophy, UserPlus, Users } from "lucide-react-native";
 import { useGetMembers, useJoinParty, useLeaveParty } from "@/hooks/tan-stack/party-member";
 import * as Clipboard from "expo-clipboard";
 import { SkeletonCard, SkeletonQuestList } from "@/components/ui/skeleton";
@@ -112,7 +112,13 @@ export default function PartyDetailScreen() {
 
             <View className="card flex-row items-center justify-between gap-3">
                 <View className="flex-1 gap-1">
-                    <Text className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">Party Code</Text>
+                    <View className="flex-row items-center gap-2">
+                        <Text className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">Party Code</Text>
+                        <View className={cn("flex-row items-center gap-1 px-2 py-1", party.public ? "bg-lime" : "bg-muted")}>
+                            {party.public ? <Globe size={11} color="#000" strokeWidth={2.5} /> : <LockKeyhole size={11} color={color.foreground} strokeWidth={2.5} />}
+                            <Text className={cn("text-[10px] font-bold uppercase", party.public && "text-black")}>{party.public ? "Public" : "Private"}</Text>
+                        </View>
+                    </View>
                     <Text selectable className="text-2xl font-extrabold tracking-widest">
                         {party.code}
                     </Text>

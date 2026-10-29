@@ -425,6 +425,7 @@ type PartyData = {
     name: string;
     code: string;
     creatorId: string;
+    public: boolean;
 };
 
 const coreParties: PartyData[] = [
@@ -591,7 +592,14 @@ for (let i = 0; i < PARTY_THEMES.length; i++) {
     });
 }
 
-const parties: PartyData[] = [...coreParties, ...generatedParties];
+const parties: PartyData[] = [...coreParties, ...generatedParties].map((party) => ({
+    ...party,
+    public: rand() < 0.7,
+}));
+
+// Keep both visibility states represented in every seeded dataset.
+if (parties.every((party) => party.public)) parties[parties.length - 1]!.public = false;
+if (parties.every((party) => !party.public)) parties[0]!.public = true;
 
 // Give every party a realistic roster (5–15 members, creator always in it), then make sure
 // every generated user is a member of at least one party and at most four.
