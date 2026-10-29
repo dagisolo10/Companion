@@ -1,8 +1,9 @@
-import Text from "@/components/ui/text";
-import { Difficulty } from "@/types/models";
-import { cn } from "cn";
 import { CircleDot, Crown, Flame, Trophy, Zap } from "lucide-react-native";
+import { Difficulty } from "@/types/models";
+import Text from "@/components/ui/text";
 import { View } from "react-native";
+import { cn } from "cn";
+
 
 const CONFIG: Record<Difficulty, { bg: string; Icon: typeof CircleDot }> = {
     Tiny: { bg: "bg-lime", Icon: CircleDot },
@@ -27,7 +28,7 @@ export default function DifficultyBadge({ difficulty, size = "sm" }: { difficult
         return (
             <View className={cn(bg, "border-foreground flex-row items-center gap-1.5 border-2 px-3 py-1.5")}>
                 <Icon size={14} color="#000000" strokeWidth={2.5} />
-                <Text className="font-jakarta-extrabold text-xs uppercase">{difficulty}</Text>
+                <Text className="text-xs font-extrabold uppercase">{difficulty}</Text>
             </View>
         );
     }
@@ -35,7 +36,7 @@ export default function DifficultyBadge({ difficulty, size = "sm" }: { difficult
     return (
         <View className={cn(bg, "border-foreground flex-row items-center gap-1 border px-2 py-0.5")}>
             <Icon size={10} color="#000000" strokeWidth={3} />
-            <Text className="font-jakarta-extrabold text-[10px] uppercase">{difficulty}</Text>
+            <Text className="text-[10px] font-extrabold uppercase">{difficulty}</Text>
         </View>
     );
 }

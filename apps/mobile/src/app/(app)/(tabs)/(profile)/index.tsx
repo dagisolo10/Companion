@@ -98,7 +98,7 @@ interface SettingRowProps {
 function SettingGroup({ label, children }: PropsWithChildren & { label: string }) {
     return (
         <View className="gap-2">
-            <Text className="font-jakarta-extrabold text-lg tracking-tight">{label}</Text>
+            <Text className="text-lg font-extrabold tracking-tight">{label}</Text>
             <View className="border-foreground bg-card shadow-nb border-2">{children}</View>
         </View>
     );

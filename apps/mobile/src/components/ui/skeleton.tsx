@@ -1,9 +1,10 @@
-import { cn } from "cn";
-import { useEffect } from "react";
-import { View } from "react-native";
 import Animated, { Extrapolation, interpolate, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withTiming } from "react-native-reanimated";
+import { View } from "react-native";
+import { useEffect } from "react";
+import { cn } from "cn";
 
-function SkeletonBlock({ className, index = 0, delay = 200 }: { className?: string; index?: number; delay?: number }) {
+
+export function SkeletonBlock({ className, index = 0, delay = 200 }: { className?: string; index?: number; delay?: number }) {
     const opacity = useSharedValue(0.3);
 
     useEffect(() => {
@@ -96,6 +97,23 @@ export function SkeletonPartyList({ count = 3 }: { count?: number }) {
             {Array.from({ length: count }).map((_, i) => (
                 <SkeletonCard key={i} lines={2} />
             ))}
+        </View>
+    );
+}
+
+export function SkeletonQuestCard() {
+    return (
+        <View className="card gap-3">
+            <View className="flex-row items-center justify-between">
+                <SkeletonBlock className="h-6 w-2/3" />
+                <SkeletonBlock className="h-5 w-16 rounded-full" />
+            </View>
+            <SkeletonBlock className="h-4 w-full" />
+            <SkeletonBlock className="h-4 w-4/5" />
+            <View className="mt-1 flex-row items-center justify-between">
+                <SkeletonBlock className="h-4 w-20" />
+                <SkeletonBlock className="border-foreground h-8 w-24 border-2" />
+            </View>
         </View>
     );
 }

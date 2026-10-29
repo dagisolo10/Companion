@@ -5,6 +5,7 @@ import { StreakService } from "@/features/streak/streak.service.js";
 import { UpdateUserDto } from "@/features/user/user.dto.js";
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
+import { PageParams, paginate } from "@/common/pagination.js";
 
 @Injectable()
 export class UserService {
@@ -76,19 +77,24 @@ export class UserService {
         }
     }
 
-    async searchUsers(query: string) {
+    async searchUsers(query: string, page?: PageParams) {
         const trimmed = query.trim();
 
         if (trimmed.length < 2) {
-            return [];
+            return page ? { items: [], nextPage: null, hasMore: false } : [];
         }
 
-        return await this.prisma.user.findMany({
-            where: {
-                AND: [{ public: true }, { OR: [{ username: { contains: trimmed, mode: "insensitive" } }, { name: { contains: trimmed, mode: "insensitive" } }] }],
-            },
-            take: 20,
-        });
+        const findUsers = ({ skip, take }: { skip?: number; take?: number }) =>
+            this.prisma.user.findMany({
+                where: {
+                    AND: [{ public: true }, { OR: [{ username: { contains: trimmed, mode: "insensitive" } }, { name: { contains: trimmed, mode: "insensitive" } }] }],
+                },
+                ...(skip !== undefined && { skip }),
+                ...(take !== undefined && { take }),
+                orderBy: [{ username: "asc" }, { id: "asc" }],
+            });
+
+        return page ? paginate(page, ({ skip, take }) => findUsers({ skip, take })) : findUsers({ take: 20 });
     }
 
     async findUser(username: string) {

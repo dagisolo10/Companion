@@ -2,6 +2,7 @@ import { Public } from "@/common/auth/public.decorator.js";
 import { UpdateUserDto } from "@/features/user/user.dto.js";
 import { UserService } from "@/features/user/user.service.js";
 import { Body, Controller, Delete, Get, Param, Patch, Query } from "@nestjs/common";
+import { parsePageParams } from "@/common/pagination.js";
 
 @Controller("user")
 export class UserController {
@@ -24,8 +25,8 @@ export class UserController {
     }
 
     @Get("search")
-    searchUsers(@Query("query") query: string) {
-        return this.userService.searchUsers(query);
+    searchUsers(@Query("query") query: string, @Query("page") page?: string, @Query("limit") limit?: string) {
+        return this.userService.searchUsers(query, page ? parsePageParams(page, limit) : undefined);
     }
 
     @Get(":username")

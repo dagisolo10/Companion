@@ -18,10 +18,10 @@ const buttonVariants = cva("border-foreground group/button transition-all durati
         variant: {
             ghost: "bg-transparent",
             outline: "border-foreground border-2",
-            success: "bg-lime shadow-nb active:shadow-nb-active border-2",
-            default: "bg-amber shadow-nb active:shadow-nb-active border-2",
-            secondary: "bg-secondary shadow-nb active:shadow-nb-active border-2",
-            destructive: "bg-destructive shadow-nb active:shadow-nb-active border-2",
+            success: "bg-lime shadow-nb active:shadow-nb-active active:translate-x-[1px] active:translate-y-[1px] border-2",
+            default: "bg-amber shadow-nb active:shadow-nb-active active:translate-x-[1px] active:translate-y-[1px] border-2",
+            secondary: "bg-secondary shadow-nb active:shadow-nb-active active:translate-x-[1px] active:translate-y-[1px] border-2",
+            destructive: "bg-destructive shadow-nb active:shadow-nb-active active:translate-x-[1px] active:translate-y-[1px] border-2",
         },
 
         size: {

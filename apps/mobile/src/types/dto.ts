@@ -1,5 +1,6 @@
 import { Difficulty, Mode } from "@/types/models";
 
+
 export type UpdateUserDto = {
     name?: string;
     public?: boolean;
@@ -16,5 +17,13 @@ export type CreateQuestDto = {
 
 export type RemoveMemberDto = { partyMemberId: string };
 export type TransferPartyDto = { partyMemberId: string };
+
+export type CreatePartyDto = {
+    name: string;
+};
+
+export type UpdatePartyDto = {
+    name?: string;
+};
 
 export type UpdateQuestDto = Partial<Omit<CreateQuestDto, "code">>;

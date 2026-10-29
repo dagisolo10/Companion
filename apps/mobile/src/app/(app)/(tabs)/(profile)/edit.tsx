@@ -8,9 +8,9 @@ import { Alert, Switch, View } from "react-native";
 import BackButton from "@/components/back-button";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
+import { useRef, useState } from "react";
 import Text from "@/components/ui/text";
 import { User } from "@/types/models";
-import { useRef, useState } from "react";
 
 
 export default function EditProfile() {
@@ -134,8 +134,8 @@ function EditProfileForm({ user }: { user: User }) {
                     clearButtonMode="while-editing"
                 />
                 {username.length > 0 && (
-                    <Text className="text-muted-foreground font-jakarta-medium px-1 text-xs">
-                        Will be saved as: <Text className="font-jakarta-bold text-foreground">@{slugValue}</Text>
+                    <Text className="text-muted-foreground px-1 text-xs font-medium">
+                        Will be saved as: <Text className="text-foreground font-bold">@{slugValue}</Text>
                     </Text>
                 )}
             </View>
@@ -143,16 +143,16 @@ function EditProfileForm({ user }: { user: User }) {
             {slugValue.length >= 3 && slugValue !== user.username && (
                 <View className="mt-1 flex-row items-center gap-1.5">
                     {usernameAvailableQuery.isFetching ? (
-                        <Text className="text-muted-foreground font-jakarta-bold text-xs">Checking availability...</Text>
+                        <Text className="text-muted-foreground text-xs font-bold">Checking availability...</Text>
                     ) : usernameAvailableQuery.data ? (
                         <View className="flex-row items-center gap-1">
                             <CheckCircle2 size={14} color="#22C55E" strokeWidth={2.5} />
-                            <Text className="font-jakarta-bold text-lime text-xs">Username available</Text>
+                            <Text className="text-lime text-xs font-bold">Username available</Text>
                         </View>
                     ) : (
                         <View className="flex-row items-center gap-1">
                             <XCircle size={14} color="#DC2626" strokeWidth={2.5} />
-                            <Text className="font-jakarta-bold text-destructive text-xs">Username taken</Text>
+                            <Text className="text-destructive text-xs font-bold">Username taken</Text>
                         </View>
                     )}
                 </View>
@@ -163,7 +163,7 @@ function EditProfileForm({ user }: { user: User }) {
             <View className="card flex-row items-center justify-between">
                 <View className="flex-1 gap-0.5 pr-3">
                     <Text className="text-sm font-bold">Public profile</Text>
-                    <Text className="text-muted-foreground font-jakarta-bold max-w-48 text-xs">Allow others to find you in search and view your profile.</Text>
+                    <Text className="text-muted-foreground max-w-48 text-xs font-bold">Allow others to find you in search and view your profile.</Text>
                 </View>
                 <View className="justify-center">
                     <Switch value={isPublic} onValueChange={handlePublicToggle} disabled={updateUserMutation.isPending} />
@@ -182,14 +182,14 @@ function LiveErrorCard({ errors }: { errors: string[] }) {
         <View className="bg-destructive/10 border-destructive shadow-nb gap-3 border-2 p-4">
             <View className="border-destructive/30 flex-row items-center gap-2 border-b pb-2">
                 <AlertCircle size={18} color="#DC2626" strokeWidth={2.5} />
-                <Text className="font-jakarta-extrabold text-destructive text-xs tracking-wider uppercase">Please fix the following issue{errors.length > 1 ? "s" : ""}</Text>
+                <Text className="text-destructive text-xs font-extrabold tracking-wider uppercase">Please fix the following issue{errors.length > 1 ? "s" : ""}</Text>
             </View>
 
             <View className="gap-1.5">
                 {errors.map((error, idx) => (
                     <View key={idx} className="flex-row items-start gap-2">
-                        <Text className="font-jakarta-extrabold text-destructive text-xs leading-5">•</Text>
-                        <Text className="font-jakarta-bold text-destructive flex-1 text-xs leading-5">{error}</Text>
+                        <Text className="text-destructive text-xs leading-5 font-extrabold">•</Text>
+                        <Text className="text-destructive flex-1 text-xs leading-5 font-bold">{error}</Text>
                     </View>
                 ))}
             </View>

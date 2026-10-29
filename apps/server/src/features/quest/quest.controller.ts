@@ -1,6 +1,7 @@
 import { CreateQuestDto, type Filter, UpdateQuestDto } from "@/features/quest/quest.dto.js";
-import { QuestService } from "@/features/quest/quest.service.js";
 import { Body, Controller, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { QuestService } from "@/features/quest/quest.service.js";
+import { parsePageParams } from "@/common/pagination.js";
 
 @Controller("quest")
 export class QuestController {
@@ -12,13 +13,13 @@ export class QuestController {
     }
 
     @Get("my")
-    getMyQuests(@Query("status") status?: Filter, @Query("take") take?: string) {
-        return this.questService.getMyQuests(status, take ? parseInt(take) : undefined);
+    getMyQuests(@Query("status") status?: Filter, @Query("take") take?: string, @Query("page") page?: string, @Query("limit") limit?: string) {
+        return this.questService.getMyQuests(status, take ? parseInt(take) : undefined, page ? parsePageParams(page, limit) : undefined);
     }
 
     @Get(":code")
-    getQuests(@Param("code") code: string) {
-        return this.questService.getPartyQuests(code);
+    getPartyQuests(@Param("code") code: string, @Query("status") status?: Filter, @Query("page") page?: string, @Query("limit") limit?: string) {
+        return this.questService.getPartyQuests(code, status, page ? parsePageParams(page, limit) : undefined);
     }
 
     @Get(":id/:code")

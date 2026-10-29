@@ -1,28 +1,32 @@
-import ActivityCard from "@/components/activity-card";
-import ErrorMessage from "@/components/error-message";
-import LevelCard from "@/components/level-card";
-import QuestCard from "@/components/quest-card";
-import SectionHeader from "@/components/section-header";
-import StatCard from "@/components/stat-card";
-import StreakCard from "@/components/streak-card";
-import Button from "@/components/ui/button";
-import EmptyState from "@/components/ui/empty-state";
-import Screen from "@/components/ui/screen";
-import Text from "@/components/ui/text";
-import { useColor } from "@/hooks/custom/use-color";
-import { useGetDashboard } from "@/hooks/tan-stack/dashboard";
-import { useGetMyQuests } from "@/hooks/tan-stack/quest";
-import { useGetMyQuestActivities } from "@/hooks/tan-stack/quest-activity";
-import { useGetUser } from "@/hooks/tan-stack/user";
-import { loadValue } from "@/utils/helper-functions";
 import { Activity, Map, Plus, Target, Trophy, Users, Zap } from "lucide-react-native";
+import { useGetMyQuestActivities } from "@/hooks/tan-stack/quest-activity";
+import { useGetDashboard } from "@/hooks/tan-stack/dashboard";
+import { useGetMyParties } from "@/hooks/tan-stack/party";
+import { useGetMyQuests } from "@/hooks/tan-stack/quest";
+import SectionHeader from "@/components/section-header";
+import ErrorMessage from "@/components/error-message";
+import ActivityCard from "@/components/activity-card";
+import EmptyState from "@/components/ui/empty-state";
+import { loadValue } from "@/utils/helper-functions";
+import { useGetUser } from "@/hooks/tan-stack/user";
+import { useColor } from "@/hooks/custom/use-color";
+import StreakCard from "@/components/streak-card";
+import QuestCard from "@/components/quest-card";
+import LevelCard from "@/components/level-card";
+import StatCard from "@/components/stat-card";
+import Screen from "@/components/ui/screen";
+import Button from "@/components/ui/button";
+import Text from "@/components/ui/text";
+import { router } from "expo-router";
 import { View } from "react-native";
+
 
 export default function Home() {
     const color = useColor();
 
     const userQuery = useGetUser();
     const dashboardQuery = useGetDashboard();
+    const myPartiesQuery = useGetMyParties();
     const myQuestsQuery = useGetMyQuests("Active", 3);
     const myQuestActivitiesQuery = useGetMyQuestActivities(3);
 
@@ -76,51 +80,27 @@ export default function Home() {
                         asChild
                         className="flex-1"
                         onPress={() => {
-                            // router.push("/(app)/(tabs)/(parties)/[code]/(quests)/create");
+                            const c = myQuestsQuery.data?.[0]?.party?.code ?? myPartiesQuery.data?.[0]?.code;
+                            if (c) router.push({ pathname: "/(app)/(tabs)/(party)/[code]/quests/create", params: { code: c } });
+                            else router.push("/(app)/(tabs)/(party)");
                         }}
                     >
                         <Plus size={18} color={color.black} strokeWidth={3} />
                         <Text className="font-extrabold text-black">Create Quest</Text>
                     </Button>
 
-                    <Button
-                        size="lg"
-                        variant="outline"
-                        asChild
-                        className="flex-1"
-                        onPress={() => {
-                            // router.push("/(app)/(parties)/create");
-                        }}
-                    >
+                    <Button size="lg" variant="outline" asChild className="flex-1" onPress={() => router.push("/(app)/(tabs)/(party)/create")}>
                         <Users size={18} color={color.foreground} strokeWidth={2.5} />
                         <Text className="font-extrabold">Create Party</Text>
                     </Button>
                 </View>
             </View>
 
-            <SectionHeader
-                icon={Target}
-                action="View all"
-                badgeColor="bg-lime"
-                title="Active Quests"
-                badge={`${myQuestsQuery.data.length} Pending`}
-                onAction={() => {
-                    // const code = myQuestsQuery.data?.[0]?.party?.code;
-                    // if (code) router.push({ pathname: "/(app)/(tabs)/(parties)/[code]/(quests)", params: { code } });
-                }}
-            />
+            <SectionHeader icon={Target} action="View all" badgeColor="bg-lime" title="My Quests" onAction={() => router.push("/(app)/(tabs)/(home)/my-quests")} />
 
             <View className="gap-3">
                 {myQuestsQuery.data.length > 0 ? (
-                    myQuestsQuery.data.map((quest) => (
-                        <QuestCard
-                            key={quest.id}
-                            quest={quest}
-                            onPress={() => {
-                                // router.push({ pathname: "/(app)/(tabs)/(parties)/[code]/(quests)/[id]", params: { id: quest.id, code: quest.party.code } });
-                            }}
-                        />
-                    ))
+                    myQuestsQuery.data.map((quest) => <QuestCard key={quest.id} quest={quest} onPress={() => router.push({ pathname: "/(app)/(tabs)/(party)/[code]/quests/[id]", params: { id: quest.id, code: quest.party.code } })} />)
                 ) : (
                     <View className="card p-0">
                         <EmptyState
@@ -129,22 +109,16 @@ export default function Home() {
                             description="Create a quest to get started!"
                             actionLabel="Create Quest"
                             onAction={() => {
-                                // const c = myQuestsQuery.data?.[0]?.party?.code;
-                                // if (c) router.push({ pathname: "/(app)/(tabs)/(parties)/[code]/(quests)/create", params: { code: c } });
+                                const code = myQuestsQuery.data?.[0]?.party?.code ?? myPartiesQuery.data?.[0]?.code;
+                                if (code) router.push({ pathname: "/(app)/(tabs)/(party)/[code]/quests/create", params: { code } });
+                                else router.push("/(app)/(tabs)/(party)");
                             }}
                         />
                     </View>
                 )}
             </View>
 
-            <SectionHeader
-                title="Recent Activity"
-                icon={Activity}
-                action="View all"
-                onAction={() => {
-                    // router.push("/(app)/(home)/activity");
-                }}
-            />
+            <SectionHeader title="Recent Activity" icon={Activity} action="View all" onAction={() => router.push("/(app)/(tabs)/(home)/activity")} />
 
             <View className="card p-2">
                 {myQuestActivitiesQuery.data.length > 0 ? (

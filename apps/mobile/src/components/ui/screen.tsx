@@ -26,9 +26,9 @@ export default function Screen({ children, nonScrollable = false, fullscreen = f
                         keyboardShouldPersistTaps="handled"
                         showsVerticalScrollIndicator={false}
                         contentInsetAdjustmentBehavior={header ? "automatic" : "never"}
-                        contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 16, ...(fullscreen && { flex: 1 }) }}
+                        contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 16, flexGrow: 1, ...(fullscreen && { flex: 1 }) }}
                     >
-                        <View className={cn("flex-1", className)}>{children}</View>
+                        <View className={cn(fullscreen && "flex-1", className)}>{children}</View>
                     </ScrollView>
                 )}
             </SafeAreaView>

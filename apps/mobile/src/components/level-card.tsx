@@ -1,9 +1,10 @@
 import ProgressBar from "@/components/ui/progress-bar";
-import Text from "@/components/ui/text";
 import { useColor } from "@/hooks/custom/use-color";
 import { getLevel } from "@/utils/helper-functions";
 import { Zap } from "lucide-react-native";
+import Text from "@/components/ui/text";
 import { View } from "react-native";
+
 
 type LevelCardProps = {
     loading: boolean;
@@ -25,12 +26,12 @@ export default function LevelCard({ experience, loading }: LevelCardProps) {
                         <Zap size={20} color={color.white} strokeWidth={2.5} />
                     </View>
                     <View>
-                        <Text className="font-jakarta-extrabold text-xl leading-none">Level {loading ? "-" : level}</Text>
-                        <Text className="text-muted-foreground font-jakarta-bold mt-0.5 text-xs">{loading ? "-" : label}</Text>
+                        <Text className="text-xl leading-none font-extrabold">Level {loading ? "-" : level}</Text>
+                        <Text className="text-muted-foreground mt-0.5 text-xs font-bold">{loading ? "-" : label}</Text>
                     </View>
                 </View>
                 <View className="border-foreground bg-muted border-2 px-3 py-1">
-                    <Text className="font-jakarta-extrabold text-xs">
+                    <Text className="text-xs font-extrabold">
                         {loading ? "-" : experience} / {loading ? "-" : isMaxLevel ? "MAX" : nextLevelXp} XP
                     </Text>
                 </View>
@@ -38,8 +39,8 @@ export default function LevelCard({ experience, loading }: LevelCardProps) {
             <View className="gap-1.5">
                 <ProgressBar value={progress} />
                 <View className="flex-row items-center justify-between">
-                    <Text className="font-jakarta-bold text-xs">XP BAR</Text>
-                    <Text className="text-muted-foreground font-jakarta-bold text-right text-[11px]">{loading ? "-" : isMaxLevel ? "Max Level Reached" : `${nextLevelXp - experience} XP to Level ${nextLevel}`}</Text>
+                    <Text className="text-xs font-bold">XP BAR</Text>
+                    <Text className="text-muted-foreground text-right text-[11px] font-bold">{loading ? "-" : isMaxLevel ? "Max Level Reached" : `${nextLevelXp - experience} XP to Level ${nextLevel}`}</Text>
                 </View>
             </View>
         </View>

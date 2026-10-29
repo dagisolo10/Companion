@@ -1,6 +1,7 @@
-import { Filter } from "@/types/models";
 import { useQueryClient } from "@tanstack/react-query";
+import { Filter } from "@/types/models";
 import { useCallback } from "react";
+
 
 export const queryRoots = {
     user: ["user"] as const,
@@ -30,9 +31,9 @@ export const queryKeys = {
         members: (code: string) => [...queryRoots.partyMember, "members", code] as const,
     },
     quest: {
-        byParty: (code: string) => [...queryRoots.quest, "party", code] as const,
         byId: (id: string, code: string) => [...queryRoots.quest, id, code] as const,
         my: (status?: Filter, take?: number) => [...queryRoots.quest, "my", status, take] as const,
+        byParty: (code: string, status?: Filter) => [...queryRoots.quest, "party", code, status] as const,
     },
     questActivity: {
         my: (take?: number) => [...queryRoots.questActivity, "my", take] as const,

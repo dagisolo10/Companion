@@ -1,15 +1,16 @@
+import { CheckCircle2, Flame, Globe, Lock, Sparkles, Trophy } from "lucide-react-native";
+import { SkeletonBlock, SkeletonCard } from "@/components/ui/skeleton";
+import { useColor } from "@/hooks/custom/use-color";
+import { formatDateTime } from "@/utils/formatters";
+import StreakCard from "@/components/streak-card";
 import BackButton from "@/components/back-button";
 import LevelCard from "@/components/level-card";
-import StreakCard from "@/components/streak-card";
 import Screen from "@/components/ui/screen";
-import SkeletonBlock, { SkeletonCard } from "@/components/ui/skeleton";
 import Text from "@/components/ui/text";
-import { useColor } from "@/hooks/custom/use-color";
 import { User } from "@/types/models";
-import { formatDateTime } from "@/utils/formatters";
-import { cn } from "cn";
-import { CheckCircle2, Flame, Globe, Lock, Sparkles, Trophy } from "lucide-react-native";
 import { View } from "react-native";
+import { cn } from "cn";
+
 
 export default function ProfileView({ user, visibility = false }: { user: User; visibility?: boolean }) {
     const color = useColor();
@@ -19,11 +20,11 @@ export default function ProfileView({ user, visibility = false }: { user: User; 
         <View className="gap-5">
             <View className="items-center gap-3">
                 <View className="border-foreground bg-amber shadow-nb h-20 w-20 items-center justify-center rounded-full border-2">
-                    <Text className="font-jakarta-extrabold text-3xl text-black">{user.name.charAt(0).toUpperCase()}</Text>
+                    <Text className="text-3xl font-extrabold text-black">{user.name.charAt(0).toUpperCase()}</Text>
                 </View>
                 <View className="items-center gap-0.5">
-                    <Text className="font-jakarta-extrabold text-2xl tracking-tight">{user.name}</Text>
-                    <Text className="text-muted-foreground font-jakarta-bold text-sm">@{user.username}</Text>
+                    <Text className="text-2xl font-extrabold tracking-tight">{user.name}</Text>
+                    <Text className="text-muted-foreground text-sm font-bold">@{user.username}</Text>
                 </View>
             </View>
 
@@ -35,13 +36,13 @@ export default function ProfileView({ user, visibility = false }: { user: User; 
                     <View className="flex-row items-center gap-2.5">
                         {isPublic ? <Globe size={18} color="#22C55E" strokeWidth={2.5} /> : <Lock size={18} color={color.mutedForeground} strokeWidth={2.5} />}
                         <View>
-                            <Text className="font-jakarta-bold text-xs">{isPublic ? "Public Profile" : "Private Profile"}</Text>
-                            <Text className="text-muted-foreground font-jakarta-medium text-[11px]">{isPublic ? "Visible in search & leaderboards" : "Hidden from search & public view"}</Text>
+                            <Text className="text-xs font-bold">{isPublic ? "Public Profile" : "Private Profile"}</Text>
+                            <Text className="text-muted-foreground text-[11px] font-medium">{isPublic ? "Visible in search & leaderboards" : "Hidden from search & public view"}</Text>
                         </View>
                     </View>
 
                     <View className={cn("border-foreground rounded-full border-2 px-2 py-0.5", isPublic ? "bg-lime" : "bg-muted")}>
-                        <Text className="font-jakarta-extrabold text-[10px] text-black uppercase">{isPublic ? "Public" : "Private"}</Text>
+                        <Text className="text-[10px] font-extrabold text-black uppercase">{isPublic ? "Public" : "Private"}</Text>
                     </View>
                 </View>
             )}
@@ -49,24 +50,24 @@ export default function ProfileView({ user, visibility = false }: { user: User; 
             <View className="flex-row flex-wrap gap-3">
                 <View className="card flex-1 items-center gap-1.5">
                     <Flame size={20} color="#DC2626" fill="#DC2626" strokeWidth={2.5} />
-                    <Text className="font-jakarta-extrabold text-2xl tracking-tight">{user.streak}</Text>
-                    <Text className="text-muted-foreground font-jakarta-bold text-xs">Current Streak</Text>
+                    <Text className="text-2xl font-extrabold tracking-tight">{user.streak}</Text>
+                    <Text className="text-muted-foreground text-xs font-bold">Current Streak</Text>
                 </View>
                 <View className="card flex-1 items-center gap-1.5">
                     <Trophy size={20} color="#f59e0b" strokeWidth={2.5} />
-                    <Text className="font-jakarta-extrabold text-2xl tracking-tight">{user.longestStreak}</Text>
-                    <Text className="text-muted-foreground font-jakarta-bold text-xs">Best Streak</Text>
+                    <Text className="text-2xl font-extrabold tracking-tight">{user.longestStreak}</Text>
+                    <Text className="text-muted-foreground text-xs font-bold">Best Streak</Text>
                 </View>
                 <View className="card flex-1 items-center gap-1.5">
                     <Sparkles size={20} color="#7c3aed" strokeWidth={2.5} />
-                    <Text className="font-jakarta-extrabold text-2xl tracking-tight">{user.experience}</Text>
-                    <Text className="text-muted-foreground font-jakarta-bold text-xs">Total XP</Text>
+                    <Text className="text-2xl font-extrabold tracking-tight">{user.experience}</Text>
+                    <Text className="text-muted-foreground text-xs font-bold">Total XP</Text>
                 </View>
             </View>
 
             <View className="card flex-row items-center gap-2.5">
                 <CheckCircle2 size={18} color="#65a30d" strokeWidth={2.5} />
-                <Text className="text-muted-foreground font-jakarta-bold text-xs">Joined {formatDateTime(user.createdAt)}</Text>
+                <Text className="text-muted-foreground text-xs font-bold">Joined {formatDateTime(user.createdAt)}</Text>
             </View>
         </View>
     );

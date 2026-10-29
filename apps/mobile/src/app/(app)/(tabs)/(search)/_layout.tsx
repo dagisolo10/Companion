@@ -21,7 +21,6 @@ export default function SearchLayout() {
                     headerTransparent: false,
                     headerTitle: "Find Players",
                     headerSearchBarOptions: {
-                        autoFocus: true,
                         autoCapitalize: "none",
                         placeholder: "Search by name or username",
                         onCancelButtonPress: () => router.setParams({ query: "" }),

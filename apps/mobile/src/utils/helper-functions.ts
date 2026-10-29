@@ -1,4 +1,8 @@
 import { LEVEL_XP_RANGES, LevelLabel } from "@/constants/experience";
+import { LeaderboardEntry } from "@/types/leaderboard";
+import { QuestActivity, User } from "@/types/models";
+import { differenceInCalendarDays } from "date-fns";
+
 
 type GetLevelReturn = {
     level: number;
@@ -39,3 +43,36 @@ export const slugifyUsername = (username: string): string => {
         .replace(/\s+/g, "_")
         .replace(/[^\w-]/g, "");
 };
+
+export function toLeaderboardEntry(user: User): LeaderboardEntry {
+    const { level, label } = getLevel(user.experience);
+
+    return {
+        level,
+        label,
+        id: user.id,
+        name: user.name,
+        streak: user.streak,
+        username: user.username,
+        experience: user.experience,
+    };
+}
+
+export function groupActivities(activities: QuestActivity[]) {
+    const now = new Date();
+    const today: typeof activities = [];
+    const yesterday: typeof activities = [];
+    const thisWeek: typeof activities = [];
+    const older: typeof activities = [];
+
+    for (const a of activities) {
+        const diffDays = differenceInCalendarDays(now, new Date(a.completedAt));
+
+        if (diffDays < 1) today.push(a);
+        else if (diffDays < 2) yesterday.push(a);
+        else if (diffDays < 7) thisWeek.push(a);
+        else older.push(a);
+    }
+
+    return { today, yesterday, thisWeek, older };
+}

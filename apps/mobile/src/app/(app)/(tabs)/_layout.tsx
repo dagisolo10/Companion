@@ -1,11 +1,17 @@
 import { NativeTabs } from "expo-router/native-tabs";
 
+
 export default function AppTabsLayout() {
     return (
         <NativeTabs>
             <NativeTabs.Trigger name="(home)">
                 <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
                 <NativeTabs.Trigger.Icon sf="house.fill" />
+            </NativeTabs.Trigger>
+
+            <NativeTabs.Trigger name="(party)">
+                <NativeTabs.Trigger.Label>Party</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Icon sf="person.2.fill" />
             </NativeTabs.Trigger>
 
             <NativeTabs.Trigger name="(profile)">

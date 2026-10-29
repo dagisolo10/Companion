@@ -5,6 +5,7 @@ import { StreakService } from "@/features/streak/streak.service.js";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { ulid } from "ulid";
+import { PageParams, paginate } from "@/common/pagination.js";
 
 @Injectable()
 export class PartyService {
@@ -91,28 +92,32 @@ export class PartyService {
         return parties.map((party) => ({ ...party, isMember: true }));
     }
 
-    async getAllParties(query?: string) {
+    async getAllParties(query?: string, page?: PageParams, excludeJoined = false) {
         const userId = this.requestService.getUserId();
         const trimmed = query?.trim();
 
-        const parties = await this.prisma.party.findMany({
-            where: trimmed
-                ? {
-                      OR: [{ name: { contains: trimmed, mode: "insensitive" } }, { code: { contains: trimmed, mode: "insensitive" } }],
-                  }
-                : undefined,
-            take: 100,
-            orderBy: { createdAt: "desc" },
-            include: {
-                _count: { select: { members: true } },
-                members: { where: { userId }, select: { id: true } },
-            },
-        });
+        const findParties = ({ skip, take }: { skip?: number; take?: number }) =>
+            this.prisma.party
+                .findMany({
+                    where: {
+                        ...(trimmed && { OR: [{ name: { contains: trimmed, mode: "insensitive" } }, { code: { contains: trimmed, mode: "insensitive" } }] }),
+                        ...(excludeJoined && { members: { none: { userId } } }),
+                    },
+                    ...(skip !== undefined && { skip }),
+                    ...(take !== undefined && { take }),
+                    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+                    include: {
+                        _count: { select: { members: true } },
+                        members: { where: { userId }, select: { id: true } },
+                    },
+                })
+                .then((parties) => parties.map(({ members, ...party }) => ({ ...party, isMember: members.length > 0 })));
 
-        return parties.map(({ members, ...party }) => ({
-            ...party,
-            isMember: members.length > 0,
-        }));
+        if (!page) return findParties({ take: 100 });
+
+        return paginate(page, async ({ skip, take }) => {
+            return findParties({ skip, take });
+        });
     }
 
     async getPartyLeaderboard(code: string) {

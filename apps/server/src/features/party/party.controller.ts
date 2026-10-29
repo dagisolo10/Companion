@@ -1,6 +1,7 @@
 import { CreatePartyDto, TransferPartyDto, UpdatePartyDto } from "@/features/party/party.dto.js";
-import { PartyService } from "@/features/party/party.service.js";
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { PartyService } from "@/features/party/party.service.js";
+import { parsePageParams } from "@/common/pagination.js";
 
 @Controller("party")
 export class PartyController {
@@ -17,8 +18,8 @@ export class PartyController {
     }
 
     @Get("all")
-    getAllParties(@Query("q") query?: string) {
-        return this.partyService.getAllParties(query);
+    getAllParties(@Query("q") query?: string, @Query("page") page?: string, @Query("limit") limit?: string, @Query("excludeJoined") excludeJoined?: string) {
+        return this.partyService.getAllParties(query, page ? parsePageParams(page, limit) : undefined, excludeJoined === "true");
     }
 
     @Get("leaderboard/:code")

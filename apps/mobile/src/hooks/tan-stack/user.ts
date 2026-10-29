@@ -1,4 +1,5 @@
-import { queryKeys, queryRoots, useInvalidateAll } from "@/constants/query-keys";
+import { syncUserCaches } from "@/lib/query-cache";
+import { queryKeys, useInvalidateAll } from "@/constants/query-keys";
 import { useAuth } from "@/contexts/auth-context";
 import { api } from "@/lib/api/axios";
 import { requestApi } from "@/lib/api/request-api";
@@ -7,6 +8,7 @@ import { User } from "@/types/models";
 import { TMutationOptions, TQueryOptions } from "@/types/options";
 import { SuccessResponse } from "@/types/response";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { usePaginatedQuery } from "@/hooks/custom/use-paginated-query";
 
 export function useGetUser(options?: TQueryOptions<User>) {
     const { user } = useAuth();
@@ -46,6 +48,10 @@ export function useSearchUsers(query: string, options?: TQueryOptions<User[]>) {
     });
 }
 
+export function useSearchUsersInfinite(query: string, enabled = true) {
+    return usePaginatedQuery<User>([...queryKeys.user.search(query)], "/user/search", { query }, enabled);
+}
+
 export function useGetLeaderboard(options?: TQueryOptions<User[]>) {
     return useQuery({
         ...options,
@@ -64,10 +70,7 @@ export function useUpdateUser(options?: TMutationOptions<User, UpdateUserDto>) {
         mutationFn: async (data: UpdateUserDto) => requestApi(() => api.patch<User>("/user", data)),
         onError: (error, ...args) => options?.onError?.(error, ...args),
         onSuccess: (user, ...args) => {
-            queryClient.setQueryData<User>(queryKeys.user.me(user.id), user);
-            queryClient.invalidateQueries({ queryKey: queryRoots.user });
-            queryClient.invalidateQueries({ queryKey: queryRoots.quest });
-            queryClient.invalidateQueries({ queryKey: queryRoots.partyMember });
+            syncUserCaches(queryClient, user);
             options?.onSuccess?.(user, ...args);
         },
     });

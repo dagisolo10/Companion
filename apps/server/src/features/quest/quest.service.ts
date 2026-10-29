@@ -1,9 +1,10 @@
-import { PrismaService } from "@/common/prisma/prisma.service.js";
-import { RequestService } from "@/common/request/request.service.js";
-import { CreateQuestDto, Filter, UpdateQuestDto } from "@/features/quest/quest.dto.js";
-import { StreakService } from "@/features/streak/streak.service.js";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { CreateQuestDto, Filter, UpdateQuestDto } from "@/features/quest/quest.dto.js";
+import { RequestService } from "@/common/request/request.service.js";
+import { StreakService } from "@/features/streak/streak.service.js";
+import { PrismaService } from "@/common/prisma/prisma.service.js";
 import { Difficulty, Mode, Prisma } from "@prisma/client";
+import { PageParams, paginate } from "@/common/pagination.js";
 
 const NORMAL_XP_RATES = [1, 0.75, 0.5, 0.25];
 
@@ -62,33 +63,50 @@ export class QuestService {
         });
     }
 
-    async getPartyQuests(code: string) {
+    async getPartyQuests(code: string, status?: Filter, page?: PageParams) {
+        const userId = this.requestService.getUserId();
         const p = await this.prisma.party.findUnique({ where: { code } });
 
         if (!p) {
             throw new NotFoundException("Party not found");
         }
 
-        return await this.prisma.quest.findMany({ where: { partyId: p.id }, include: questSelect });
+        const findQuests = (args: { skip?: number; take?: number }) =>
+            this.prisma.quest.findMany({
+                where: { partyId: p.id, ...(status !== "All" && { status }) },
+                ...args,
+                orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+                include: {
+                    ...questSelect,
+                    questActivities: {
+                        where: { userId },
+                        select: { id: true },
+                    },
+                },
+            });
+        return page ? paginate(page, ({ skip, take }) => findQuests({ skip, take })) : findQuests({});
     }
 
-    async getMyQuests(status?: Filter, take = 100) {
+    async getMyQuests(status?: Filter, take = 100, page?: PageParams) {
         const userId = this.requestService.getUserId();
 
-        return await this.prisma.quest.findMany({
-            where: {
-                party: { members: { some: { userId } } },
-                ...(status !== "All" && { status }),
-            },
-            take,
-            include: {
-                ...questSelect,
-                questActivities: {
-                    where: { userId },
-                    select: { id: true },
+        const findQuests = (args: { skip?: number; take?: number }) =>
+            this.prisma.quest.findMany({
+                where: {
+                    party: { members: { some: { userId } } },
+                    ...(status !== "All" && { status }),
                 },
-            },
-        });
+                ...args,
+                orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+                include: {
+                    ...questSelect,
+                    questActivities: {
+                        where: { userId },
+                        select: { id: true },
+                    },
+                },
+            });
+        return page ? paginate(page, ({ skip, take: pageTake }) => findQuests({ skip, take: pageTake })) : findQuests({ take });
     }
 
     async getQuest(id: string, code: string) {

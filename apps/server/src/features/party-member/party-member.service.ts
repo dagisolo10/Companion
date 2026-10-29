@@ -3,6 +3,7 @@ import { RequestService } from "@/common/request/request.service.js";
 import { RemoveMemberDto } from "@/features/party-member/party-member.dto.js";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
+import { PageParams, paginate } from "@/common/pagination.js";
 
 @Injectable()
 export class PartyMemberService {
@@ -67,17 +68,21 @@ export class PartyMemberService {
         return { success: true };
     }
 
-    async getMembers(code: string) {
+    async getMembers(code: string, page?: PageParams) {
         const party = await this.prisma.party.findUnique({ where: { code } });
 
         if (!party) {
             throw new NotFoundException("Party not found");
         }
 
-        return await this.prisma.partyMember.findMany({
-            where: { party: { code } },
-            include: { user: { select: { id: true, name: true, username: true } } },
-        });
+        const findMembers = (args: { skip?: number; take?: number }) =>
+            this.prisma.partyMember.findMany({
+                where: { party: { code } },
+                ...args,
+                orderBy: [{ joinedAt: "asc" }, { id: "asc" }],
+                include: { user: { select: { id: true, name: true, username: true } } },
+            });
+        return page ? paginate(page, ({ skip, take }) => findMembers({ skip, take })) : findMembers({});
     }
 
     async removeMember(code: string, { partyMemberId }: RemoveMemberDto) {
