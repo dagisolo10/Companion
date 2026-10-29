@@ -7,7 +7,7 @@ import BackButton from "@/components/back-button";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
-import { Alert, View } from "react-native";
+import { Alert, Switch, View } from "react-native";
 import Text from "@/components/ui/text";
 import { Party } from "@/types/models";
 import { useState } from "react";
@@ -41,6 +41,7 @@ function PartySettingsForm({ party }: { party: Party }) {
     const updatePartyMutation = useUpdateParty();
     const regenerateCodeMutation = useRegeneratePartyCode();
     const [name, setName] = useState(party.name);
+    const [isPublic, setIsPublic] = useState(party.public);
     const [showRegenerateDialog, setShowRegenerateDialog] = useState(false);
 
     function handleSave() {
@@ -49,7 +50,7 @@ function PartySettingsForm({ party }: { party: Party }) {
             return;
         }
         updatePartyMutation.mutate(
-            { id: party.id, data: { name: name.trim() } },
+            { id: party.id, data: { name: name.trim(), public: isPublic } },
             {
                 onSuccess: () => router.back(),
                 onError: (err) => Alert.alert("Error", err.message),
@@ -74,6 +75,14 @@ function PartySettingsForm({ party }: { party: Party }) {
             <View className="gap-1.5">
                 <Text className="text-sm">Party Name</Text>
                 <Input placeholder="Party name" value={name} onChangeText={setName} />
+            </View>
+
+            <View className="card flex-row items-center justify-between gap-4">
+                <View className="flex-1 gap-1">
+                    <Text className="text-sm font-bold">Public party</Text>
+                    <Text className="text-muted-foreground text-xs">{isPublic ? "Anyone can find this party in Discover." : "This party is hidden from Discover and can only be found by its code."}</Text>
+                </View>
+                <Switch value={isPublic} onValueChange={setIsPublic} disabled={updatePartyMutation.isPending} />
             </View>
 
             <Button onPress={handleSave} disabled={updatePartyMutation.isPending || !name.trim()} asChild size={"lg"}>

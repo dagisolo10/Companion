@@ -26,7 +26,7 @@ export class PartyService {
         return code;
     }
 
-    async createParty({ name }: CreatePartyDto) {
+    async createParty({ name, public: isPublic = true }: CreatePartyDto) {
         const userId = this.requestService.getUserId();
 
         const code = await this.generateUniquePartyCode();
@@ -35,6 +35,7 @@ export class PartyService {
             data: {
                 code,
                 name,
+                public: isPublic,
                 creatorId: userId,
                 members: { create: { userId } },
             },
@@ -100,6 +101,7 @@ export class PartyService {
             this.prisma.party
                 .findMany({
                     where: {
+                        public: true,
                         ...(trimmed && { OR: [{ name: { contains: trimmed, mode: "insensitive" } }, { code: { contains: trimmed, mode: "insensitive" } }] }),
                         ...(excludeJoined && { members: { none: { userId } } }),
                     },

@@ -20,10 +20,12 @@ export type TransferPartyDto = { partyMemberId: string };
 
 export type CreatePartyDto = {
     name: string;
+    public?: boolean;
 };
 
 export type UpdatePartyDto = {
     name?: string;
+    public?: boolean;
 };
 
 export type UpdateQuestDto = Partial<Omit<CreateQuestDto, "code">>;

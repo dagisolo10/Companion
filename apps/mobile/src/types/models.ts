@@ -13,6 +13,7 @@ export type Party = {
     id: string;
     code: string;
     name: string;
+    public: boolean;
     createdAt: string;
     creatorId: string;
 };

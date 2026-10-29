@@ -25,6 +25,7 @@ model Party {
     id        String        @id @default(uuid())
     name      String
     code      String        @unique
+    public    Boolean       @default(true)
     createdAt DateTime      @default(now())
     creatorId String
     quests    Quest[]
