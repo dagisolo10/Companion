@@ -15,7 +15,6 @@ import { useGetMyQuests } from "@/hooks/tan-stack/quest";
 import { useGetMyQuestActivities } from "@/hooks/tan-stack/quest-activity";
 import { useGetUser } from "@/hooks/tan-stack/user";
 import { loadValue } from "@/utils/helper-functions";
-import { router } from "expo-router";
 import { Activity, Map, Plus, Target, Trophy, Users, Zap } from "lucide-react-native";
 import { View } from "react-native";
 
@@ -72,12 +71,27 @@ export default function Home() {
             <View className="gap-2.5">
                 <SectionHeader title="Quick Actions" icon={Map} />
                 <View className="flex-row gap-3">
-                    <Button size="lg" asChild className="flex-1" onPress={() => router.push("/(app)/(tabs)/(parties)/[code]/(quests)/create")}>
+                    <Button
+                        size="lg"
+                        asChild
+                        className="flex-1"
+                        onPress={() => {
+                            // router.push("/(app)/(tabs)/(parties)/[code]/(quests)/create");
+                        }}
+                    >
                         <Plus size={18} color={color.black} strokeWidth={3} />
                         <Text className="font-extrabold text-black">Create Quest</Text>
                     </Button>
 
-                    <Button size="lg" variant="outline" asChild className="flex-1" onPress={() => router.push("/(app)/(parties)/create")}>
+                    <Button
+                        size="lg"
+                        variant="outline"
+                        asChild
+                        className="flex-1"
+                        onPress={() => {
+                            // router.push("/(app)/(parties)/create");
+                        }}
+                    >
                         <Users size={18} color={color.foreground} strokeWidth={2.5} />
                         <Text className="font-extrabold">Create Party</Text>
                     </Button>
@@ -91,14 +105,22 @@ export default function Home() {
                 title="Active Quests"
                 badge={`${myQuestsQuery.data.length} Pending`}
                 onAction={() => {
-                    const code = myQuestsQuery.data?.[0]?.party?.code;
-                    if (code) router.push({ pathname: "/(app)/(tabs)/(parties)/[code]/(quests)", params: { code } });
+                    // const code = myQuestsQuery.data?.[0]?.party?.code;
+                    // if (code) router.push({ pathname: "/(app)/(tabs)/(parties)/[code]/(quests)", params: { code } });
                 }}
             />
 
             <View className="gap-3">
                 {myQuestsQuery.data.length > 0 ? (
-                    myQuestsQuery.data.map((quest) => <QuestCard key={quest.id} quest={quest} onPress={() => router.push({ pathname: "/(app)/(tabs)/(parties)/[code]/(quests)/[id]", params: { id: quest.id, code: quest.party.code } })} />)
+                    myQuestsQuery.data.map((quest) => (
+                        <QuestCard
+                            key={quest.id}
+                            quest={quest}
+                            onPress={() => {
+                                // router.push({ pathname: "/(app)/(tabs)/(parties)/[code]/(quests)/[id]", params: { id: quest.id, code: quest.party.code } });
+                            }}
+                        />
+                    ))
                 ) : (
                     <View className="card p-0">
                         <EmptyState
@@ -107,15 +129,22 @@ export default function Home() {
                             description="Create a quest to get started!"
                             actionLabel="Create Quest"
                             onAction={() => {
-                                const c = myQuestsQuery.data?.[0]?.party?.code;
-                                if (c) router.push({ pathname: "/(app)/(tabs)/(parties)/[code]/(quests)/create", params: { code: c } });
+                                // const c = myQuestsQuery.data?.[0]?.party?.code;
+                                // if (c) router.push({ pathname: "/(app)/(tabs)/(parties)/[code]/(quests)/create", params: { code: c } });
                             }}
                         />
                     </View>
                 )}
             </View>
 
-            <SectionHeader title="Recent Activity" icon={Activity} action="View all" onAction={() => router.push("/(app)/(home)/activity")} />
+            <SectionHeader
+                title="Recent Activity"
+                icon={Activity}
+                action="View all"
+                onAction={() => {
+                    // router.push("/(app)/(home)/activity");
+                }}
+            />
 
             <View className="card p-2">
                 {myQuestActivitiesQuery.data.length > 0 ? (

@@ -9,7 +9,7 @@ export default function ProgressBar({ color, value }: { color?: string; value: n
     const width = useSharedValue(0);
 
     useEffect(() => {
-        width.value = withTiming(value, { duration: 1500, easing: Easing.bounce });
+        width.value = withTiming(value, { duration: 1500, easing: Easing.bezier(0.25, 1, 0.5, 1) });
     }, [value, width]);
 
     const widthStyle = useAnimatedStyle(() => ({ width: `${width.value}%` }));
