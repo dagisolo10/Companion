@@ -8,6 +8,7 @@ import EmptyState from "@/components/ui/empty-state";
 import { useColor } from "@/hooks/custom/use-color";
 import { getLevel } from "@/utils/helper-functions";
 import Text from "@/components/ui/text";
+import ErrorMessage from "@/components/error-message";
 import { cn } from "cn";
 
 
@@ -22,7 +23,7 @@ export default function SearchScreen() {
     const usersQuery = useSearchUsers(debouncedQuery, {
         enabled: debouncedQuery.trim().length >= 2,
     });
-    const showEmpty = debouncedQuery.trim().length >= 2 && !usersQuery.isFetching && usersQuery.data.length === 0;
+    const showEmpty = debouncedQuery.trim().length >= 2 && !usersQuery.isFetching && !usersQuery.isError && usersQuery.data.length === 0;
 
     return (
         <ScrollView
@@ -40,7 +41,7 @@ export default function SearchScreen() {
                 </View>
             )}
 
-            {!usersQuery.isFetching && usersQuery.data.length > 0 && (
+            {!usersQuery.isFetching && !usersQuery.isError && usersQuery.data.length > 0 && (
                 <View className="gap-3">
                     {usersQuery.data.map((user, index) => {
                         const bgColor = AVATAR_COLORS[index % AVATAR_COLORS.length];
@@ -63,6 +64,8 @@ export default function SearchScreen() {
                     })}
                 </View>
             )}
+
+            {!usersQuery.isFetching && usersQuery.isError && <ErrorMessage message={usersQuery.error.message || "Failed to search players."} />}
 
             {showEmpty && <EmptyState icon={UserRound} title="No players found" description={`No one matches "${debouncedQuery}".`} />}
 

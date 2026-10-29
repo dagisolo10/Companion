@@ -1,15 +1,16 @@
-import ConfirmDialog from "@/components/confirm-dialog";
-import ProfileView, { SkeletonProfileView } from "@/components/profile";
-import Screen from "@/components/ui/screen";
-import Text from "@/components/ui/text";
-import { useColor } from "@/hooks/custom/use-color";
-import { useDeleteUser, useGetUser } from "@/hooks/tan-stack/user";
-import { supabase } from "@/lib/supabase";
-import { cn } from "cn";
-import { router } from "expo-router";
 import { ChevronRight, LogOut, LucideIcon, Moon, Sun, Trash2, User } from "lucide-react-native";
-import { PropsWithChildren, ReactNode, useState } from "react";
 import { Alert, Appearance, Pressable, Switch, View, useColorScheme } from "react-native";
+import ProfileView, { SkeletonProfileView } from "@/components/profile";
+import { useDeleteUser, useGetUser } from "@/hooks/tan-stack/user";
+import { PropsWithChildren, ReactNode, useState } from "react";
+import ConfirmDialog from "@/components/confirm-dialog";
+import { useColor } from "@/hooks/custom/use-color";
+import Screen from "@/components/ui/screen";
+import { supabase } from "@/lib/supabase";
+import Text from "@/components/ui/text";
+import { router } from "expo-router";
+import { cn } from "cn";
+
 
 export default function Profile() {
     const scheme = useColorScheme();
@@ -20,15 +21,26 @@ export default function Profile() {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
     async function handleSignOut() {
-        await supabase.auth.signOut();
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+            Alert.alert("Sign Out", "Failed to sign out. Try Again!");
+            return;
+        }
+
         router.replace("/(auth)/sign-in");
     }
 
     function handleDeleteAccount() {
         deleteUserMutation.mutate(undefined, {
             onSuccess: async () => {
+                const { error } = await supabase.auth.signOut();
+
+                if (error) {
+                    throw error;
+                }
+
                 setShowDeleteDialog(false);
-                await supabase.auth.signOut();
                 router.replace("/(auth)/sign-in");
             },
             onError: (err) => Alert.alert("Error", err.message),

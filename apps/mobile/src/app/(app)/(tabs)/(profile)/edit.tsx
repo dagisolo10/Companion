@@ -1,16 +1,17 @@
-import BackButton from "@/components/back-button";
-import Button from "@/components/ui/button";
-import { InputField } from "@/components/ui/input";
-import Screen from "@/components/ui/screen";
-import { SkeletonCard } from "@/components/ui/skeleton";
-import Text from "@/components/ui/text";
-import useDebounce from "@/hooks/custom/use-debounce";
-import { useGetUser, useIsUsernameAvailable, useUpdateUser } from "@/hooks/tan-stack/user";
-import { User } from "@/types/models";
-import { slugifyUsername } from "@/utils/helper-functions";
 import { AlertCircle, AtSign, CheckCircle2, Save, User2, XCircle } from "lucide-react-native";
-import { useState } from "react";
+import { useGetUser, useIsUsernameAvailable, useUpdateUser } from "@/hooks/tan-stack/user";
+import { slugifyUsername } from "@/utils/helper-functions";
+import { SkeletonCard } from "@/components/ui/skeleton";
+import useDebounce from "@/hooks/custom/use-debounce";
+import { InputField } from "@/components/ui/input";
 import { Alert, Switch, View } from "react-native";
+import BackButton from "@/components/back-button";
+import Screen from "@/components/ui/screen";
+import Button from "@/components/ui/button";
+import Text from "@/components/ui/text";
+import { User } from "@/types/models";
+import { useRef, useState } from "react";
+
 
 export default function EditProfile() {
     const userQuery = useGetUser();
@@ -43,12 +44,13 @@ function EditProfileForm({ user }: { user: User }) {
     const [isPublic, setIsPublic] = useState(user.public);
     const [username, setUsername] = useState(user.username);
     const [apiError, setApiError] = useState<string | null>(null);
+    const isUpdatingVisibility = useRef(false);
 
     const slugValue = slugifyUsername(username);
     const debounced = useDebounce(slugValue, 1000);
 
     const updateUserMutation = useUpdateUser();
-    const usernameAvailableQuery = useIsUsernameAvailable(debounced, { enabled: debounced.length >= 3 && debounced !== user.username });
+    const usernameAvailableQuery = useIsUsernameAvailable(debounced, { enabled: debounced.length >= 3 && debounced !== user.username, retry: 0 });
 
     const activeErrors: string[] = [];
 
@@ -68,6 +70,9 @@ function EditProfileForm({ user }: { user: User }) {
     if (apiError) activeErrors.push(apiError);
 
     function handlePublicToggle(value: boolean) {
+        if (updateUserMutation.isPending || isUpdatingVisibility.current) return;
+
+        isUpdatingVisibility.current = true;
         setIsPublic(value);
         setApiError(null);
         updateUserMutation.mutate(
@@ -79,6 +84,9 @@ function EditProfileForm({ user }: { user: User }) {
                 onError: (err) => {
                     setIsPublic(!value);
                     setApiError(err.message || "Failed to update profile visibility.");
+                },
+                onSettled: () => {
+                    isUpdatingVisibility.current = false;
                 },
             },
         );
@@ -158,7 +166,7 @@ function EditProfileForm({ user }: { user: User }) {
                     <Text className="text-muted-foreground font-jakarta-bold max-w-48 text-xs">Allow others to find you in search and view your profile.</Text>
                 </View>
                 <View className="justify-center">
-                    <Switch value={isPublic} onValueChange={handlePublicToggle} />
+                    <Switch value={isPublic} onValueChange={handlePublicToggle} disabled={updateUserMutation.isPending} />
                 </View>
             </View>
 
