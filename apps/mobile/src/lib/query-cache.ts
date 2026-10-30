@@ -3,6 +3,26 @@ import type { QueryClient, QueryKey } from "@tanstack/react-query";
 import type { PartyLeaderboardMember } from "@/types/leaderboard";
 import { queryKeys, queryRoots } from "@/constants/query-keys";
 
+type PaginatedItems<T> = { pages: { items: T[] }[]; pageParams: unknown[] };
+
+function removePartyFromPaginatedCaches(queryClient: QueryClient, code: string) {
+    for (const [key, data] of queryClient.getQueriesData<PaginatedItems<PartyDetail>>({ queryKey: ["paginated", ...queryRoots.party] })) {
+        if (!data) continue;
+        queryClient.setQueryData<PaginatedItems<PartyDetail>>(key, {
+            ...data,
+            pages: data.pages.map((page) => ({ ...page, items: page.items.filter((party) => party.code !== code) })),
+        });
+    }
+
+    for (const [key, data] of queryClient.getQueriesData<PaginatedItems<Quest>>({ queryKey: ["paginated", ...queryRoots.quest] })) {
+        if (!data) continue;
+        queryClient.setQueryData<PaginatedItems<Quest>>(key, {
+            ...data,
+            pages: data.pages.map((page) => ({ ...page, items: page.items.filter((quest) => quest.party.code !== code) })),
+        });
+    }
+}
+
 function isQuestDetailKey(key: QueryKey) {
     return key.length === 3 && key[0] === "quest" && key[1] !== "my" && key[1] !== "party";
 }
@@ -237,6 +257,7 @@ export async function leavePartyCaches(queryClient: QueryClient, code: string, m
     adjustPartyMemberCount(queryClient, code, -1, false, memberCount);
     queryClient.setQueriesData<PartyDetail[]>({ queryKey: queryKeys.party.my() }, (list) => list?.filter((party) => party.code !== code));
     removeQuestsByParty(queryClient, code);
+    removePartyFromPaginatedCaches(queryClient, code);
     await queryClient.invalidateQueries({ queryKey: [...queryRoots.questActivity, "my"] });
     await queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.partyMember] });
 }

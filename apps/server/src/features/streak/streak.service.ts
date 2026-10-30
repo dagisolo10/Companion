@@ -75,7 +75,11 @@ export class StreakService {
     }
 
     async buildLeaderboardPayload(partyId: string): Promise<PartyLeaderboardMember[]> {
-        const members = await this.prisma.partyMember.findMany({ where: { partyId }, include: { user: true }, orderBy: { user: { experience: "desc" } } });
+        const members = await this.prisma.partyMember.findMany({
+            where: { partyId },
+            include: { user: true },
+            orderBy: [{ user: { experience: "desc" } }, { joinedAt: "asc" }, { id: "asc" }],
+        });
         const resolvedUsers = await this.resolveStreaks(members.map(({ user }) => user));
         const usersById = new Map(resolvedUsers.map((user) => [user.id, user]));
 
