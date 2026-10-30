@@ -1,26 +1,27 @@
-import { NativeTabs } from "expo-router/native-tabs";
+import { House, Search, UserRound, UsersRound } from "lucide-react-native";
+import NeoBrutalTabBar from "@/components/neo-brutal-tab-bar";
+import { useColor } from "@/hooks/custom/use-color";
+import { Tabs } from "expo-router";
+
 
 export default function AppTabsLayout() {
+    const color = useColor();
+
     return (
-        <NativeTabs>
-            <NativeTabs.Trigger name="(home)">
-                <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
-                <NativeTabs.Trigger.Icon sf="house.fill" />
-            </NativeTabs.Trigger>
-
-            <NativeTabs.Trigger name="(party)">
-                <NativeTabs.Trigger.Label>Party</NativeTabs.Trigger.Label>
-                <NativeTabs.Trigger.Icon sf="person.2.fill" />
-            </NativeTabs.Trigger>
-
-            <NativeTabs.Trigger name="(profile)">
-                <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
-                <NativeTabs.Trigger.Icon sf="person.crop.circle.fill" />
-            </NativeTabs.Trigger>
-
-            <NativeTabs.Trigger name="(search)" role="search">
-                <NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label>
-            </NativeTabs.Trigger>
-        </NativeTabs>
+        <Tabs
+            tabBar={(props) => <NeoBrutalTabBar {...props} />}
+            screenOptions={{
+                headerShown: false,
+                tabBarActiveTintColor: color.foreground,
+                tabBarLabelStyle: { fontWeight: "700" },
+                tabBarInactiveTintColor: color.mutedForeground,
+                tabBarStyle: { backgroundColor: color.background, borderTopColor: color.border },
+            }}
+        >
+            <Tabs.Screen name="(home)" options={{ title: "Home", tabBarIcon: ({ color: iconColor, size }) => <House color={iconColor} size={size} /> }} />
+            <Tabs.Screen name="(party)" options={{ title: "Party", tabBarIcon: ({ color: iconColor, size }) => <UsersRound color={iconColor} size={size} /> }} />
+            <Tabs.Screen name="(search)" options={{ title: "Search", tabBarIcon: ({ color: iconColor, size }) => <Search color={iconColor} size={size} /> }} />
+            <Tabs.Screen name="(profile)" options={{ title: "Profile", tabBarIcon: ({ color: iconColor, size }) => <UserRound color={iconColor} size={size} /> }} />
+        </Tabs>
     );
 }

@@ -1,18 +1,20 @@
+import { ArrowRight, AtSign, Eye, EyeOff, Lock, Mail, User2 } from "lucide-react-native";
+import { rememberAccount } from "@/lib/auth/remembered-accounts";
+import { Platform, Pressable, Switch, View } from "react-native";
 import ErrorMessage from "@/components/error-message";
-import Button from "@/components/ui/button";
+import { useMutation } from "@tanstack/react-query";
+import { useColor } from "@/hooks/custom/use-color";
+import { requestApi } from "@/lib/api/request-api";
 import { InputField } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
-import Text from "@/components/ui/text";
-import { useColor } from "@/hooks/custom/use-color";
-import { api } from "@/lib/api/axios";
-import { requestApi } from "@/lib/api/request-api";
-import { supabase } from "@/lib/supabase";
-import { useMutation } from "@tanstack/react-query";
+import Button from "@/components/ui/button";
 import { Link, router } from "expo-router";
-import { ArrowRight, AtSign, Eye, EyeOff, Lock, Mail, User2 } from "lucide-react-native";
+import { supabase } from "@/lib/supabase";
+import Text from "@/components/ui/text";
+import { api } from "@/lib/api/axios";
 import { useState } from "react";
-import { Pressable, View } from "react-native";
 import { z } from "zod";
+
 
 const signUpSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -29,6 +31,7 @@ export default function SignUp() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [rememberThisAccount, setRememberThisAccount] = useState(false);
 
     const signUpNewUserMt = useMutation({
         mutationFn: async () => {
@@ -57,6 +60,8 @@ export default function SignUp() {
             if (response.error) {
                 throw new Error(response.error.message);
             }
+
+            if (rememberThisAccount && response.data.session) await rememberAccount(response.data.session);
         },
         onSuccess: () => {
             router.replace("/(app)/(home)");
@@ -88,6 +93,14 @@ export default function SignUp() {
                     secureTextEntry={!showPassword}
                     onChangeText={setPassword}
                 />
+
+                <View className="card flex-row items-center justify-between gap-4">
+                    <View className="flex-1 gap-1">
+                        <Text className="text-sm font-bold">Remember this account</Text>
+                        <Text className="text-muted-foreground text-xs">{Platform.OS === "web" ? "Secure account switching is available in the mobile app." : "Save it securely on this device for account switching."}</Text>
+                    </View>
+                    <Switch value={rememberThisAccount} onValueChange={setRememberThisAccount} disabled={signUpNewUserMt.isPending || Platform.OS === "web"} />
+                </View>
 
                 <ErrorMessage message={signUpNewUserMt.error?.message} />
 

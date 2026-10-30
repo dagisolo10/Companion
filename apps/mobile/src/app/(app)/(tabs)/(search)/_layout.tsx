@@ -1,6 +1,7 @@
 import { useColor } from "@/hooks/custom/use-color";
 import { router, Stack } from "expo-router";
 
+
 export default function SearchLayout() {
     const color = useColor();
 
@@ -16,9 +17,7 @@ export default function SearchLayout() {
             <Stack.Screen
                 name="index"
                 options={{
-                    headerLargeTitle: true,
-                    headerTransparent: false,
-                    headerTitle: "Find Players",
+                    title: "",
                     headerSearchBarOptions: {
                         autoCapitalize: "none",
                         placeholder: "Search by name or username",

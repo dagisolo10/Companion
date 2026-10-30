@@ -1,18 +1,28 @@
-import ConfirmDialog from "@/components/confirm-dialog";
-import ProfileView, { SkeletonProfileView } from "@/components/profile";
-import Screen from "@/components/ui/screen";
-import Text from "@/components/ui/text";
-import { useColor } from "@/hooks/custom/use-color";
-import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
-import { useDeleteUser, useGetUser } from "@/hooks/tan-stack/user";
-import { supabase } from "@/lib/supabase";
-import { cn } from "cn";
-import { router } from "expo-router";
 import { ChevronRight, LogOut, LucideIcon, Moon, Sun, Trash2, User } from "lucide-react-native";
-import { PropsWithChildren, ReactNode, useState } from "react";
 import { Appearance, Pressable, Switch, View, useColorScheme } from "react-native";
+import ProfileView, { SkeletonProfileView } from "@/components/profile";
+import { useDeleteUser, useGetUser } from "@/hooks/tan-stack/user";
+import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
+import { PropsWithChildren, ReactNode, useState } from "react";
+import { forgetAccount } from "@/lib/auth/remembered-accounts";
+import AccountSwitcher from "@/components/account-switcher";
+import ConfirmDialog from "@/components/confirm-dialog";
+import { useColor } from "@/hooks/custom/use-color";
+import { useAuth } from "@/contexts/auth-context";
+import Screen from "@/components/ui/screen";
+import { supabase } from "@/lib/supabase";
+import Text from "@/components/ui/text";
+import { router } from "expo-router";
+import { cn } from "cn";
+
 
 export default function Profile() {
+    const { user } = useAuth();
+
+    return <ProfileContent key={user?.id ?? "signed-out"} />;
+}
+
+function ProfileContent() {
     const scheme = useColorScheme();
 
     const userQuery = useGetUser();
@@ -22,25 +32,28 @@ export default function Profile() {
     const { showConfirmDialog, confirmDialog } = useConfirmDialog();
 
     async function handleSignOut() {
-        const { error } = await supabase.auth.signOut();
+        const currentUserId = userQuery.data?.id;
+        const { error } = await supabase.auth.signOut({ scope: "local" });
 
         if (error) {
             showConfirmDialog({ title: "Sign Out", description: "Failed to sign out. Try again." });
             return;
         }
 
+        if (currentUserId) await forgetAccount(currentUserId).catch(() => undefined);
         router.replace("/(auth)/sign-in");
     }
 
     function handleDeleteAccount() {
         deleteUserMutation.mutate(undefined, {
             onSuccess: async () => {
-                const { error } = await supabase.auth.signOut();
+                const { error } = await supabase.auth.signOut({ scope: "local" });
 
                 if (error) {
                     throw error;
                 }
 
+                if (userQuery.data?.id) await forgetAccount(userQuery.data.id).catch(() => undefined);
                 setShowDeleteDialog(false);
                 router.replace("/(auth)/sign-in");
             },
@@ -48,7 +61,7 @@ export default function Profile() {
         });
     }
 
-    if (userQuery.isFetching) {
+    if (userQuery.isPending) {
         return <SkeletonProfileView />;
     }
 
@@ -74,6 +87,8 @@ export default function Profile() {
                 <SettingRow label="Sign Out" icon={LogOut} onPress={handleSignOut} />
                 <SettingRow label="Delete Account" icon={Trash2} onPress={() => setShowDeleteDialog(true)} isLast />
             </SettingGroup>
+
+            <AccountSwitcher currentUserId={userQuery.data.id} />
 
             <ConfirmDialog
                 destructive

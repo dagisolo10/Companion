@@ -1,17 +1,38 @@
-import { PropsWithChildren, useEffect, useState } from "react";
+import { PropsWithChildren, useCallback, useEffect, useRef, useState } from "react";
+import { updateRememberedAccountSession } from "@/lib/auth/remembered-accounts";
+import { useQueryClient } from "@tanstack/react-query";
+import { Session, User } from "@supabase/supabase-js";
 import { injectTokenResolver } from "@/lib/api/axios";
 import { AuthContext } from "@/contexts/auth-context";
 import { useGetUser } from "@/hooks/tan-stack/user";
-import { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import { AppState } from "react-native";
 
+
 export default function AuthProvider({ children }: PropsWithChildren) {
+    const queryClient = useQueryClient();
     const [isLoading, setIsLoading] = useState(true);
     const [isSignedIn, setIsSignedIn] = useState(false);
 
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
+    const activeUserId = useRef<string | null>(null);
+
+    const applySession = useCallback(
+        (session: Session | null) => {
+            const nextUserId = session?.user.id ?? null;
+            if (activeUserId.current && activeUserId.current !== nextUserId) {
+                queryClient.getQueryCache().clear();
+            }
+            activeUserId.current = nextUserId;
+            const nextToken = session?.access_token ?? null;
+            injectTokenResolver(() => nextToken);
+            setIsSignedIn(session !== null);
+            setUser(session?.user ?? null);
+            setToken(nextToken);
+        },
+        [queryClient],
+    );
 
     useGetUser();
 
@@ -40,13 +61,10 @@ export default function AuthProvider({ children }: PropsWithChildren) {
             }
 
             if (data.session) {
-                setIsSignedIn(true);
-                setUser(data.session.user);
-                setToken(data.session.access_token);
+                void updateRememberedAccountSession(data.session).catch(() => undefined);
+                applySession(data.session);
             } else {
-                setUser(null);
-                setToken(null);
-                setIsSignedIn(false);
+                applySession(null);
             }
 
             setIsLoading(false);
@@ -56,18 +74,15 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
         const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
             if (session) {
-                setIsSignedIn(true);
-                setUser(session.user);
-                setToken(session.access_token);
+                void updateRememberedAccountSession(session).catch(() => undefined);
+                applySession(session);
             } else {
-                setUser(null);
-                setToken(null);
-                setIsSignedIn(false);
+                applySession(null);
             }
         });
 
         return () => data.subscription.unsubscribe();
-    }, []);
+    }, [applySession]);
 
-    return <AuthContext.Provider value={{ user, token, isLoading, isSignedIn }}>{children}</AuthContext.Provider>;
+    return <AuthContext.Provider value={{ user, token, isLoading, isSignedIn, applySession }}>{children}</AuthContext.Provider>;
 }

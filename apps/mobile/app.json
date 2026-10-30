@@ -40,11 +40,11 @@
                 }
             ],
             "expo-sqlite",
-
             "expo-web-browser",
             "expo-image",
             "expo-status-bar",
-            "expo-asset"
+            "expo-asset",
+            "expo-secure-store"
         ],
         "experiments": {
             "typedRoutes": true,

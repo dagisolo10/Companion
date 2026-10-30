@@ -1,15 +1,17 @@
-import { router, useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
 import { useSearchUsersInfinite } from "@/hooks/tan-stack/user";
+import { router, useLocalSearchParams } from "expo-router";
 import { SkeletonCard } from "@/components/ui/skeleton";
 import { Search, UserRound } from "lucide-react-native";
 import useDebounce from "@/hooks/custom/use-debounce";
 import ErrorMessage from "@/components/error-message";
 import EmptyState from "@/components/ui/empty-state";
+import LargeHeader from "@/components/large-header";
 import { useColor } from "@/hooks/custom/use-color";
 import { getLevel } from "@/utils/helper-functions";
 import Text from "@/components/ui/text";
 import { cn } from "cn";
+
 
 const AVATAR_COLORS = ["bg-lime", "bg-pink", "bg-amber", "bg-purple"];
 
@@ -69,6 +71,7 @@ export default function SearchScreen() {
                     </View>
                 );
             }}
+            ListHeaderComponent={<LargeHeader header="Find Players" />}
             ListFooterComponent={usersQuery.isFetchingNextPage ? <ActivityIndicator /> : undefined}
         />
     );

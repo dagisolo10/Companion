@@ -1,16 +1,19 @@
-import ErrorMessage from "@/components/error-message";
-import Button from "@/components/ui/button";
-import { InputField } from "@/components/ui/input";
-import Screen from "@/components/ui/screen";
-import Text from "@/components/ui/text";
-import { useColor } from "@/hooks/custom/use-color";
-import { supabase } from "@/lib/supabase";
-import { useMutation } from "@tanstack/react-query";
-import { Link, router } from "expo-router";
+import { getRememberedAccounts, rememberAccount, RememberedAccount, restoreRememberedAccount } from "@/lib/auth/remembered-accounts";
+import { ActivityIndicator, Platform, Pressable, Switch, View } from "react-native";
 import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react-native";
-import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { useMutation } from "@tanstack/react-query";
+import { Link, router, useFocusEffect } from "expo-router";
+import ErrorMessage from "@/components/error-message";
+import { useAuth } from "@/contexts/auth-context";
+import { useColor } from "@/hooks/custom/use-color";
+import { InputField } from "@/components/ui/input";
+import { useCallback, useState } from "react";
+import Screen from "@/components/ui/screen";
+import Button from "@/components/ui/button";
+import { supabase } from "@/lib/supabase";
+import Text from "@/components/ui/text";
 import { z } from "zod";
+
 
 const signInSchema = z.object({
     email: z.string().email("Please enter a valid email address"),
@@ -23,16 +26,32 @@ export default function SignIn() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [rememberThisAccount, setRememberThisAccount] = useState(false);
+    const [savedAccounts, setSavedAccounts] = useState<RememberedAccount[]>([]);
+    const { applySession } = useAuth();
+
+    const refreshSavedAccounts = useCallback(() => setSavedAccounts(getRememberedAccounts()), []);
+    useFocusEffect(refreshSavedAccounts);
+
+    const restoreAccountMutation = useMutation({
+        mutationFn: (account: RememberedAccount) => restoreRememberedAccount(account.userId),
+        onSuccess: (session) => {
+            applySession(session);
+            router.replace("/(app)/(home)");
+        },
+    });
 
     const signInWithPasswordMt = useMutation({
         mutationFn: async () => {
             const parsed = signInSchema.parse({ email, password });
 
-            const { error } = await supabase.auth.signInWithPassword({ ...parsed });
+            const { data, error } = await supabase.auth.signInWithPassword({ ...parsed });
 
             if (error) {
                 throw error;
             }
+
+            if (rememberThisAccount && data.session) await rememberAccount(data.session);
         },
         onSuccess: () => {
             router.replace("/(app)/(home)");
@@ -45,6 +64,44 @@ export default function SignIn() {
                 <Text className="font-bebas text-6xl">Welcome Back</Text>
                 <Text className="text-muted-foreground text-xl font-medium">Sign in to your account to continue</Text>
             </View>
+
+            {savedAccounts.length > 0 && (
+                <View className="gap-2">
+                    <Text className="text-sm font-extrabold">Continue as</Text>
+                    {savedAccounts.map((account) => {
+                        const isRestoring = restoreAccountMutation.isPending && restoreAccountMutation.variables?.userId === account.userId;
+                        return (
+                            <Pressable
+                                key={account.userId}
+                                accessibilityRole="button"
+                                accessibilityLabel={`Continue as ${account.name}, ${account.email}`}
+                                disabled={restoreAccountMutation.isPending || signInWithPasswordMt.isPending}
+                                onPress={() => {
+                                    setEmail(account.email);
+                                    setRememberThisAccount(true);
+                                    restoreAccountMutation.reset();
+                                    restoreAccountMutation.mutate(account);
+                                }}
+                                className="card flex-row items-center gap-3 px-4 py-3 active:opacity-80"
+                            >
+                                <View className="bg-lime border-foreground h-10 w-10 items-center justify-center border-2">
+                                    <Text className="font-extrabold text-black">{account.name.slice(0, 1).toUpperCase()}</Text>
+                                </View>
+                                <View className="flex-1">
+                                    <Text className="text-sm font-extrabold" numberOfLines={1}>
+                                        {account.name}
+                                    </Text>
+                                    <Text className="text-muted-foreground text-xs" numberOfLines={1}>
+                                        {account.email}
+                                    </Text>
+                                </View>
+                                {isRestoring ? <ActivityIndicator color={color.foreground} /> : <ArrowRight size={18} color={color.foreground} />}
+                            </Pressable>
+                        );
+                    })}
+                    <ErrorMessage message={restoreAccountMutation.error ? `${restoreAccountMutation.error instanceof Error ? restoreAccountMutation.error.message : "Could not restore this account."} Enter your password below to sign in again.` : undefined} />
+                </View>
+            )}
 
             <View className="gap-5">
                 <InputField icon={Mail} value={email} autoComplete="email" autoCapitalize="none" onChangeText={setEmail} placeholder="bob@gmail.com" keyboardType="email-address" />
@@ -70,6 +127,14 @@ export default function SignIn() {
                         secureTextEntry={!showPassword}
                         onChangeText={setPassword}
                     />
+                </View>
+
+                <View className="card flex-row items-center justify-between gap-4">
+                    <View className="flex-1 gap-1">
+                        <Text className="text-sm font-bold">Remember this account</Text>
+                        <Text className="text-muted-foreground text-xs">{Platform.OS === "web" ? "Secure account switching is available in the mobile app." : "Save it securely on this device for account switching."}</Text>
+                    </View>
+                    <Switch value={rememberThisAccount} onValueChange={setRememberThisAccount} disabled={signInWithPasswordMt.isPending || Platform.OS === "web"} />
                 </View>
 
                 <ErrorMessage message={signInWithPasswordMt.error?.message} />
