@@ -52,6 +52,8 @@ export default function SocketIoProvider({ children }: PropsWithChildren) {
 
         return () => {
             socketInstance.disconnect();
+            socketRef.current?.(null);
+            setConnected(false);
             socketInstance.off("connect");
             socketInstance.off("disconnect");
             socketInstance.off("connect_error");
