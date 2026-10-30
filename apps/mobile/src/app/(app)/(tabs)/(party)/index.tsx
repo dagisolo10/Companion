@@ -1,19 +1,20 @@
-import BackButton from "@/components/common/back-button";
-import LargeHeader from "@/components/common/large-header";
-import PartyCard from "@/components/party/party-card";
+import { useGetAllPartiesInfinite, useGetMyParties } from "@/hooks/tan-stack/party";
+import { Compass, Plus, Search, UserPlus, Users } from "lucide-react-native";
+import { ActivityIndicator, FlatList, View } from "react-native";
 import SectionHeader from "@/components/common/section-header";
-import Button from "@/components/ui/button";
+import { SkeletonPartyList } from "@/components/ui/skeleton";
+import LargeHeader from "@/components/common/large-header";
+import BackButton from "@/components/common/back-button";
+import useDebounce from "@/hooks/custom/use-debounce";
+import PartyCard from "@/components/party/party-card";
 import EmptyState from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
-import { SkeletonPartyList } from "@/components/ui/skeleton";
-import Text from "@/components/ui/text";
-import useDebounce from "@/hooks/custom/use-debounce";
-import { useGetAllPartiesInfinite, useGetMyParties } from "@/hooks/tan-stack/party";
-import { router } from "expo-router";
-import { Compass, Plus, Search, UserPlus, Users } from "lucide-react-native";
+import Button from "@/components/ui/button";
 import { useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, View } from "react-native";
+import Text from "@/components/ui/text";
+import { router } from "expo-router";
+
 
 export default function PartiesScreen() {
     const [search, setSearch] = useState("");
@@ -37,7 +38,7 @@ export default function PartiesScreen() {
     }
 
     return (
-        <Screen nonScrollable>
+        <Screen className="pb-0" nonScrollable>
             <FlatList
                 style={{ flex: 1 }}
                 data={discoverParties}

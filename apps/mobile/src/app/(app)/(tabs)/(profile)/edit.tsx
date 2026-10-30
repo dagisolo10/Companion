@@ -1,16 +1,16 @@
 import { AlertCircle, AtSign, CheckCircle2, Save, User2, XCircle } from "lucide-react-native";
 import { useGetUser, useIsUsernameAvailable, useUpdateUser } from "@/hooks/tan-stack/user";
-import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
 import { slugifyUsername } from "@/utils/helper-functions";
 import BackButton from "@/components/common/back-button";
 import { SkeletonCard } from "@/components/ui/skeleton";
 import useDebounce from "@/hooks/custom/use-debounce";
+import useToast from "@/hooks/custom/use-toast";
 import { InputField } from "@/components/ui/input";
 import { User } from "@companion/shared-types";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
 import { Switch, View } from "react-native";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Text from "@/components/ui/text";
 
 
@@ -45,8 +45,7 @@ function EditProfileForm({ user }: { user: User }) {
     const [isPublic, setIsPublic] = useState(user.public);
     const [username, setUsername] = useState(user.username);
     const [apiError, setApiError] = useState<string | null>(null);
-    const isUpdatingVisibility = useRef(false);
-    const { showConfirmDialog, confirmDialog } = useConfirmDialog();
+    const { showToast } = useToast();
 
     const slugValue = slugifyUsername(username);
     const debounced = useDebounce(slugValue, 1000);
@@ -72,24 +71,8 @@ function EditProfileForm({ user }: { user: User }) {
     if (apiError) activeErrors.push(apiError);
 
     function handlePublicToggle(value: boolean) {
-        if (updateUserMutation.isPending || isUpdatingVisibility.current) return;
-
-        isUpdatingVisibility.current = true;
         setIsPublic(value);
         setApiError(null);
-        updateUserMutation.mutate(
-            { public: value },
-            {
-                onSuccess: (data) => showConfirmDialog({ title: "Visibility Updated", description: `Your profile is now ${data.public ? "publicly accessible" : "private"}.` }),
-                onError: (err) => {
-                    setIsPublic(!value);
-                    setApiError(err.message || "Failed to update profile visibility.");
-                },
-                onSettled: () => {
-                    isUpdatingVisibility.current = false;
-                },
-            },
-        );
     }
 
     function handleSubmit() {
@@ -97,17 +80,20 @@ function EditProfileForm({ user }: { user: User }) {
 
         setApiError(null);
         updateUserMutation.mutate(
-            { name: name.trim(), username: slugValue },
+            { name: name.trim(), username: slugValue, public: isPublic },
             {
-                onSuccess: () => showConfirmDialog({ title: "Profile Updated", description: "Your profile details have been saved." }),
-                onError: (err) => setApiError(err.message || "Failed to update profile."),
+                onSuccess: () => showToast({ title: "Profile updated", description: "Your changes have been saved.", variant: "success" }),
+                onError: (err) => {
+                    const message = err.message || "Failed to update profile.";
+                    setApiError(message);
+                    showToast({ title: "Could not update profile", description: message, variant: "error" });
+                },
             },
         );
     }
 
     return (
         <Screen className="gap-6">
-            {confirmDialog}
             <BackButton label="Edit Profile" />
 
             <InputField

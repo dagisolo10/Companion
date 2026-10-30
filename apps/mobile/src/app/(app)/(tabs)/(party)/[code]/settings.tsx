@@ -1,5 +1,5 @@
 import { useGetParty, useRegeneratePartyCode, useUpdateParty } from "@/hooks/tan-stack/party";
-import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
+import useToast from "@/hooks/custom/use-toast";
 import ConfirmDialog from "@/components/common/confirm-dialog";
 import { router, useLocalSearchParams } from "expo-router";
 import BackButton from "@/components/common/back-button";
@@ -44,18 +44,18 @@ function PartySettingsForm({ party }: { party: Party }) {
     const [name, setName] = useState(party.name);
     const [isPublic, setIsPublic] = useState(party.public);
     const [showRegenerateDialog, setShowRegenerateDialog] = useState(false);
-    const { showConfirmDialog, confirmDialog } = useConfirmDialog();
+    const { showToast } = useToast();
 
     function handleSave() {
         if (!name.trim()) {
-            showConfirmDialog({ title: "Missing name", description: "Party name cannot be empty." });
+            showToast({ title: "Party name required", description: "Enter a name before saving.", variant: "warning" });
             return;
         }
         updatePartyMutation.mutate(
             { id: party.id, data: { name: name.trim(), public: isPublic } },
             {
                 onSuccess: () => router.back(),
-                onError: (err) => showConfirmDialog({ title: "Error", description: err.message }),
+                onError: (err) => showToast({ title: "Could not save party", description: err.message, variant: "error" }),
             },
         );
     }
@@ -66,13 +66,12 @@ function PartySettingsForm({ party }: { party: Party }) {
                 setShowRegenerateDialog(false);
                 router.push({ pathname: "/(app)/(tabs)/(party)/[code]", params: { code } });
             },
-            onError: (err) => showConfirmDialog({ title: "Error", description: err.message }),
+            onError: (err) => showToast({ title: "Could not regenerate code", description: err.message, variant: "error" }),
         });
     }
 
     return (
         <Screen className="gap-5">
-            {confirmDialog}
             <BackButton label="Settings" />
 
             <View className="gap-1.5">

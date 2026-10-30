@@ -1,6 +1,7 @@
 import { AlertTriangle, Check, CheckCircle2, Copy, Globe, LockKeyhole, LogOut, Plus, ScrollText, Settings, Share2, Target, Trophy, UserPlus, Users } from "lucide-react-native";
 import { useGetMembers, useJoinParty, useLeaveParty } from "@/hooks/tan-stack/party-member";
 import * as Clipboard from "expo-clipboard";
+import useToast from "@/hooks/custom/use-toast";
 import { SkeletonCard, SkeletonQuestList } from "@/components/ui/skeleton";
 import { useDeleteParty, useGetParty } from "@/hooks/tan-stack/party";
 import { useGetPartyQuests } from "@/hooks/tan-stack/quest";
@@ -30,6 +31,7 @@ export default function PartyDetailScreen() {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showLeaveDialog, setShowLeaveDialog] = useState(false);
     const [codeCopied, setCodeCopied] = useState(false);
+    const { showToast } = useToast();
 
     useEffect(() => {
         if (!codeCopied) return;
@@ -54,7 +56,10 @@ export default function PartyDetailScreen() {
             router.replace("/(app)/(tabs)/(party)");
         },
     });
-    const joinPartyMutation = useJoinParty();
+    const joinPartyMutation = useJoinParty({
+        onSuccess: () => showToast({ title: "Joined party", description: `You are now a member of ${partyQuery.data?.name ?? "this party"}.`, variant: "success" }),
+        onError: (error) => showToast({ title: "Could not join party", description: error.message || "Please try again.", variant: "error" }),
+    });
 
     function handleJoin() {
         if (!code) return;

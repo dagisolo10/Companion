@@ -3,6 +3,7 @@ import Animated, { createAnimatedComponent, Easing, useAnimatedStyle, useSharedV
 import { Check, ChevronDown, LogIn, Trash2, UserPlus, UsersRound } from "lucide-react-native";
 import { ActivityIndicator, Pressable, View } from "react-native";
 import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
+import useToast from "@/hooks/custom/use-toast";
 import { useCallback, useEffect, useState } from "react";
 import SectionHeader from "@/components/common/section-header";
 import { router, useFocusEffect } from "expo-router";
@@ -23,6 +24,7 @@ export default function AccountSwitcher({ currentUserId }: { currentUserId: stri
     const color = useColor();
     const { applySession } = useAuth();
     const { showConfirmDialog, confirmDialog } = useConfirmDialog();
+    const { showToast } = useToast();
 
     const rotation = useSharedValue(0);
     const progress = useSharedValue(0);
@@ -68,8 +70,9 @@ export default function AccountSwitcher({ currentUserId }: { currentUserId: stri
         onSuccess: () => {
             refreshAccounts();
             if (accounts.length <= 1) setShowDropdown(false);
+            showToast({ title: "Account forgotten", description: "It has been removed from this device.", variant: "success" });
         },
-        onError: (error) => showConfirmDialog({ title: "Could not forget account", description: error instanceof Error ? error.message : "Please try again." }),
+        onError: (error) => showToast({ title: "Could not forget account", description: error instanceof Error ? error.message : "Please try again.", variant: "error" }),
     });
 
     function handleForget(account: RememberedAccount) {

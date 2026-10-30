@@ -8,6 +8,7 @@ import BackButton from "@/components/common/back-button";
 import { Filter, Quest } from "@companion/shared-types";
 import QuestCard from "@/components/quest/quest-card";
 import EmptyState from "@/components/ui/empty-state";
+import useToast from "@/hooks/custom/use-toast";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
 import Text from "@/components/ui/text";
@@ -23,6 +24,7 @@ export default function MyQuests() {
     const questsQuery = useGetMyQuestsInfinite(filter);
     const completeQuestMutation = useCompleteQuest();
     const { showConfirmDialog, confirmDialog } = useConfirmDialog();
+    const { showToast } = useToast();
 
     const isLoading = questsQuery.isLoading;
 
@@ -35,8 +37,8 @@ export default function MyQuests() {
                 completeQuestMutation.mutate(
                     { id: quest.id, code: quest.party.code },
                     {
-                        onSuccess: () => showConfirmDialog({ title: "Done", description: "Quest completed!" }),
-                        onError: (err) => showConfirmDialog({ title: "Error", description: err.message || "Failed to complete quest" }),
+                        onSuccess: () => showToast({ title: "Quest completed", description: "Your completion has been recorded.", variant: "success" }),
+                        onError: (err) => showToast({ title: "Could not complete quest", description: err.message || "Please try again.", variant: "error" }),
                     },
                 ),
         });
@@ -67,7 +69,7 @@ export default function MyQuests() {
                     <View className="mb-5 gap-5">
                         <BackButton label="My Quests" />
                         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                            <View className="flex-row gap-2">
+                            <View className="flex-row gap-2 pb-2">
                                 {tabs.map((tab) => (
                                     <Button key={tab} variant={filter === tab ? "default" : "secondary"} onPress={() => setFilter(tab)} className="px-4">
                                         <Text className={cn("text-center text-sm font-extrabold", filter === tab ? "text-black" : "text-foreground")}>{tab}</Text>

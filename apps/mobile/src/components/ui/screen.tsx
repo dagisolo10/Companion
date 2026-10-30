@@ -4,6 +4,7 @@ import { useColor } from "@/hooks/custom/use-color";
 import { PropsWithChildren } from "react";
 import { cn } from "cn";
 
+
 type ScreenProps = PropsWithChildren & {
     header?: boolean;
     className?: string;
@@ -20,14 +21,10 @@ export default function Screen({ children, nonScrollable = false, fullscreen = f
                 {nonScrollable ? (
                     <View className={cn("flex-1 px-5 py-8", className)}>{children}</View>
                 ) : (
-                    <ScrollView
-                        keyboardDismissMode="on-drag"
-                        keyboardShouldPersistTaps="handled"
-                        showsVerticalScrollIndicator={false}
-                        contentInsetAdjustmentBehavior={header ? "automatic" : "never"}
-                        contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 16, flexGrow: 1, ...(fullscreen && { flex: 1 }) }}
-                    >
-                        <View className={cn(fullscreen && "flex-1", className)}>{children}</View>
+                    <ScrollView keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentInsetAdjustmentBehavior={header ? "automatic" : "never"} contentContainerStyle={{ flexGrow: 1, ...(fullscreen && { flex: 1 }) }}>
+                        <View style={{ paddingHorizontal: 20, paddingVertical: 16 }} className={cn(fullscreen && "flex-1", className)}>
+                            {children}
+                        </View>
                     </ScrollView>
                 )}
             </SafeAreaView>

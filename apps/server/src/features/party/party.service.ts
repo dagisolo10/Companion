@@ -1,18 +1,21 @@
-import { PrismaService } from "@/common/prisma/prisma.service.js";
-import { RequestService } from "@/common/request/request.service.js";
-import { CreatePartyDto, TransferPartyDto, UpdatePartyDto } from "@/features/party/party.dto.js";
-import { StreakService } from "@/features/streak/streak.service.js";
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { CreatePartyDto, TransferPartyDto, UpdatePartyDto } from "@/features/party/party.dto.js";
+import { SocketIoService } from "@/common/socket.io/socket.io.service.js";
+import { RequestService } from "@/common/request/request.service.js";
+import { StreakService } from "@/features/streak/streak.service.js";
+import { PrismaService } from "@/common/prisma/prisma.service.js";
+import { PageParams, paginate } from "@/common/pagination.js";
 import { Prisma } from "@prisma/client";
 import { ulid } from "ulid";
-import { PageParams, paginate } from "@/common/pagination.js";
+
 
 @Injectable()
 export class PartyService {
     constructor(
         private readonly prisma: PrismaService,
-        private readonly requestService: RequestService,
         private readonly streakService: StreakService,
+        private readonly requestService: RequestService,
+        private readonly socketIoService: SocketIoService,
     ) {}
 
     private async generateUniquePartyCode() {
@@ -56,8 +59,20 @@ export class PartyService {
         }
 
         const code = await this.generateUniquePartyCode();
+        const updatedParty = await this.prisma.party.update({ where: { id }, data: { code } });
 
-        return await this.prisma.party.update({ where: { id }, data: { code } });
+        const members = await this.prisma.partyMember.findMany({ where: { partyId: id }, select: { userId: true } });
+
+        this.socketIoService.emitToUsers(
+            "party:code-regenerated",
+            members.map(({ userId: memberUserId }) => memberUserId),
+            {
+                previousCode: party.code,
+                party: { ...updatedParty, createdAt: updatedParty.createdAt.toISOString() },
+                memberCount: members.length,
+            },
+        );
+        return updatedParty;
     }
 
     async getParty(code: string) {
@@ -155,15 +170,30 @@ export class PartyService {
         const userId = this.requestService.getUserId();
 
         await this.checkOwnership(userId, id, "Only the party creator can update party");
-
-        return await this.prisma.party.update({ where: { id }, data });
+        const party = await this.prisma.party.update({ where: { id }, data });
+        const members = await this.prisma.partyMember.findMany({ where: { partyId: id }, select: { userId: true } });
+        const event = { party: { ...party, createdAt: party.createdAt.toISOString() }, memberCount: members.length };
+        this.socketIoService.emitToUsers(
+            "party:updated",
+            members.map(({ userId: memberUserId }) => memberUserId),
+            event,
+        );
+        return party;
     }
     async deleteParty(id: string) {
         const userId = this.requestService.getUserId();
 
         await this.checkOwnership(userId, id, "Only the party creator can delete party");
 
-        return await this.prisma.party.delete({ where: { id } });
+        const party = await this.prisma.party.findUniqueOrThrow({ where: { id } });
+        const members = await this.prisma.partyMember.findMany({ where: { partyId: id }, select: { userId: true } });
+        const deletedParty = await this.prisma.party.delete({ where: { id } });
+        this.socketIoService.emitToUsers(
+            "party:deleted",
+            members.map(({ userId: memberUserId }) => memberUserId),
+            { partyId: id, partyCode: party.code },
+        );
+        return deletedParty;
     }
 
     async transferParty(id: string, { partyMemberId }: TransferPartyDto) {
@@ -173,7 +203,7 @@ export class PartyService {
 
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
-                return await this.prisma.$transaction(
+                const transferredParty = await this.prisma.$transaction(
                     async (tx) => {
                         const party = await tx.party.findUnique({ where: { id } });
 
@@ -199,6 +229,16 @@ export class PartyService {
                     },
                     { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
                 );
+                const members = await this.prisma.partyMember.findMany({ where: { partyId: id }, select: { userId: true } });
+                this.socketIoService.emitToUsers(
+                    "party:updated",
+                    members.map(({ userId: memberUserId }) => memberUserId),
+                    {
+                        party: { ...transferredParty, createdAt: transferredParty.createdAt.toISOString() },
+                        memberCount: members.length,
+                    },
+                );
+                return transferredParty;
             } catch (error) {
                 if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034" && attempt < maxAttempts) {
                     await new Promise((resolve) => setTimeout(resolve, 50 * attempt));

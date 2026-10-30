@@ -1,6 +1,7 @@
 import { useGetMembersInfinite, useRemoveMember } from "@/hooks/tan-stack/party-member";
 import { useGetParty, useTransferParty } from "@/hooks/tan-stack/party";
 import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
+import useToast from "@/hooks/custom/use-toast";
 import { Crown, Shield, UserMinus, Users } from "lucide-react-native";
 import { useFindUser, useGetUser } from "@/hooks/tan-stack/user";
 import { router, useLocalSearchParams } from "expo-router";
@@ -25,12 +26,19 @@ export default function PartyMembersScreen() {
     const [showTransferInput, setShowTransferInput] = useState(false);
     const [removeTarget, setRemoveTarget] = useState<string | null>(null);
     const { showConfirmDialog, confirmDialog } = useConfirmDialog();
+    const { showToast } = useToast();
 
     const userQuery = useGetUser();
     const partyQuery = useGetParty(code!);
     const membersQuery = useGetMembersInfinite(code!);
     const searchingUserQuery = useFindUser(transferUsername, { enabled: transferUsername.length > 2 });
-    const removeMemberMutation = useRemoveMember({ onSuccess: () => setRemoveTarget(null) });
+    const removeMemberMutation = useRemoveMember({
+        onSuccess: () => {
+            setRemoveTarget(null);
+            showToast({ title: "Member removed", description: "They no longer have access to this party.", variant: "success" });
+        },
+        onError: (error) => showToast({ title: "Could not remove member", description: error.message || "Please try again.", variant: "error" }),
+    });
     const transferPartyMutation = useTransferParty({
         onSuccess: () => {
             setShowTransferInput(false);

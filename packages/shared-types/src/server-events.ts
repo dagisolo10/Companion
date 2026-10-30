@@ -1,47 +1,70 @@
-import type { QuestStatus } from "./models";
+import type { Party, PartyMember, Quest, QuestCompleter, User } from "./models";
 
 
 export interface PartyUpdatedEvent {
-    code: string;
-    name: string;
-    public: boolean;
+    party: Party;
     memberCount: number;
 }
 
 export interface PartyMemberChangedEvent {
-    code: string;
-    name: string;
-    userId: string;
-    username: string;
-    joinedAt: string;
+    partyCode: string;
+    partyName: string;
+    member: PartyMember;
+    memberCount: number;
 }
 
-export interface QuestUpdatedEvent {
-    id: string;
-    title: string;
-    startsAt: string;
-    partyCode: string;
-    status: QuestStatus;
-    expiresAt: string | null;
-    completedAt: string | null;
+export interface PartyCodeRegeneratedEvent {
+    previousCode: string;
+    party: Party;
+    memberCount: number;
 }
 
-export interface QuestActivityCreatedEvent {
-    id: string;
-    questId: string;
+export interface PartyDeletedEvent {
+    partyId: string;
     partyCode: string;
-    userId: string;
-    completedAt: string;
-    xpAwarded: number;
+}
+
+export interface UserUpdatedEvent {
+    user: User;
+}
+
+export interface QuestChangedEvent {
+    partyCode: string;
+    quest: Quest;
+}
+
+export interface QuestLifecycleEvent {
+    partyCode: string;
+    quest: Quest;
+    hoursRemaining?: 1 | 2;
+}
+
+export interface QuestMemberCompletedEvent {
+    partyCode: string;
+    quest: Quest;
+    activity: { id: string; questId: string; userId: string; xpAwarded: number; completedAt: string; user: QuestCompleter };
+}
+
+export type PartyLeaderboardMember = PartyMember & { user: User };
+
+export interface PartyLeaderboardUpdatedEvent {
+    partyCode: string;
+    leaderboard: PartyLeaderboardMember[];
 }
 
 export interface ServerToClientEvents {
-    connection_error: (error: string) => void;
-    "quest:updated": (event: QuestUpdatedEvent) => void;
+    "user:updated": (event: UserUpdatedEvent) => void;
     "party:updated": (event: PartyUpdatedEvent) => void;
-    "connection:ready": (event: { userId: string }) => void;
+    "party:deleted": (event: PartyDeletedEvent) => void;
+    "quest:created": (event: QuestChangedEvent) => void;
+    "quest:updated": (event: QuestChangedEvent) => void;
+    "quest:started": (event: QuestLifecycleEvent) => void;
+    "quest:expired": (event: QuestLifecycleEvent) => void;
+    "quest:expiring": (event: QuestLifecycleEvent) => void;
+    "quest:completed": (event: QuestLifecycleEvent) => void;
+    "party:member-left": (event: PartyMemberChangedEvent) => void;
     "party:member-joined": (event: PartyMemberChangedEvent) => void;
-    "quest:activity-created": (event: QuestActivityCreatedEvent) => void;
-    "client:pong": (event: { sentAt: number; receivedAt: number }) => void;
-    "party:member-left": (event: Pick<PartyMemberChangedEvent, "code" | "userId">) => void;
+    "party:code-regenerated": (event: PartyCodeRegeneratedEvent) => void;
+    "quest:member-completed": (event: QuestMemberCompletedEvent) => void;
+    "party:leaderboard-updated": (event: PartyLeaderboardUpdatedEvent) => void;
 }

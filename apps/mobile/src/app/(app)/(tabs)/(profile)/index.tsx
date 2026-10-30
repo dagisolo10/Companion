@@ -2,7 +2,7 @@ import { ChevronRight, LogOut, LucideIcon, Moon, Sun, Trash2, User } from "lucid
 import { Appearance, Pressable, Switch, View, useColorScheme } from "react-native";
 import ProfileView, { SkeletonProfileView } from "@/components/profile/profile";
 import { useDeleteUser, useGetUser } from "@/hooks/tan-stack/user";
-import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
+import useToast from "@/hooks/custom/use-toast";
 import { PropsWithChildren, ReactNode, useState } from "react";
 import { forgetAccount } from "@/lib/auth/remembered-accounts";
 import AccountSwitcher from "@/components/account/account-switcher";
@@ -29,14 +29,14 @@ function ProfileContent() {
     const deleteUserMutation = useDeleteUser();
 
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-    const { showConfirmDialog, confirmDialog } = useConfirmDialog();
+    const { showToast } = useToast();
 
     async function handleSignOut() {
         const currentUserId = userQuery.data?.id;
         const { error } = await supabase.auth.signOut({ scope: "local" });
 
         if (error) {
-            showConfirmDialog({ title: "Sign Out", description: "Failed to sign out. Try again." });
+            showToast({ title: "Could not sign out", description: "Please try again.", variant: "error" });
             return;
         }
 
@@ -57,7 +57,7 @@ function ProfileContent() {
                 setShowDeleteDialog(false);
                 router.replace("/(auth)/sign-in");
             },
-            onError: (err) => showConfirmDialog({ title: "Error", description: err.message }),
+            onError: (err) => showToast({ title: "Could not delete account", description: err.message || "Please try again.", variant: "error" }),
         });
     }
 
@@ -75,7 +75,6 @@ function ProfileContent() {
 
     return (
         <Screen className="gap-5">
-            {confirmDialog}
             <ProfileView user={userQuery.data} visibility />
 
             <SettingGroup label="Settings">

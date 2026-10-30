@@ -1,19 +1,22 @@
-import { PrismaService } from "@/common/prisma/prisma.service.js";
-import { RequestService } from "@/common/request/request.service.js";
-import { SupabaseService } from "@/common/supabase/supabase.service.js";
-import { StreakService } from "@/features/streak/streak.service.js";
-import { UpdateUserDto } from "@/features/user/user.dto.js";
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { SocketIoService } from "@/common/socket.io/socket.io.service.js";
+import { SupabaseService } from "@/common/supabase/supabase.service.js";
+import { RequestService } from "@/common/request/request.service.js";
+import { StreakService } from "@/features/streak/streak.service.js";
+import { PrismaService } from "@/common/prisma/prisma.service.js";
 import { PageParams, paginate } from "@/common/pagination.js";
+import { UpdateUserDto } from "@/features/user/user.dto.js";
+import { Prisma } from "@prisma/client";
+
 
 @Injectable()
 export class UserService {
     constructor(
         private readonly prisma: PrismaService,
         private readonly supabase: SupabaseService,
-        private readonly requestService: RequestService,
         private readonly streakService: StreakService,
+        private readonly requestService: RequestService,
+        private readonly socketIoService: SocketIoService,
     ) {}
 
     async getLeaderboard(take = 100) {
@@ -136,6 +139,25 @@ export class UserService {
             }
 
             const [resolved] = await this.streakService.resolveStreaks([updatedUser]);
+
+            if (name !== undefined || slugUsername !== undefined) {
+                const memberships = await this.prisma.partyMember.findMany({ where: { userId: id }, select: { partyId: true, party: { select: { code: true } } } });
+                const partyIds = [...new Set(memberships.map(({ partyId }) => partyId))];
+                const partyRecipients = partyIds.length > 0 ? await this.prisma.partyMember.findMany({ where: { partyId: { in: partyIds } }, select: { userId: true } }) : [];
+                this.socketIoService.emitToUsers("user:updated", [...new Set(partyRecipients.map(({ userId }) => userId))], { user: { ...resolved, createdAt: resolved.createdAt.toISOString() } });
+                for (const { partyId, party } of memberships) {
+                    const members = await this.prisma.partyMember.findMany({ where: { partyId }, include: { user: true }, orderBy: { user: { experience: "desc" } } });
+                    const recipients = members.map(({ userId }) => userId);
+                    const leaderboardUsers = await this.streakService.resolveStreaks(members.map(({ user }) => user));
+                    const usersById = new Map(leaderboardUsers.map((leaderboardUser) => [leaderboardUser.id, leaderboardUser]));
+                    const leaderboard = members.map((member) => ({
+                        ...member,
+                        joinedAt: member.joinedAt.toISOString(),
+                        user: { ...usersById.get(member.userId)!, createdAt: usersById.get(member.userId)!.createdAt.toISOString() },
+                    }));
+                    this.socketIoService.emitToUsers("party:leaderboard-updated", recipients, { partyCode: party.code, leaderboard });
+                }
+            }
 
             return resolved;
         } catch (error) {

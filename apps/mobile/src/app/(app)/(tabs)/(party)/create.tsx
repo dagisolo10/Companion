@@ -1,5 +1,6 @@
 import { useCreateParty } from "@/hooks/tan-stack/party";
 import BackButton from "@/components/common/back-button";
+import useToast from "@/hooks/custom/use-toast";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
@@ -10,10 +11,12 @@ import { useState } from "react";
 
 export default function CreatePartyScreen() {
     const [name, setName] = useState("");
+    const { showToast } = useToast();
     const createPartyMutation = useCreateParty({
         onSuccess: (party) => {
             router.replace(`/(app)/(tabs)/(party)/${party.code}`);
         },
+        onError: (error) => showToast({ title: "Could not create party", description: error.message || "Please try again.", variant: "error" }),
     });
 
     function handleCreate() {

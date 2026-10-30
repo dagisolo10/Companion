@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import SocketIoProvider from "@/providers/socket.io-provider";
 import AuthProvider from "@/providers/auth-providers";
+import { ToastProvider } from "@/hooks/custom/use-toast";
 import { useAuth } from "@/contexts/auth-context";
 import { router, Stack } from "expo-router";
 import { useEffect } from "react";
@@ -46,9 +47,11 @@ export default function RootLayout() {
         <GestureHandlerRootView style={{ flex: 1 }}>
             <QueryClientProvider client={queryClient}>
                 <AuthProvider>
-                    <SocketIoProvider>
-                        <RootNavigator />
-                    </SocketIoProvider>
+                    <ToastProvider>
+                        <SocketIoProvider>
+                            <RootNavigator />
+                        </SocketIoProvider>
+                    </ToastProvider>
                 </AuthProvider>
             </QueryClientProvider>
         </GestureHandlerRootView>

@@ -1,13 +1,8 @@
+import { isAfter, isToday, isYesterday, startOfDay, subDays } from "date-fns";
 import { PrismaService } from "@/common/prisma/prisma.service.js";
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
-import { isAfter, isToday, isYesterday, startOfDay, subDays } from "date-fns";
 
-// const DAY_MS = 24 * 60 * 60 * 1000;
-
-// function startOfDay(date: Date) {
-//     return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-// }
 
 @Injectable()
 export class StreakService {

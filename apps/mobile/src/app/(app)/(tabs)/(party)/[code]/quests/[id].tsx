@@ -11,6 +11,7 @@ import { SkeletonCard } from "@/components/ui/skeleton";
 import { useColor } from "@/hooks/custom/use-color";
 import { useLocalSearchParams } from "expo-router";
 import { useAuth } from "@/contexts/auth-context";
+import useToast from "@/hooks/custom/use-toast";
 import { Pressable, View } from "react-native";
 import { Input } from "@/components/ui/input";
 import { UpdateQuestDto } from "@/types/dto";
@@ -39,6 +40,7 @@ export default function QuestDetail() {
     const [editMode, setEditMode] = useState<Mode>("Normal");
     const [errors, setErrors] = useState<{ title?: string; description?: string; general?: string }>({});
     const { showConfirmDialog, confirmDialog } = useConfirmDialog();
+    const { showToast } = useToast();
 
     function handleComplete() {
         const quest = questQuery.data;
@@ -49,7 +51,13 @@ export default function QuestDetail() {
             confirmLabel: "Complete",
             onConfirm: () => {
                 setErrors((prev) => ({ ...prev, general: undefined }));
-                completeQuestMutation.mutate({ id: quest.id, code: quest.party.code }, { onError: (err) => setErrors((prev) => ({ ...prev, general: err.message || "Failed to complete quest. Please try again." })) });
+                completeQuestMutation.mutate(
+                    { id: quest.id, code: quest.party.code },
+                    {
+                        onSuccess: () => showToast({ title: "Quest completed", description: "Your completion has been recorded.", variant: "success" }),
+                        onError: (err) => setErrors((prev) => ({ ...prev, general: err.message || "Failed to complete quest. Please try again." })),
+                    },
+                );
             },
         });
     }
@@ -96,6 +104,7 @@ export default function QuestDetail() {
                 onSuccess: () => {
                     setEditing(false);
                     setErrors({});
+                    showToast({ title: "Quest updated", description: "Your changes have been saved.", variant: "success" });
                 },
                 onError: (err) => setErrors((prev) => ({ ...prev, general: err.message || "Failed to update quest. Please try again." })),
             },

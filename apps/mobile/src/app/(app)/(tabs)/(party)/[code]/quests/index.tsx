@@ -1,6 +1,7 @@
 import { useCompleteQuest, useGetPartyQuestsInfinite } from "@/hooks/tan-stack/quest";
 import { ActivityIndicator, FlatList, ScrollView, View } from "react-native";
 import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
+import useToast from "@/hooks/custom/use-toast";
 import ErrorMessage from "@/components/common/error-message";
 import { SkeletonQuestCard } from "@/components/ui/skeleton";
 import { CheckCircle2, Sparkles } from "lucide-react-native";
@@ -24,6 +25,7 @@ export default function PartyQuests() {
     const questsQuery = useGetPartyQuestsInfinite(code, filter);
     const completeQuestMutation = useCompleteQuest();
     const { showConfirmDialog, confirmDialog } = useConfirmDialog();
+    const { showToast } = useToast();
 
     const isLoading = questsQuery.isLoading;
 
@@ -36,8 +38,8 @@ export default function PartyQuests() {
                 completeQuestMutation.mutate(
                     { id: quest.id, code: quest.party.code },
                     {
-                        onSuccess: () => showConfirmDialog({ title: "Done", description: "Quest completed!" }),
-                        onError: (err) => showConfirmDialog({ title: "Error", description: err.message || "Failed to complete quest" }),
+                        onSuccess: () => showToast({ title: "Quest completed", description: "Your completion has been recorded.", variant: "success" }),
+                        onError: (err) => showToast({ title: "Could not complete quest", description: err.message || "Please try again.", variant: "error" }),
                     },
                 ),
         });
