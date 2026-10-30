@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { CreateQuestDto, Filter, UpdateQuestDto } from "@/features/quest/quest.dto.js";
 import { SocketIoService } from "@/common/socket.io/socket.io.service.js";
 import { Difficulty, Mode, Prisma, QuestStatus } from "@prisma/client";
@@ -49,6 +49,8 @@ type QuestRecord = Prisma.QuestGetPayload<{ select: typeof questSelect }>;
 
 @Injectable()
 export class QuestService implements OnModuleInit, OnModuleDestroy {
+    private readonly logger = new Logger(QuestService.name);
+
     constructor(
         private readonly prisma: PrismaService,
         private readonly streakService: StreakService,
@@ -105,33 +107,30 @@ export class QuestService implements OnModuleInit, OnModuleDestroy {
     }
 
     private async notifyQuestLifecycle(event: "quest:started" | "quest:expiring" | "quest:expired" | "quest:completed", id: string, hoursRemaining?: 1 | 2) {
-        const quest = await this.prisma.quest.findUnique({
-            where: { id },
-            select: questSelect,
-        });
-        if (!quest) return;
-        const members = await this.prisma.partyMember.findMany({ where: { partyId: quest.partyId }, select: { userId: true } });
-        this.socketIoService.emitToUsers(
-            event,
-            members.map(({ userId }) => userId),
-            {
+        try {
+            const quest = await this.prisma.quest.findUnique({ where: { id }, select: questSelect });
+            if (!quest) return;
+            const members = await this.prisma.partyMember.findMany({ where: { partyId: quest.partyId }, select: { userId: true } });
+            this.socketIoService.emitToUsers(event, members.map(({ userId }) => userId), {
                 partyCode: quest.party.code,
                 quest: this.serializeQuest(quest),
                 ...(hoursRemaining !== undefined && { hoursRemaining }),
-            },
-        );
+            });
+        } catch (error) {
+            this.logger.warn(`${event} broadcast failed: ${String(error)}`);
+        }
     }
 
     private async notifyQuestChanged(event: "quest:created" | "quest:updated", quest: QuestRecord) {
-        const members = await this.prisma.partyMember.findMany({ where: { partyId: quest.partyId }, select: { userId: true } });
-        this.socketIoService.emitToUsers(
-            event,
-            members.map(({ userId }) => userId),
-            {
+        try {
+            const members = await this.prisma.partyMember.findMany({ where: { partyId: quest.partyId }, select: { userId: true } });
+            this.socketIoService.emitToUsers(event, members.map(({ userId }) => userId), {
                 partyCode: quest.party.code,
                 quest: this.serializeQuest(quest),
-            },
-        );
+            });
+        } catch (error) {
+            this.logger.warn(`${event} broadcast failed: ${String(error)}`);
+        }
     }
 
     private serializeQuest(quest: QuestRecord): SharedQuest {
@@ -145,21 +144,12 @@ export class QuestService implements OnModuleInit, OnModuleDestroy {
     }
 
     private async notifyLeaderboard(partyId: string, partyCode: string) {
-        const members = await this.prisma.partyMember.findMany({ where: { partyId }, include: { user: true }, orderBy: { user: { experience: "desc" } } });
-        const users = await this.streakService.resolveStreaks(members.map(({ user }) => user));
-        const usersById = new Map(users.map((user) => [user.id, user]));
-        this.socketIoService.emitToUsers(
-            "party:leaderboard-updated",
-            members.map(({ userId }) => userId),
-            {
-                partyCode,
-                leaderboard: members.map((member) => ({
-                    ...member,
-                    joinedAt: member.joinedAt.toISOString(),
-                    user: { ...usersById.get(member.userId)!, createdAt: usersById.get(member.userId)!.createdAt.toISOString() },
-                })),
-            },
-        );
+        try {
+            const leaderboard = await this.streakService.buildLeaderboardPayload(partyId);
+            this.socketIoService.emitToUsers("party:leaderboard-updated", leaderboard.map(({ userId }) => userId), { partyCode, leaderboard });
+        } catch (error) {
+            this.logger.warn(`party:leaderboard-updated broadcast failed: ${String(error)}`);
+        }
     }
 
     private scheduleQuest(quest: { id: string; startsAt: Date; expiresAt: Date | null; status: QuestStatus }) {
@@ -391,7 +381,10 @@ export class QuestService implements OnModuleInit, OnModuleDestroy {
 
             await this.streakService.bumpStreak(tx, userId);
 
-            const activity = await tx.questActivity.create({ data: { questId: id, userId, xpAwarded } });
+            const activity = await tx.questActivity.create({
+                data: { questId: id, userId, xpAwarded },
+                include: { user: { select: { id: true, name: true, username: true } } },
+            });
 
             await tx.user.update({
                 where: { id: userId },
@@ -415,40 +408,34 @@ export class QuestService implements OnModuleInit, OnModuleDestroy {
                     },
                 });
             }
-            return { error: undefined, expired: false, activity, completed };
+            const updatedQuest = await tx.quest.findUnique({ where: { id }, select: questSelect });
+            if (!updatedQuest) throw new NotFoundException("Quest not found");
+            return { error: undefined, expired: false, activity, completed, updatedQuest };
         });
 
-        if (result.error) {
+        if (result.error !== undefined) {
             if (result.expired) {
                 await this.notifyQuestLifecycle("quest:expired", id);
                 this.clearQuestTimers(id);
             }
             throw new BadRequestException(result.error);
         }
-        if (!result.activity) throw new BadRequestException("Quest completion could not be recorded");
+        const updatedQuest = result.updatedQuest;
 
-        const updatedQuest = await this.prisma.quest.findUnique({
-            where: { id },
-            select: questSelect,
-        });
-        if (updatedQuest) {
-            const [members, activity] = await Promise.all([
-                this.prisma.partyMember.findMany({ where: { partyId: party.id }, select: { userId: true } }),
-                this.prisma.questActivity.findUniqueOrThrow({ where: { questId_userId: { questId: id, userId } }, include: { user: { select: { id: true, name: true, username: true } } } }),
-            ]);
-            this.socketIoService.emitToUsers(
-                "quest:member-completed",
-                members.map(({ userId: memberUserId }) => memberUserId),
-                {
-                    partyCode: party.code,
-                    quest: this.serializeQuest(updatedQuest),
-                    activity: { ...activity, completedAt: activity.completedAt.toISOString() },
-                },
-            );
+        try {
+            const members = await this.prisma.partyMember.findMany({ where: { partyId: party.id }, select: { userId: true } });
+            this.socketIoService.emitToUsers("quest:member-completed", members.map(({ userId: memberUserId }) => memberUserId), {
+                partyCode: party.code,
+                quest: this.serializeQuest(updatedQuest),
+                activity: { ...result.activity, completedAt: result.activity.completedAt.toISOString() },
+            });
             await this.notifyLeaderboard(party.id, party.code);
             if (result.completed) await this.notifyQuestLifecycle("quest:completed", id);
-            if (updatedQuest.status !== "Active") this.clearQuestTimers(id);
+        } catch (error) {
+            this.logger.warn(`Quest completion broadcast failed: ${String(error)}`);
         }
+
+        if (updatedQuest.status !== "Active") this.clearQuestTimers(id);
         return updatedQuest;
     }
 

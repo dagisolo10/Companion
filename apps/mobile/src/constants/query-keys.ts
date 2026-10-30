@@ -2,7 +2,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Filter } from "@companion/shared-types";
 import { useCallback } from "react";
 
-
 export const queryRoots = {
     user: ["user"] as const,
     party: ["party"] as const,

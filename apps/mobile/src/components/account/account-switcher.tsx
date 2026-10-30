@@ -14,7 +14,6 @@ import Button from "@/components/ui/button";
 import Text from "@/components/ui/text";
 import { cn } from "cn";
 
-
 const AnimatedChevron = createAnimatedComponent(ChevronDown);
 
 export default function AccountSwitcher({ currentUserId }: { currentUserId: string }) {

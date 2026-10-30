@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
 import { SocketIoService } from "@/common/socket.io/socket.io.service.js";
 import { SupabaseService } from "@/common/supabase/supabase.service.js";
 import { RequestService } from "@/common/request/request.service.js";
@@ -11,6 +11,8 @@ import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class UserService {
+    private readonly logger = new Logger(UserService.name);
+
     constructor(
         private readonly prisma: PrismaService,
         private readonly supabase: SupabaseService,
@@ -140,30 +142,35 @@ export class UserService {
 
             const [resolved] = await this.streakService.resolveStreaks([updatedUser]);
 
-            if (name !== undefined || slugUsername !== undefined) {
-                const memberships = await this.prisma.partyMember.findMany({ where: { userId: id }, select: { partyId: true, party: { select: { code: true } } } });
-                const partyIds = [...new Set(memberships.map(({ partyId }) => partyId))];
-                const partyRecipients = partyIds.length > 0 ? await this.prisma.partyMember.findMany({ where: { partyId: { in: partyIds } }, select: { userId: true } }) : [];
-                this.socketIoService.emitToUsers("user:updated", [...new Set(partyRecipients.map(({ userId }) => userId))], { user: { ...resolved, createdAt: resolved.createdAt.toISOString() } });
-                for (const { partyId, party } of memberships) {
-                    const members = await this.prisma.partyMember.findMany({ where: { partyId }, include: { user: true }, orderBy: { user: { experience: "desc" } } });
-                    const recipients = members.map(({ userId }) => userId);
-                    const leaderboardUsers = await this.streakService.resolveStreaks(members.map(({ user }) => user));
-                    const usersById = new Map(leaderboardUsers.map((leaderboardUser) => [leaderboardUser.id, leaderboardUser]));
-                    const leaderboard = members.map((member) => ({
-                        ...member,
-                        joinedAt: member.joinedAt.toISOString(),
-                        user: { ...usersById.get(member.userId)!, createdAt: usersById.get(member.userId)!.createdAt.toISOString() },
-                    }));
-                    this.socketIoService.emitToUsers("party:leaderboard-updated", recipients, { partyCode: party.code, leaderboard });
-                }
-            }
+            if (name !== undefined || slugUsername !== undefined) await this.notifyProfileUpdated(resolved);
 
             return resolved;
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
                 throw new BadRequestException("Username already taken. Choose another one");
             }
+            throw error;
+        }
+    }
+
+    private async notifyProfileUpdated(user: Prisma.UserGetPayload<{}>) {
+        try {
+            const memberships = await this.prisma.partyMember.findMany({ where: { userId: user.id }, select: { partyId: true, party: { select: { code: true } } } });
+            if (memberships.length === 0) return;
+
+            const partyIds = [...new Set(memberships.map(({ partyId }) => partyId))];
+            const partyMembers = await this.prisma.partyMember.findMany({ where: { partyId: { in: partyIds } }, select: { userId: true } });
+            this.socketIoService.emitToUsers("user:updated", [...new Set(partyMembers.map(({ userId }) => userId))], { user: { ...user, createdAt: user.createdAt.toISOString() } });
+
+            await Promise.all(
+                memberships.map(async ({ partyId, party }) => {
+                    const leaderboard = await this.streakService.buildLeaderboardPayload(partyId);
+                    const recipients = leaderboard.map(({ userId }) => userId);
+                    this.socketIoService.emitToUsers("party:leaderboard-updated", recipients, { partyCode: party.code, leaderboard });
+                }),
+            );
+        } catch (error) {
+            this.logger.warn(`Profile update broadcast failed: ${String(error)}`);
         }
     }
 

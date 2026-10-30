@@ -9,7 +9,6 @@ import { queryKeys } from "@/constants/query-keys";
 import { RemoveMemberDto } from "@/types/dto";
 import { api } from "@/lib/api/axios";
 
-
 export function useGetMembers(code: string, options?: TQueryOptions<PartyMember[]>) {
     return useQuery({
         ...options,

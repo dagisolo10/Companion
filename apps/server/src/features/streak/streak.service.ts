@@ -1,4 +1,5 @@
 import { isAfter, isToday, isYesterday, startOfDay, subDays } from "date-fns";
+import type { PartyLeaderboardMember } from "@companion/shared-types";
 import { PrismaService } from "@/common/prisma/prisma.service.js";
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
@@ -71,5 +72,22 @@ export class StreakService {
         }
 
         return resolved;
+    }
+
+    async buildLeaderboardPayload(partyId: string): Promise<PartyLeaderboardMember[]> {
+        const members = await this.prisma.partyMember.findMany({ where: { partyId }, include: { user: true }, orderBy: { user: { experience: "desc" } } });
+        const resolvedUsers = await this.resolveStreaks(members.map(({ user }) => user));
+        const usersById = new Map(resolvedUsers.map((user) => [user.id, user]));
+
+        return members.map((member) => {
+            const user = usersById.get(member.userId);
+            if (!user) throw new Error(`Missing leaderboard user ${member.userId}`);
+
+            return {
+                ...member,
+                joinedAt: member.joinedAt.toISOString(),
+                user: { ...user, createdAt: user.createdAt.toISOString() },
+            };
+        });
     }
 }

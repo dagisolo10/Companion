@@ -13,7 +13,6 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Text from "@/components/ui/text";
 
-
 export default function AddAccountScreen() {
     const { email: initialEmail } = useLocalSearchParams<{ email?: string }>();
 

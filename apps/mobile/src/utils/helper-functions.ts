@@ -3,7 +3,6 @@ import { QuestActivity, User } from "@companion/shared-types";
 import { LeaderboardEntry } from "@/types/leaderboard";
 import { differenceInCalendarDays } from "date-fns";
 
-
 type GetLevelReturn = {
     level: number;
     label: LevelLabel;

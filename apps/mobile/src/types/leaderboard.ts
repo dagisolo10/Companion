@@ -1,7 +1,6 @@
 import { LevelLabel } from "@/constants/experience";
 import { User } from "@companion/shared-types";
 
-
 export type LeaderboardEntry = {
     id: string;
     name: string;

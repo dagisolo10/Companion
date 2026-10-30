@@ -4,7 +4,6 @@ import { Pressable, View } from "react-native";
 import Text from "@/components/ui/text";
 import { router } from "expo-router";
 
-
 type PartyCardProps = {
     party: PartyDetail;
 };

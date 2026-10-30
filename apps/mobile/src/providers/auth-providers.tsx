@@ -8,7 +8,6 @@ import { useGetUser } from "@/hooks/tan-stack/user";
 import { supabase } from "@/lib/supabase";
 import { AppState } from "react-native";
 
-
 export default function AuthProvider({ children }: PropsWithChildren) {
     const queryClient = useQueryClient();
     const [isLoading, setIsLoading] = useState(true);

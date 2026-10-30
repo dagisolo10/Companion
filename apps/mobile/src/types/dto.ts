@@ -1,6 +1,5 @@
 import { Difficulty, Mode } from "@companion/shared-types";
 
-
 export type UpdateUserDto = {
     name?: string;
     public?: boolean;

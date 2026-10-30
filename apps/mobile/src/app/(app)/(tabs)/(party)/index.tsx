@@ -15,7 +15,6 @@ import { useMemo, useState } from "react";
 import Text from "@/components/ui/text";
 import { router } from "expo-router";
 
-
 export default function PartiesScreen() {
     const [search, setSearch] = useState("");
     const debouncedSearch = useDebounce(search, 300);

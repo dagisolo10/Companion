@@ -12,7 +12,6 @@ import { getLevel } from "@/utils/helper-functions";
 import Text from "@/components/ui/text";
 import { cn } from "cn";
 
-
 const AVATAR_COLORS = ["bg-lime", "bg-pink", "bg-amber", "bg-purple"];
 
 export default function SearchScreen() {

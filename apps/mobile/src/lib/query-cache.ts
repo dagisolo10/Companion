@@ -3,7 +3,6 @@ import type { QueryClient, QueryKey } from "@tanstack/react-query";
 import type { PartyLeaderboardMember } from "@/types/leaderboard";
 import { queryKeys, queryRoots } from "@/constants/query-keys";
 
-
 function isQuestDetailKey(key: QueryKey) {
     return key.length === 3 && key[0] === "quest" && key[1] !== "my" && key[1] !== "party";
 }
@@ -100,13 +99,13 @@ function findPartyByCode(queryClient: QueryClient, code: string) {
     return undefined;
 }
 
-function adjustPartyMemberCount(queryClient: QueryClient, code: string, delta: number, isMember?: boolean) {
+function adjustPartyMemberCount(queryClient: QueryClient, code: string, delta: number, isMember?: boolean, memberCount?: number) {
     queryClient.setQueryData<PartyDetail>(queryKeys.party.byCode(code), (previous) =>
         previous
             ? {
                   ...previous,
                   isMember: isMember ?? previous.isMember,
-                  _count: { ...previous._count, members: Math.max(0, previous._count.members + delta) },
+                  _count: { ...previous._count, members: memberCount ?? Math.max(0, previous._count.members + delta) },
               }
             : previous,
     );
@@ -117,7 +116,7 @@ function adjustPartyMemberCount(queryClient: QueryClient, code: string, delta: n
                 ? {
                       ...party,
                       isMember: isMember ?? party.isMember,
-                      _count: { ...party._count, members: Math.max(0, party._count.members + delta) },
+                      _count: { ...party._count, members: memberCount ?? Math.max(0, party._count.members + delta) },
                   }
                 : party,
         ),
@@ -222,7 +221,7 @@ export async function joinPartyCaches(queryClient: QueryClient, code: string, me
     await queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.partyMember] });
 }
 
-export async function leavePartyCaches(queryClient: QueryClient, code: string) {
+export async function leavePartyCaches(queryClient: QueryClient, code: string, memberCount?: number) {
     const user = findCurrentUser(queryClient);
     const members = queryClient.getQueryData<PartyMember[]>(queryKeys.partyMember.members(code));
     const leaderboard = queryClient.getQueryData<PartyLeaderboardMember[]>(queryKeys.party.leaderboard(code));
@@ -235,7 +234,7 @@ export async function leavePartyCaches(queryClient: QueryClient, code: string) {
         if (leaderboard) await queryClient.invalidateQueries({ queryKey: queryKeys.party.leaderboard(code) });
     }
 
-    adjustPartyMemberCount(queryClient, code, -1, false);
+    adjustPartyMemberCount(queryClient, code, -1, false, memberCount);
     queryClient.setQueriesData<PartyDetail[]>({ queryKey: queryKeys.party.my() }, (list) => list?.filter((party) => party.code !== code));
     removeQuestsByParty(queryClient, code);
     await queryClient.invalidateQueries({ queryKey: [...queryRoots.questActivity, "my"] });

@@ -13,7 +13,6 @@ import { Switch, View } from "react-native";
 import Text from "@/components/ui/text";
 import { useState } from "react";
 
-
 export default function PartySettingsScreen() {
     const { code } = useLocalSearchParams<{ code: string }>();
     const partyQuery = useGetParty(code!);
@@ -66,7 +65,10 @@ function PartySettingsForm({ party }: { party: Party }) {
                 setShowRegenerateDialog(false);
                 router.push({ pathname: "/(app)/(tabs)/(party)/[code]", params: { code } });
             },
-            onError: (err) => showToast({ title: "Could not regenerate code", description: err.message, variant: "error" }),
+            onError: (err) => {
+                setShowRegenerateDialog(false);
+                showToast({ title: "Could not regenerate code", description: err.message, variant: "error" });
+            },
         });
     }
 

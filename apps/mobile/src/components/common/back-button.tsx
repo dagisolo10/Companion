@@ -5,7 +5,6 @@ import Text from "@/components/ui/text";
 import { router } from "expo-router";
 import { cn } from "cn";
 
-
 export default function BackButton({ onPress, className, label }: { onPress?: () => void; label: string; className?: string }) {
     const color = useColor();
 

@@ -13,7 +13,6 @@ import { Switch, View } from "react-native";
 import { useState } from "react";
 import Text from "@/components/ui/text";
 
-
 export default function EditProfile() {
     const userQuery = useGetUser();
 

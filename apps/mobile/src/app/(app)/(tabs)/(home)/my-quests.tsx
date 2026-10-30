@@ -16,7 +16,6 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { cn } from "cn";
 
-
 export default function MyQuests() {
     const [filter, setFilter] = useState<Filter>("All");
     const tabs: Filter[] = ["All", "Upcoming", "Active", "Completed", "Expired"];

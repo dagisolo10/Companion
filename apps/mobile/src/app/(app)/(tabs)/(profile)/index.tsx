@@ -15,7 +15,6 @@ import Text from "@/components/ui/text";
 import { router } from "expo-router";
 import { cn } from "cn";
 
-
 export default function Profile() {
     const { user } = useAuth();
 
@@ -57,7 +56,10 @@ function ProfileContent() {
                 setShowDeleteDialog(false);
                 router.replace("/(auth)/sign-in");
             },
-            onError: (err) => showToast({ title: "Could not delete account", description: err.message || "Please try again.", variant: "error" }),
+            onError: (err) => {
+                setShowDeleteDialog(false);
+                showToast({ title: "Could not delete account", description: err.message || "Please try again.", variant: "error" });
+            },
         });
     }
 

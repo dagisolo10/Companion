@@ -7,7 +7,6 @@ import Text from "@/components/ui/text";
 import { View } from "react-native";
 import { useEffect } from "react";
 
-
 type QuestScheduleCardProps = {
     quest: Quest;
 };

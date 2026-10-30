@@ -37,7 +37,10 @@ export default function PartyMembersScreen() {
             setRemoveTarget(null);
             showToast({ title: "Member removed", description: "They no longer have access to this party.", variant: "success" });
         },
-        onError: (error) => showToast({ title: "Could not remove member", description: error.message || "Please try again.", variant: "error" }),
+        onError: (error) => {
+            setRemoveTarget(null);
+            showToast({ title: "Could not remove member", description: error.message || "Please try again.", variant: "error" });
+        },
     });
     const transferPartyMutation = useTransferParty({
         onSuccess: () => {

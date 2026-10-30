@@ -6,7 +6,6 @@ import { queryKeys } from "@/constants/query-keys";
 import { TQueryOptions } from "@/types/options";
 import { api } from "@/lib/api/axios";
 
-
 export function useGetMyQuestActivities(take?: number, options?: TQueryOptions<QuestActivity[]>) {
     return useQuery({
         ...options,

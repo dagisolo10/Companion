@@ -10,7 +10,6 @@ import { User } from "@companion/shared-types";
 import { UpdateUserDto } from "@/types/dto";
 import { api } from "@/lib/api/axios";
 
-
 export function useGetUser(options?: TQueryOptions<User>) {
     const { user } = useAuth();
 

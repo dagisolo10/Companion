@@ -16,7 +16,6 @@ import Text from "@/components/ui/text";
 import { useState } from "react";
 import { cn } from "cn";
 
-
 export const DIFFICULTIES: Difficulty[] = ["Tiny", "Easy", "Normal", "Hard", "Major"];
 export const REWARD_MAP: Record<Difficulty, number> = { Tiny: 5, Easy: 10, Normal: 25, Hard: 50, Major: 100 };
 

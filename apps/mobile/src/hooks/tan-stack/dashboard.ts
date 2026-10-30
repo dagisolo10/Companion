@@ -5,7 +5,6 @@ import { queryKeys } from "@/constants/query-keys";
 import { TQueryOptions } from "@/types/options";
 import { api } from "@/lib/api/axios";
 
-
 const defaultDashboard: DashboardData = {
     weekXp: 0,
     todayXp: 0,

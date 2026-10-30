@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { RemoveMemberDto } from "@/features/party-member/party-member.dto.js";
 import { SocketIoService } from "@/common/socket.io/socket.io.service.js";
 import { RequestService } from "@/common/request/request.service.js";
@@ -10,6 +10,8 @@ import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class PartyMemberService {
+    private readonly logger = new Logger(PartyMemberService.name);
+
     constructor(
         private readonly prisma: PrismaService,
         private readonly streakService: StreakService,
@@ -39,34 +41,34 @@ export class PartyMemberService {
             throw new BadRequestException("You are already a member of this party");
         }
 
+        let member;
         try {
-            const member = await this.prisma.partyMember.create({ data: { userId, partyId: party.id } });
-
-            const [user, members] = await Promise.all([this.prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { id: true, name: true, username: true } }), this.prisma.partyMember.findMany({ where: { partyId: party.id }, select: { userId: true } })]);
-
-            this.socketIoService.emitToUsers(
-                "party:member-joined",
-                members.map(({ userId: memberUserId }) => memberUserId),
-                {
-                    partyCode: party.code,
-                    partyName: party.name,
-                    member: { ...member, joinedAt: member.joinedAt.toISOString(), user },
-                    memberCount: members.length,
-                },
-            );
-            await this.emitLeaderboard(
-                party.id,
-                party.code,
-                members.map(({ userId: memberUserId }) => memberUserId),
-            );
-            return member;
+            member = await this.prisma.partyMember.create({ data: { userId, partyId: party.id } });
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
                 throw new BadRequestException("You are already a member of this party");
             }
-
             throw error;
         }
+
+        try {
+            const [user, members] = await Promise.all([
+                this.prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { id: true, name: true, username: true } }),
+                this.prisma.partyMember.findMany({ where: { partyId: party.id }, select: { userId: true } }),
+            ]);
+            const recipients = members.map(({ userId: memberUserId }) => memberUserId);
+            this.socketIoService.emitToUsers("party:member-joined", recipients, {
+                partyCode: party.code,
+                partyName: party.name,
+                member: { ...member, joinedAt: member.joinedAt.toISOString(), user },
+                memberCount: members.length,
+            });
+            await this.emitLeaderboard(party.id, party.code, recipients);
+        } catch (notifyError) {
+            this.logger.warn(`party:member-joined broadcast failed: ${String(notifyError)}`);
+        }
+
+        return member;
     }
 
     async leaveParty(code: string) {
@@ -86,30 +88,13 @@ export class PartyMemberService {
         }
 
         await this.prisma.partyMember.delete({ where: { id: partyMember.id } });
-
-        const remainingMembers = await this.prisma.partyMember.findMany({ where: { partyId: partyMember.partyId }, select: { userId: true } });
-
-        this.socketIoService.emitToUsers(
-            "party:member-left",
-            remainingMembers.map(({ userId: memberUserId }) => memberUserId),
-            {
-                partyCode: partyMember.party.code,
-                partyName: partyMember.party.name,
-                member: {
-                    id: partyMember.id,
-                    userId,
-                    partyId: partyMember.partyId,
-                    joinedAt: partyMember.joinedAt.toISOString(),
-                    user: partyMember.user,
-                },
-                memberCount: remainingMembers.length,
-            },
-        );
-        await this.emitLeaderboard(
-            partyMember.partyId,
-            partyMember.party.code,
-            remainingMembers.map(({ userId: memberUserId }) => memberUserId),
-        );
+        await this.notifyMemberLeft(partyMember.party, {
+            id: partyMember.id,
+            userId,
+            partyId: partyMember.partyId,
+            joinedAt: partyMember.joinedAt,
+            user: partyMember.user,
+        });
 
         return { success: true };
     }
@@ -158,41 +143,31 @@ export class PartyMemberService {
         }
 
         const removedMember = await this.prisma.partyMember.delete({ where: { id: partyMemberId } });
-
-        const remainingMembers = await this.prisma.partyMember.findMany({ where: { partyId: party.id }, select: { userId: true } });
-        this.socketIoService.emitToUsers(
-            "party:member-left",
-            remainingMembers.map(({ userId: memberUserId }) => memberUserId),
-            {
-                partyCode: party.code,
-                partyName: party.name,
-                member: {
-                    ...removedMember,
-                    joinedAt: removedMember.joinedAt.toISOString(),
-                    user: partyMember.user,
-                },
-                memberCount: remainingMembers.length,
-            },
-        );
-        await this.emitLeaderboard(
-            party.id,
-            party.code,
-            remainingMembers.map(({ userId: memberUserId }) => memberUserId),
-        );
+        await this.notifyMemberLeft(party, { ...removedMember, user: partyMember.user });
         return removedMember;
     }
 
+    private async notifyMemberLeft(party: { id: string; code: string; name: string }, member: { id: string; userId: string; partyId: string; joinedAt: Date; user: { id: string; name: string; username: string } }) {
+        try {
+            const remainingMembers = await this.prisma.partyMember.findMany({ where: { partyId: party.id }, select: { userId: true } });
+            const recipients = [...new Set([...remainingMembers.map(({ userId }) => userId), member.userId])];
+            this.socketIoService.emitToUsers("party:member-left", recipients, {
+                partyCode: party.code,
+                partyName: party.name,
+                member: { ...member, joinedAt: member.joinedAt.toISOString() },
+                memberCount: remainingMembers.length,
+            });
+            await this.emitLeaderboard(party.id, party.code, remainingMembers.map(({ userId }) => userId));
+        } catch (notifyError) {
+            this.logger.warn(`party:member-left broadcast failed: ${String(notifyError)}`);
+        }
+    }
+
     private async emitLeaderboard(partyId: string, partyCode: string, recipients: string[]) {
-        const members = await this.prisma.partyMember.findMany({ where: { partyId }, include: { user: true }, orderBy: { user: { experience: "desc" } } });
-        const users = await this.streakService.resolveStreaks(members.map(({ user }) => user));
-        const usersById = new Map(users.map((user) => [user.id, user]));
+        const leaderboard = await this.streakService.buildLeaderboardPayload(partyId);
         this.socketIoService.emitToUsers("party:leaderboard-updated", recipients, {
             partyCode,
-            leaderboard: members.map((member) => ({
-                ...member,
-                joinedAt: member.joinedAt.toISOString(),
-                user: { ...usersById.get(member.userId)!, createdAt: usersById.get(member.userId)!.createdAt.toISOString() },
-            })),
+            leaderboard,
         });
     }
 }

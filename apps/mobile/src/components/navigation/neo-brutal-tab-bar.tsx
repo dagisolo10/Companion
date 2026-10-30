@@ -5,7 +5,6 @@ import Text from "@/components/ui/text";
 import { useState } from "react";
 import { cn } from "cn";
 
-
 export default function NeoBrutalTabBar({ state, descriptors, emitter, navigateToTab, insets }: BottomTabBarProps) {
     const [layoutWidth, setLayoutWidth] = useState(0);
     const widthPerTab = Math.max(0, (layoutWidth - 12) / state.routes.length);

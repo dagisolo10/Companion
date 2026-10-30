@@ -2,7 +2,6 @@ import { ClientToServerEvents, ServerToClientEvents } from "@companion/shared-ty
 import { createContext, useContext } from "react";
 import { Socket } from "socket.io-client";
 
-
 export type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
 type SocketIoContextType = {

@@ -5,7 +5,6 @@ import { LucideIcon } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import { cn } from "cn";
 
-
 interface ButtonProps extends PressableProps, VariantProps<typeof buttonVariants> {
     asChild?: boolean;
     right?: LucideIcon;

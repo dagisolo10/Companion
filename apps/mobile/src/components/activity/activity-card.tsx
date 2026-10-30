@@ -6,7 +6,6 @@ import Text from "@/components/ui/text";
 import { View } from "react-native";
 import { cn } from "cn";
 
-
 const DIFFICULTY_BG: Record<string, string> = {
     Tiny: "bg-lime",
     Hard: "bg-pink",

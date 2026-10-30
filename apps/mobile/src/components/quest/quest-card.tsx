@@ -7,7 +7,6 @@ import { Pressable, View } from "react-native";
 import Button from "@/components/ui/button";
 import Text from "@/components/ui/text";
 
-
 type QuestCardProps = {
     quest: Quest;
     onPress?: () => void;

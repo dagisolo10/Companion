@@ -4,7 +4,6 @@ import Text from "@/components/ui/text";
 import { View } from "react-native";
 import { cn } from "cn";
 
-
 const CONFIG: Record<Difficulty, { bg: string; Icon: typeof CircleDot }> = {
     Tiny: { bg: "bg-lime", Icon: CircleDot },
     Easy: { bg: "bg-amber", Icon: Zap },

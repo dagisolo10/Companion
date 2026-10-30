@@ -144,16 +144,7 @@ export class PartyService {
             throw new NotFoundException("Party not found");
         }
 
-        const members = await this.prisma.partyMember.findMany({
-            where: { partyId: party.id },
-            include: { user: true },
-            orderBy: { user: { experience: "desc" } },
-        });
-
-        const users = await this.streakService.resolveStreaks(members.map(({ user }) => user));
-        const resolvedById = new Map(users.map((user) => [user.id, user]));
-
-        return members.map((member) => ({ ...member, user: resolvedById.get(member.userId) ?? member.user }));
+        return this.streakService.buildLeaderboardPayload(party.id);
     }
 
     async searchParty(code: string) {

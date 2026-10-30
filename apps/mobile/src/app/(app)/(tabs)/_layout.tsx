@@ -3,7 +3,6 @@ import NeoBrutalTabBar from "@/components/navigation/neo-brutal-tab-bar";
 import { useColor } from "@/hooks/custom/use-color";
 import { Tabs } from "expo-router";
 
-
 export default function AppTabsLayout() {
     const color = useColor();
 

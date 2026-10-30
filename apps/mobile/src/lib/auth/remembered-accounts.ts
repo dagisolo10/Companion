@@ -5,7 +5,6 @@ import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 import { supabase } from "@/lib/supabase";
 
-
 export type RememberedAccount = {
     userId: string;
     email: string;

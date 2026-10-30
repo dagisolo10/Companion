@@ -1,7 +1,6 @@
 import Toast, { ToastProps } from "@/components/common/toast";
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useRef, useState } from "react";
 
-
 type ToastMessage = Omit<ToastProps, "onDismiss">;
 type ShowToastOptions = ToastMessage & { durationMs?: number };
 type ToastContextValue = { showToast: (options: ShowToastOptions) => void; dismissToast: () => void };
@@ -27,9 +26,12 @@ export function ToastProvider({ children }: PropsWithChildren) {
         }, durationMs);
     }, []);
 
-    useEffect(() => () => {
-        if (timeout.current) clearTimeout(timeout.current);
-    }, []);
+    useEffect(
+        () => () => {
+            if (timeout.current) clearTimeout(timeout.current);
+        },
+        [],
+    );
 
     return (
         <ToastContext.Provider value={{ showToast, dismissToast }}>

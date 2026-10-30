@@ -23,7 +23,6 @@ import { cn } from "cn";
 
 import { DIFFICULTIES, REWARD_MAP } from "./create";
 
-
 const MODE_ICON = { Normal: Flame, Rush: Zap };
 
 export default function QuestDetail() {

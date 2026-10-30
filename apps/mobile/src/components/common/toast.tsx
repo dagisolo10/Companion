@@ -4,7 +4,6 @@ import { Pressable, View } from "react-native";
 import Text from "@/components/ui/text";
 import { cn } from "cn";
 
-
 export type ToastVariant = "success" | "error" | "warning" | "info";
 
 export type ToastProps = {

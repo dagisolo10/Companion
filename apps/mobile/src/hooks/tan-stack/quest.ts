@@ -8,7 +8,6 @@ import { updateQuestCaches } from "@/lib/query-cache";
 import { requestApi } from "@/lib/api/request-api";
 import { api } from "@/lib/api/axios";
 
-
 export function useGetPartyQuests(code: string, status?: Filter, options?: TQueryOptions<Quest[]>) {
     return useQuery({
         ...options,

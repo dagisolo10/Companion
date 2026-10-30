@@ -16,7 +16,6 @@ import Text from "@/components/ui/text";
 import { useState } from "react";
 import { cn } from "cn";
 
-
 export default function PartyQuests() {
     const { code } = useLocalSearchParams<{ code: string }>();
     const [filter, setFilter] = useState<Filter>("All");

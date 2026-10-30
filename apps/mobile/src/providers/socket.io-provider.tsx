@@ -1,30 +1,34 @@
 import { applyLeaderboard, applyPartyCodeChange, applyPartyDelete, applyPartyMemberChange, applyPartyUpdate, applyQuestChange, applyQuestCompletion, applyUserUpdate } from "@/lib/socket-cache";
 import { Dispatch, PropsWithChildren, SetStateAction, useEffect, useRef, useState } from "react";
 import { SocketIoContext, TypedSocket } from "@/contexts/socket.io-context";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useGlobalSearchParams } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
 import useToast from "@/hooks/custom/use-toast";
 import { useAuth } from "@/contexts/auth-context";
+import { leavePartyCaches } from "@/lib/query-cache";
 import { io } from "socket.io-client";
-
 
 export default function SocketIoProvider({ children }: PropsWithChildren) {
     const [connected, setConnected] = useState(false);
     const [socket, setSocket] = useState<TypedSocket | null>(null);
 
-    const { token } = useAuth();
+    const { token, user } = useAuth();
     const queryClient = useQueryClient();
     const { showToast } = useToast();
-    const { code: currentPartyCode } = useLocalSearchParams<{ code?: string }>();
+    const { code: currentPartyCode } = useGlobalSearchParams<{ code?: string }>();
 
     const socketRef = useRef<Dispatch<SetStateAction<TypedSocket | null>>>(null);
     const partyCodeRef = useRef(currentPartyCode);
+    const showToastRef = useRef(showToast);
     useEffect(() => {
         socketRef.current = setSocket;
     }, []);
     useEffect(() => {
         partyCodeRef.current = currentPartyCode;
     }, [currentPartyCode]);
+    useEffect(() => {
+        showToastRef.current = showToast;
+    }, [showToast]);
 
     useEffect(() => {
         if (!token) {
@@ -58,7 +62,7 @@ export default function SocketIoProvider({ children }: PropsWithChildren) {
 
         const handleMemberChange = (type: "joined" | "left", event: { member: { id: string; userId: string; partyId: string; joinedAt: string; user: { name: string; username: string } }; partyName: string; partyCode: string; memberCount: number }) => {
             const name = event.member.user.name;
-            showToast({
+            showToastRef.current({
                 title: type === "joined" ? `${name} joined` : `${name} left`,
                 description: `@${event.member.user.username} · ${event.partyName}`,
                 variant: type === "joined" ? "success" : "warning",
@@ -70,6 +74,13 @@ export default function SocketIoProvider({ children }: PropsWithChildren) {
         });
         socketInstance.on("party:member-left", (event) => {
             handleMemberChange("left", event);
+            if (event.member.userId === user?.id) {
+                void leavePartyCaches(queryClient, event.partyCode, event.memberCount).catch((error: unknown) => {
+                    console.error("Failed to clear caches after party removal:", error);
+                });
+                if (partyCodeRef.current === event.partyCode) router.replace("/(app)/(tabs)/(party)");
+                return;
+            }
             applyPartyMemberChange(queryClient, event.partyCode, event.memberCount, event.member, false);
         });
         socketInstance.on("party:code-regenerated", (event) => {
@@ -118,11 +129,7 @@ export default function SocketIoProvider({ children }: PropsWithChildren) {
             setConnected(false);
             console.log("🧹 Disconnecting previous socket instance...");
         };
-    }, [queryClient, showToast, token]);
+    }, [queryClient, token, user?.id]);
 
-    return (
-        <SocketIoContext.Provider value={{ socket, connected: Boolean(token && connected) }}>
-            {children}
-        </SocketIoContext.Provider>
-    );
+    return <SocketIoContext.Provider value={{ socket, connected: Boolean(token && connected) }}>{children}</SocketIoContext.Provider>;
 }
