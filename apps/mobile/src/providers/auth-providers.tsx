@@ -1,17 +1,18 @@
-import { PropsWithChildren, useCallback, useEffect, useRef, useState } from "react";
-import { updateRememberedAccountSession } from "@/lib/auth/remembered-accounts";
-import { useQueryClient } from "@tanstack/react-query";
-import { Session, User } from "@supabase/supabase-js";
-import { injectTokenResolver } from "@/lib/api/axios";
 import { AuthContext } from "@/contexts/auth-context";
 import { useGetUser } from "@/hooks/tan-stack/user";
+import { injectTokenResolver } from "@/lib/api/axios";
+import { updateRememberedAccountSession } from "@/lib/auth/remembered-accounts";
 import { supabase } from "@/lib/supabase";
+import { Session, User } from "@supabase/supabase-js";
+import { useQueryClient } from "@tanstack/react-query";
+import { PropsWithChildren, useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 
 export default function AuthProvider({ children }: PropsWithChildren) {
     const queryClient = useQueryClient();
     const [isLoading, setIsLoading] = useState(true);
     const [isSignedIn, setIsSignedIn] = useState(false);
+    const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
 
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
@@ -32,6 +33,9 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         },
         [queryClient],
     );
+
+    const startPasswordRecovery = useCallback(() => setIsPasswordRecovery(true), []);
+    const endPasswordRecovery = useCallback(() => setIsPasswordRecovery(false), []);
 
     useGetUser();
 
@@ -71,7 +75,10 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
         void initializeAuth();
 
-        const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === "PASSWORD_RECOVERY") setIsPasswordRecovery(true);
+            if (event === "SIGNED_OUT") setIsPasswordRecovery(false);
+
             if (session) {
                 void updateRememberedAccountSession(session).catch(() => undefined);
                 applySession(session);
@@ -83,5 +90,5 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         return () => data.subscription.unsubscribe();
     }, [applySession]);
 
-    return <AuthContext.Provider value={{ user, token, isLoading, isSignedIn, applySession }}>{children}</AuthContext.Provider>;
+    return <AuthContext.Provider value={{ user, token, isLoading, isSignedIn, isPasswordRecovery, applySession, startPasswordRecovery, endPasswordRecovery }}>{children}</AuthContext.Provider>;
 }

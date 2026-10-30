@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/auth-context";
 import { Eye, EyeOff } from "lucide-react-native";
 import { Pressable, View } from "react-native";
 import { Input } from "@/components/ui/input";
@@ -9,19 +10,26 @@ import { supabase } from "@/lib/supabase";
 import Text from "@/components/ui/text";
 import { useState } from "react";
 
+
 export default function ResetPassword() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [confirmPassword, setConfirmPassword] = useState("");
+    const { endPasswordRecovery } = useAuth();
 
     const resetPasswordMt = useMutation({
-        onSuccess: () => router.replace("/(auth)/sign-in"),
+        onSuccess: async () => {
+            await supabase.auth.signOut({ scope: "local" }).catch(() => undefined);
+            endPasswordRecovery();
+            router.replace("/(auth)/sign-in");
+        },
         mutationFn: async () => {
             if (!password || !confirmPassword) throw new Error("Please fill in all fields.");
             if (password.length < 6) throw new Error("Password must be at least 6 characters.");
             if (password !== confirmPassword) throw new Error("Passwords do not match.");
 
-            await supabase.auth.updateUser({ password });
+            const { error } = await supabase.auth.updateUser({ password });
+            if (error) throw error;
         },
     });
 

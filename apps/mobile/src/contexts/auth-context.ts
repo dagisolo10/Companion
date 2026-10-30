@@ -6,6 +6,9 @@ type AuthContextType = {
     isLoading: boolean;
     isSignedIn: boolean;
     token: string | null;
+    isPasswordRecovery: boolean;
+    endPasswordRecovery: () => void;
+    startPasswordRecovery: () => void;
     applySession: (session: Session | null) => void;
 };
 
@@ -14,7 +17,10 @@ export const AuthContext = createContext<AuthContextType>({
     token: null,
     isLoading: true,
     isSignedIn: false,
+    isPasswordRecovery: false,
     applySession: () => undefined,
+    endPasswordRecovery: () => undefined,
+    startPasswordRecovery: () => undefined,
 });
 
 export function useAuth() {

@@ -16,7 +16,8 @@
         "reset": "prisma migrate reset",
         "seed": "bun prisma/seed/main.ts",
         "lint": "oxlint --type-aware src/ test/",
-        "start:debug": "nest start --debug --watch"
+        "start:debug": "nest start --debug --watch",
+        "dep": "clear && bun x prisma migrate deploy"
     },
     "dependencies": {
         "@companion/shared-types": "*",

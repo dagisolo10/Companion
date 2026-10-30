@@ -9,6 +9,7 @@ import { InputField } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
 import { Link, router } from "expo-router";
+import * as Linking from "expo-linking";
 import { supabase } from "@/lib/supabase";
 import Text from "@/components/ui/text";
 import { api } from "@/lib/api/axios";
@@ -53,7 +54,7 @@ export default function SignUp() {
             const response = await supabase.auth.signUp({
                 email: parsed.email,
                 password: parsed.password,
-                options: { data: { name: normalizedName, username: normalizedUsername } },
+                options: { data: { name: normalizedName, username: normalizedUsername }, emailRedirectTo: Linking.createURL("/") },
             });
 
             if (response.error) {

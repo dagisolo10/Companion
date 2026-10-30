@@ -1,7 +1,8 @@
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useColor } from "@/hooks/custom/use-color";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, RefObject } from "react";
+import type { ScrollViewInstance } from "react-native";
 import { cn } from "cn";
 
 type ScreenProps = PropsWithChildren & {
@@ -9,9 +10,10 @@ type ScreenProps = PropsWithChildren & {
     className?: string;
     fullscreen?: boolean;
     nonScrollable?: boolean;
+    scrollRef?: RefObject<ScrollViewInstance | null>;
 };
 
-export default function Screen({ children, nonScrollable = false, fullscreen = false, header = false, className }: ScreenProps) {
+export default function Screen({ children, nonScrollable = false, fullscreen = false, header = false, className, scrollRef }: ScreenProps) {
     const color = useColor();
 
     return (
@@ -20,7 +22,14 @@ export default function Screen({ children, nonScrollable = false, fullscreen = f
                 {nonScrollable ? (
                     <View className={cn("flex-1 px-5 py-8", className)}>{children}</View>
                 ) : (
-                    <ScrollView keyboardDismissMode="on-drag" keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentInsetAdjustmentBehavior={header ? "automatic" : "never"} contentContainerStyle={{ flexGrow: 1, ...(fullscreen && { flex: 1 }) }}>
+                    <ScrollView
+                        ref={scrollRef}
+                        keyboardDismissMode="on-drag"
+                        keyboardShouldPersistTaps="handled"
+                        showsVerticalScrollIndicator={false}
+                        contentInsetAdjustmentBehavior={header ? "automatic" : "never"}
+                        contentContainerStyle={{ flexGrow: 1, ...(fullscreen && { flex: 1 }) }}
+                    >
                         <View style={{ paddingHorizontal: 20, paddingVertical: 16 }} className={cn(fullscreen && "flex-1", className)}>
                             {children}
                         </View>

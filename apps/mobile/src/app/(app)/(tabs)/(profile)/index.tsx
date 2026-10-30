@@ -1,19 +1,20 @@
-import { ChevronRight, LogOut, LucideIcon, Moon, Sun, Trash2, User } from "lucide-react-native";
-import { Appearance, Pressable, Switch, View, useColorScheme } from "react-native";
-import ProfileView, { SkeletonProfileView } from "@/components/profile/profile";
-import { useDeleteUser, useGetUser } from "@/hooks/tan-stack/user";
-import useToast from "@/hooks/custom/use-toast";
-import { PropsWithChildren, ReactNode, useState } from "react";
-import { forgetAccount } from "@/lib/auth/remembered-accounts";
 import AccountSwitcher from "@/components/account/account-switcher";
 import ConfirmDialog from "@/components/common/confirm-dialog";
-import { useColor } from "@/hooks/custom/use-color";
-import { useAuth } from "@/contexts/auth-context";
+import ProfileView, { SkeletonProfileView } from "@/components/profile/profile";
 import Screen from "@/components/ui/screen";
-import { supabase } from "@/lib/supabase";
 import Text from "@/components/ui/text";
-import { router } from "expo-router";
+import { useAuth } from "@/contexts/auth-context";
+import { useColor } from "@/hooks/custom/use-color";
+import useToast from "@/hooks/custom/use-toast";
+import { useDeleteUser, useGetUser } from "@/hooks/tan-stack/user";
+import { forgetAccount } from "@/lib/auth/remembered-accounts";
+import { supabase } from "@/lib/supabase";
 import { cn } from "cn";
+import { router } from "expo-router";
+import { ChevronRight, KeyRound, LogOut, LucideIcon, Moon, Sun, Trash2, User } from "lucide-react-native";
+import { PropsWithChildren, ReactNode, useCallback, useRef, useState } from "react";
+import type { ScrollViewInstance } from "react-native";
+import { Appearance, Pressable, Switch, View, useColorScheme } from "react-native";
 
 export default function Profile() {
     const { user } = useAuth();
@@ -29,6 +30,9 @@ function ProfileContent() {
 
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const { showToast } = useToast();
+
+    const scrollViewRef = useRef<ScrollViewInstance>(null);
+    const handleSwitcherExpand = useCallback(() => scrollViewRef.current?.scrollToEnd({ animated: true }), []);
 
     async function handleSignOut() {
         const currentUserId = userQuery.data?.id;
@@ -76,7 +80,7 @@ function ProfileContent() {
     }
 
     return (
-        <Screen className="gap-5">
+        <Screen className="gap-5" scrollRef={scrollViewRef}>
             <ProfileView user={userQuery.data} visibility />
 
             <SettingGroup label="Settings">
@@ -85,11 +89,12 @@ function ProfileContent() {
             </SettingGroup>
 
             <SettingGroup label="Account">
+                <SettingRow label="Change Password" icon={KeyRound} onPress={() => router.push("/(app)/(tabs)/(profile)/change-password")} />
                 <SettingRow label="Sign Out" icon={LogOut} onPress={handleSignOut} />
                 <SettingRow label="Delete Account" icon={Trash2} onPress={() => setShowDeleteDialog(true)} isLast />
             </SettingGroup>
 
-            <AccountSwitcher currentUserId={userQuery.data.id} />
+            <AccountSwitcher currentUserId={userQuery.data.id} onExpand={handleSwitcherExpand} />
 
             <ConfirmDialog
                 destructive

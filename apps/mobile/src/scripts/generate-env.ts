@@ -23,7 +23,7 @@ console.log(`📡 Detected local IP address: ${localIP}`);
 const envContent = `
 # Auto-generated based on current network configuration
 EXPO_PUBLIC_SERVER_URL=http://${localIP}:3000
-EXPO_PUBLIC_SUPABASE_URL=http://${localIP}:54321
+# EXPO_PUBLIC_SUPABASE_URL=http://${localIP}:54321
 `;
 
 fs.writeFileSync(path.join(__dirname, "../../.env.local"), envContent.trim());

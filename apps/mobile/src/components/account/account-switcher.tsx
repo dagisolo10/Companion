@@ -3,20 +3,21 @@ import Animated, { createAnimatedComponent, Easing, useAnimatedStyle, useSharedV
 import { Check, ChevronDown, LogIn, Trash2, UserPlus, UsersRound } from "lucide-react-native";
 import { ActivityIndicator, Pressable, View } from "react-native";
 import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
-import useToast from "@/hooks/custom/use-toast";
-import { useCallback, useEffect, useState } from "react";
 import SectionHeader from "@/components/common/section-header";
+import { useCallback, useEffect, useState } from "react";
 import { router, useFocusEffect } from "expo-router";
 import { useMutation } from "@tanstack/react-query";
 import { useColor } from "@/hooks/custom/use-color";
 import { useAuth } from "@/contexts/auth-context";
+import useToast from "@/hooks/custom/use-toast";
 import Button from "@/components/ui/button";
 import Text from "@/components/ui/text";
 import { cn } from "cn";
 
+
 const AnimatedChevron = createAnimatedComponent(ChevronDown);
 
-export default function AccountSwitcher({ currentUserId }: { currentUserId: string }) {
+export default function AccountSwitcher({ currentUserId, onExpand }: { currentUserId: string; onExpand?: () => void }) {
     const [accounts, setAccounts] = useState<RememberedAccount[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
 
@@ -41,6 +42,14 @@ export default function AccountSwitcher({ currentUserId }: { currentUserId: stri
         rotation.value = withTiming(showDropdown ? 180 : 0, { duration: 250, easing: Easing.bezier(0.25, 1, 0.5, 1) });
         progress.value = withTiming(showDropdown ? 1 : 0, { duration: 250, easing: Easing.bezier(0.25, 1, 0.5, 1) });
     }, [progress, rotation, showDropdown]);
+
+    useEffect(() => {
+        if (!showDropdown) return;
+
+        const timeout = setTimeout(() => onExpand?.(), 50);
+
+        return () => clearTimeout(timeout);
+    }, [onExpand, showDropdown]);
 
     const chevronStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${rotation.value}deg` }] }));
     const dynamicDropdownStyle = useAnimatedStyle(() => ({ opacity: progress.value, height: progress.value * menuHeight.value }));
