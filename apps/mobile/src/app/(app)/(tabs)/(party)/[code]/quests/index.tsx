@@ -1,19 +1,20 @@
 import { useCompleteQuest, useGetPartyQuestsInfinite } from "@/hooks/tan-stack/quest";
+import { ActivityIndicator, FlatList, ScrollView, View } from "react-native";
 import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
+import ErrorMessage from "@/components/common/error-message";
 import { SkeletonQuestCard } from "@/components/ui/skeleton";
 import { CheckCircle2, Sparkles } from "lucide-react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import ErrorMessage from "@/components/common/error-message";
-import EmptyState from "@/components/ui/empty-state";
 import BackButton from "@/components/common/back-button";
+import { Filter, Quest } from "@companion/shared-types";
 import QuestCard from "@/components/quest/quest-card";
-import { Filter, Quest } from "@/types/models";
+import EmptyState from "@/components/ui/empty-state";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
-import { ActivityIndicator, FlatList, ScrollView, View } from "react-native";
 import Text from "@/components/ui/text";
 import { useState } from "react";
 import { cn } from "cn";
+
 
 export default function PartyQuests() {
     const { code } = useLocalSearchParams<{ code: string }>();

@@ -1,7 +1,8 @@
-import { QuestStatus } from "@/types/models";
+import { QuestStatus } from "@companion/shared-types";
 import Text from "@/components/ui/text";
 import { View } from "react-native";
 import { cn } from "cn";
+
 
 export default function QuestStatusBadge({ status }: { status: QuestStatus }) {
     const color = status === "Completed" ? "bg-lime" : status === "Upcoming" ? "bg-purple" : status === "Expired" ? "bg-muted" : "bg-amber";

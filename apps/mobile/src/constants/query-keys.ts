@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Filter } from "@/types/models";
+import { Filter } from "@companion/shared-types";
 import { useCallback } from "react";
 
 

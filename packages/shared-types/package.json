@@ -1,0 +1,29 @@
+{
+    "name": "@companion/shared-types",
+    "module": "index.ts",
+    "type": "module",
+    "private": true,
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "dev": "tsc --watch",
+        "b": "tsc && bun log",
+        "log": "echo ✅ Build Complete!"
+    },
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "devDependencies": {
+        "@types/bun": "latest"
+    },
+    "peerDependencies": {
+        "typescript": ">=5.9 <7"
+    }
+}

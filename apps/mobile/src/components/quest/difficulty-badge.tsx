@@ -1,8 +1,9 @@
 import { CircleDot, Crown, Flame, Trophy, Zap } from "lucide-react-native";
-import { Difficulty } from "@/types/models";
+import { Difficulty } from "@companion/shared-types";
 import Text from "@/components/ui/text";
 import { View } from "react-native";
 import { cn } from "cn";
+
 
 const CONFIG: Record<Difficulty, { bg: string; Icon: typeof CircleDot }> = {
     Tiny: { bg: "bg-lime", Icon: CircleDot },

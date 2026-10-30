@@ -1,10 +1,11 @@
 import { CheckCircle2, Sparkles } from "lucide-react-native";
+import { QuestActivity } from "@companion/shared-types";
 import { useColor } from "@/hooks/custom/use-color";
 import { relativeTime } from "@/utils/formatters";
-import { QuestActivity } from "@/types/models";
 import Text from "@/components/ui/text";
 import { View } from "react-native";
 import { cn } from "cn";
+
 
 const DIFFICULTY_BG: Record<string, string> = {
     Tiny: "bg-lime",

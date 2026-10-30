@@ -2,11 +2,11 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { joinPartyCaches, leavePartyCaches, removePartyMemberCaches } from "@/lib/query-cache";
 import { usePaginatedQuery } from "@/hooks/custom/use-paginated-query";
 import { TMutationOptions, TQueryOptions } from "@/types/options";
+import { PartyMember } from "@companion/shared-types";
 import { SuccessResponse } from "@/types/response";
 import { requestApi } from "@/lib/api/request-api";
 import { queryKeys } from "@/constants/query-keys";
 import { RemoveMemberDto } from "@/types/dto";
-import { PartyMember } from "@/types/models";
 import { api } from "@/lib/api/axios";
 
 

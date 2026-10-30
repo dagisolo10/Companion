@@ -1,7 +1,8 @@
 import { LEVEL_XP_RANGES, LevelLabel } from "@/constants/experience";
+import { QuestActivity, User } from "@companion/shared-types";
 import { LeaderboardEntry } from "@/types/leaderboard";
-import { QuestActivity, User } from "@/types/models";
 import { differenceInCalendarDays } from "date-fns";
+
 
 type GetLevelReturn = {
     level: number;

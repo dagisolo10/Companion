@@ -1,4 +1,5 @@
-import { Difficulty, Mode } from "@/types/models";
+import { Difficulty, Mode } from "@companion/shared-types";
+
 
 export type UpdateUserDto = {
     name?: string;

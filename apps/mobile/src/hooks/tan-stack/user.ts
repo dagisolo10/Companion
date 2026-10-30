@@ -6,8 +6,8 @@ import { syncUserCaches } from "@/lib/query-cache";
 import { SuccessResponse } from "@/types/response";
 import { requestApi } from "@/lib/api/request-api";
 import { useAuth } from "@/contexts/auth-context";
+import { User } from "@companion/shared-types";
 import { UpdateUserDto } from "@/types/dto";
-import { User } from "@/types/models";
 import { api } from "@/lib/api/axios";
 
 

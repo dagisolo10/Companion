@@ -1,9 +1,10 @@
-import { queryKeys } from "@/constants/query-keys";
-import { api } from "@/lib/api/axios";
-import { requestApi } from "@/lib/api/request-api";
-import { DashboardData } from "@/types/models";
-import { TQueryOptions } from "@/types/options";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { DashboardData } from "@companion/shared-types";
+import { requestApi } from "@/lib/api/request-api";
+import { queryKeys } from "@/constants/query-keys";
+import { TQueryOptions } from "@/types/options";
+import { api } from "@/lib/api/axios";
+
 
 const defaultDashboard: DashboardData = {
     weekXp: 0,

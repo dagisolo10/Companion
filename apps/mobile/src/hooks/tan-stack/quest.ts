@@ -1,9 +1,9 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePaginatedQuery } from "@/hooks/custom/use-paginated-query";
+import { Filter, Quest, QuestDetail } from "@companion/shared-types";
 import { TMutationOptions, TQueryOptions } from "@/types/options";
 import { queryKeys, queryRoots } from "@/constants/query-keys";
 import { CreateQuestDto, UpdateQuestDto } from "@/types/dto";
-import { Filter, Quest, QuestDetail } from "@/types/models";
 import { updateQuestCaches } from "@/lib/query-cache";
 import { requestApi } from "@/lib/api/request-api";
 import { api } from "@/lib/api/axios";

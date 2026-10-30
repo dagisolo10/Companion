@@ -1,5 +1,6 @@
 import { LevelLabel } from "@/constants/experience";
-import { User } from "@/types/models";
+import { User } from "@companion/shared-types";
+
 
 export type LeaderboardEntry = {
     id: string;
@@ -10,8 +11,6 @@ export type LeaderboardEntry = {
     label: LevelLabel;
     streak: number;
 };
-
-export type LeaderboardScope = "global" | "party";
 
 export type PartyLeaderboardMember = {
     user: User;

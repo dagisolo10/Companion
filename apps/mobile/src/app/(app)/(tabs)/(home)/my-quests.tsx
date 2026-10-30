@@ -1,19 +1,20 @@
-import BackButton from "@/components/common/back-button";
+import { useCompleteQuest, useGetMyQuestsInfinite } from "@/hooks/tan-stack/quest";
+import { ActivityIndicator, FlatList, ScrollView, View } from "react-native";
+import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
 import ErrorMessage from "@/components/common/error-message";
+import { SkeletonQuestCard } from "@/components/ui/skeleton";
+import { CheckCircle2, Sparkles } from "lucide-react-native";
+import BackButton from "@/components/common/back-button";
+import { Filter, Quest } from "@companion/shared-types";
 import QuestCard from "@/components/quest/quest-card";
-import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import Screen from "@/components/ui/screen";
-import { SkeletonQuestCard } from "@/components/ui/skeleton";
+import Button from "@/components/ui/button";
 import Text from "@/components/ui/text";
-import { useCompleteQuest, useGetMyQuestsInfinite } from "@/hooks/tan-stack/quest";
-import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
-import { Filter, Quest } from "@/types/models";
-import { cn } from "cn";
 import { router } from "expo-router";
-import { CheckCircle2, Sparkles } from "lucide-react-native";
 import { useState } from "react";
-import { ActivityIndicator, FlatList, ScrollView, View } from "react-native";
+import { cn } from "cn";
+
 
 export default function MyQuests() {
     const [filter, setFilter] = useState<Filter>("All");

@@ -1,20 +1,21 @@
-import BackButton from "@/components/common/back-button";
-import DifficultyBadge from "@/components/quest/difficulty-badge";
-import PartySelector from "@/components/party/party-selector";
-import SectionHeader from "@/components/common/section-header";
-import Button from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import Screen from "@/components/ui/screen";
-import Text from "@/components/ui/text";
-import { useGetMyParties } from "@/hooks/tan-stack/party";
-import { useCreateQuest } from "@/hooks/tan-stack/quest";
-import { CreateQuestDto } from "@/types/dto";
-import { Difficulty, Mode } from "@/types/models";
-import { cn } from "cn";
-import { router, useLocalSearchParams } from "expo-router";
 import { AlertCircle, Award, PlusCircle } from "lucide-react-native";
-import { useState } from "react";
+import DifficultyBadge from "@/components/quest/difficulty-badge";
+import SectionHeader from "@/components/common/section-header";
+import PartySelector from "@/components/party/party-selector";
+import { router, useLocalSearchParams } from "expo-router";
+import { Difficulty, Mode } from "@companion/shared-types";
+import { useGetMyParties } from "@/hooks/tan-stack/party";
+import BackButton from "@/components/common/back-button";
+import { useCreateQuest } from "@/hooks/tan-stack/quest";
 import { Pressable, View } from "react-native";
+import { Input } from "@/components/ui/input";
+import { CreateQuestDto } from "@/types/dto";
+import Screen from "@/components/ui/screen";
+import Button from "@/components/ui/button";
+import Text from "@/components/ui/text";
+import { useState } from "react";
+import { cn } from "cn";
+
 
 export const DIFFICULTIES: Difficulty[] = ["Tiny", "Easy", "Normal", "Hard", "Major"];
 export const REWARD_MAP: Record<Difficulty, number> = { Tiny: 5, Easy: 10, Normal: 25, Hard: 50, Major: 100 };

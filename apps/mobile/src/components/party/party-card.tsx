@@ -1,8 +1,9 @@
-import Text from "@/components/ui/text";
-import { PartyDetail } from "@/types/models";
-import { router } from "expo-router";
 import { ChevronRight, Users } from "lucide-react-native";
+import { PartyDetail } from "@companion/shared-types";
 import { Pressable, View } from "react-native";
+import Text from "@/components/ui/text";
+import { router } from "expo-router";
+
 
 type PartyCardProps = {
     party: PartyDetail;

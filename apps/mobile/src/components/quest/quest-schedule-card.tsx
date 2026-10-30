@@ -1,11 +1,12 @@
-import QuestCountdown from "@/components/quest/quest-countdown";
-import Text from "@/components/ui/text";
-import { Quest } from "@/types/models";
-import { formatDateTimeWithTime } from "@/utils/formatters";
-import { Clock, Hourglass, Timer } from "lucide-react-native";
-import { useEffect } from "react";
-import { View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
+import QuestCountdown from "@/components/quest/quest-countdown";
+import { Clock, Hourglass, Timer } from "lucide-react-native";
+import { formatDateTimeWithTime } from "@/utils/formatters";
+import { Quest } from "@companion/shared-types";
+import Text from "@/components/ui/text";
+import { View } from "react-native";
+import { useEffect } from "react";
+
 
 type QuestScheduleCardProps = {
     quest: Quest;

@@ -1,15 +1,16 @@
 import { CheckCircle2, Flame, Globe, Lock, Sparkles, Trophy } from "lucide-react-native";
 import { SkeletonBlock, SkeletonCard } from "@/components/ui/skeleton";
-import { useColor } from "@/hooks/custom/use-color";
-import { formatDateTime } from "@/utils/formatters";
 import StreakCard from "@/components/profile/streak-card";
 import BackButton from "@/components/common/back-button";
 import LevelCard from "@/components/profile/level-card";
+import { useColor } from "@/hooks/custom/use-color";
+import { formatDateTime } from "@/utils/formatters";
+import { User } from "@companion/shared-types";
 import Screen from "@/components/ui/screen";
 import Text from "@/components/ui/text";
-import { User } from "@/types/models";
 import { View } from "react-native";
 import { cn } from "cn";
+
 
 export default function ProfileView({ user, visibility = false }: { user: User; visibility?: boolean }) {
     const color = useColor();

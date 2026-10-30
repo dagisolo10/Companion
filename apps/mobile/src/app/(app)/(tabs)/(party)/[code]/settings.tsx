@@ -1,17 +1,18 @@
 import { useGetParty, useRegeneratePartyCode, useUpdateParty } from "@/hooks/tan-stack/party";
 import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
-import { router, useLocalSearchParams } from "expo-router";
 import ConfirmDialog from "@/components/common/confirm-dialog";
+import { router, useLocalSearchParams } from "expo-router";
+import BackButton from "@/components/common/back-button";
 import { SkeletonCard } from "@/components/ui/skeleton";
 import { RefreshCw, Save } from "lucide-react-native";
-import BackButton from "@/components/common/back-button";
+import { Party } from "@companion/shared-types";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
 import { Switch, View } from "react-native";
 import Text from "@/components/ui/text";
-import { Party } from "@/types/models";
 import { useState } from "react";
+
 
 export default function PartySettingsScreen() {
     const { code } = useLocalSearchParams<{ code: string }>();

@@ -1,26 +1,27 @@
-import BackButton from "@/components/common/back-button";
-import DifficultyBadge from "@/components/quest/difficulty-badge";
-import QuestStatusBadge from "@/components/quest/quest-status-badge";
-import QuestScheduleCard from "@/components/quest/quest-schedule-card";
-import Button from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import Screen from "@/components/ui/screen";
-import { SkeletonCard } from "@/components/ui/skeleton";
-import Text from "@/components/ui/text";
-import { useAuth } from "@/contexts/auth-context";
-import { useColor } from "@/hooks/custom/use-color";
-import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
-import { useCompleteQuest, useGetQuest, useUpdateQuest } from "@/hooks/tan-stack/quest";
-import { UpdateQuestDto } from "@/types/dto";
-import { Difficulty, Mode } from "@/types/models";
-import { formatDateTime, relativeTime } from "@/utils/formatters";
-import { cn } from "cn";
-import { useLocalSearchParams } from "expo-router";
 import { AlertCircle, Award, CheckCircle2, Edit3, Flame, Save, Users, Zap } from "lucide-react-native";
-import { useState } from "react";
+import { useCompleteQuest, useGetQuest, useUpdateQuest } from "@/hooks/tan-stack/quest";
+import QuestScheduleCard from "@/components/quest/quest-schedule-card";
+import QuestStatusBadge from "@/components/quest/quest-status-badge";
+import DifficultyBadge from "@/components/quest/difficulty-badge";
+import { formatDateTime, relativeTime } from "@/utils/formatters";
+import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
+import { Difficulty, Mode } from "@companion/shared-types";
+import BackButton from "@/components/common/back-button";
+import { SkeletonCard } from "@/components/ui/skeleton";
+import { useColor } from "@/hooks/custom/use-color";
+import { useLocalSearchParams } from "expo-router";
+import { useAuth } from "@/contexts/auth-context";
 import { Pressable, View } from "react-native";
+import { Input } from "@/components/ui/input";
+import { UpdateQuestDto } from "@/types/dto";
+import Screen from "@/components/ui/screen";
+import Button from "@/components/ui/button";
+import Text from "@/components/ui/text";
+import { useState } from "react";
+import { cn } from "cn";
 
 import { DIFFICULTIES, REWARD_MAP } from "./create";
+
 
 const MODE_ICON = { Normal: Flame, Rush: Zap };
 

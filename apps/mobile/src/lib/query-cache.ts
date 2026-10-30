@@ -1,4 +1,4 @@
-import type { Party, PartyDetail, PartyMember, Quest, QuestDetail, User } from "@/types/models";
+import type { Party, PartyDetail, PartyMember, Quest, QuestDetail, User } from "@companion/shared-types";
 import type { QueryClient, QueryKey } from "@tanstack/react-query";
 import type { PartyLeaderboardMember } from "@/types/leaderboard";
 import { queryKeys, queryRoots } from "@/constants/query-keys";

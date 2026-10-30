@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePaginatedQuery } from "@/hooks/custom/use-paginated-query";
 import { TMutationOptions, TQueryOptions } from "@/types/options";
 import { PartyLeaderboardMember } from "@/types/leaderboard";
-import { Party, PartyDetail } from "@/types/models";
+import { Party, PartyDetail } from "@companion/shared-types";
 import { requestApi } from "@/lib/api/request-api";
 import { queryKeys } from "@/constants/query-keys";
 import { api } from "@/lib/api/axios";

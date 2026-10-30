@@ -1,10 +1,11 @@
-import { queryKeys } from "@/constants/query-keys";
-import { api } from "@/lib/api/axios";
-import { requestApi } from "@/lib/api/request-api";
-import { QuestActivity } from "@/types/models";
-import { TQueryOptions } from "@/types/options";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { usePaginatedQuery } from "@/hooks/custom/use-paginated-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { QuestActivity } from "@companion/shared-types";
+import { requestApi } from "@/lib/api/request-api";
+import { queryKeys } from "@/constants/query-keys";
+import { TQueryOptions } from "@/types/options";
+import { api } from "@/lib/api/axios";
+
 
 export function useGetMyQuestActivities(take?: number, options?: TQueryOptions<QuestActivity[]>) {
     return useQuery({

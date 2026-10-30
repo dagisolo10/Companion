@@ -2,16 +2,17 @@ import { AlertCircle, AtSign, CheckCircle2, Save, User2, XCircle } from "lucide-
 import { useGetUser, useIsUsernameAvailable, useUpdateUser } from "@/hooks/tan-stack/user";
 import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
 import { slugifyUsername } from "@/utils/helper-functions";
+import BackButton from "@/components/common/back-button";
 import { SkeletonCard } from "@/components/ui/skeleton";
 import useDebounce from "@/hooks/custom/use-debounce";
 import { InputField } from "@/components/ui/input";
-import { Switch, View } from "react-native";
-import BackButton from "@/components/common/back-button";
+import { User } from "@companion/shared-types";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
+import { Switch, View } from "react-native";
 import { useRef, useState } from "react";
 import Text from "@/components/ui/text";
-import { User } from "@/types/models";
+
 
 export default function EditProfile() {
     const userQuery = useGetUser();
