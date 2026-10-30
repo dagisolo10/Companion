@@ -9,6 +9,7 @@ import { requestApi } from "@/lib/api/request-api";
 import { queryKeys } from "@/constants/query-keys";
 import { api } from "@/lib/api/axios";
 
+
 export function useGetMyParties(options?: TQueryOptions<PartyDetail[]>) {
     return useQuery({
         ...options,
@@ -63,8 +64,8 @@ export function useCreateParty(options?: TMutationOptions<Party, CreatePartyDto>
     return useMutation({
         ...options,
         mutationFn: async (data) => requestApi(() => api.post<Party>("/party/create", data)),
-        onSuccess: (party, ...args) => {
-            createPartyCaches(queryClient, party);
+        onSuccess: async (party, ...args) => {
+            await createPartyCaches(queryClient, party);
             options?.onSuccess?.(party, ...args);
         },
         onError: (error, ...args) => options?.onError?.(error, ...args),
@@ -77,8 +78,8 @@ export function useUpdateParty(options?: TMutationOptions<Party, { id: string; d
     return useMutation({
         ...options,
         mutationFn: async ({ id, data }) => requestApi(() => api.patch<Party>(`/party/${id}`, data)),
-        onSuccess: (party, ...args) => {
-            updatePartyCaches(queryClient, party);
+        onSuccess: async (party, ...args) => {
+            await updatePartyCaches(queryClient, party);
             options?.onSuccess?.(party, ...args);
         },
         onError: (error, ...args) => options?.onError?.(error, ...args),
@@ -91,8 +92,8 @@ export function useRegeneratePartyCode(options?: TMutationOptions<Party, string>
     return useMutation({
         ...options,
         mutationFn: async (id: string) => requestApi(() => api.patch<Party>(`/party/regenerate-code/${id}`)),
-        onSuccess: (party, ...args) => {
-            regeneratePartyCaches(queryClient, party);
+        onSuccess: async (party, ...args) => {
+            await regeneratePartyCaches(queryClient, party);
             options?.onSuccess?.(party, ...args);
         },
         onError: (error, ...args) => options?.onError?.(error, ...args),
@@ -105,9 +106,9 @@ export function useTransferParty(options?: TMutationOptions<Party, { id: string;
     return useMutation({
         mutationFn: async ({ id, data }) => requestApi(() => api.patch<Party>(`/party/transfer/${id}`, data)),
         ...options,
-        onSuccess: (party, ...args) => {
+        onSuccess: async (party, ...args) => {
             options?.onSuccess?.(party, ...args);
-            updatePartyCaches(queryClient, party);
+            await updatePartyCaches(queryClient, party);
         },
         onError: (error, ...args) => options?.onError?.(error, ...args),
     });
@@ -119,9 +120,9 @@ export function useDeleteParty(options?: TMutationOptions<Party, string>) {
     return useMutation({
         ...options,
         mutationFn: async (id: string) => requestApi(() => api.delete<Party>(`/party/delete/${id}`)),
-        onSuccess: (party, ...args) => {
+        onSuccess: async (party, ...args) => {
             options?.onSuccess?.(party, ...args);
-            deletePartyCaches(queryClient, party);
+            await deletePartyCaches(queryClient, party);
         },
         onError: (error, ...args) => options?.onError?.(error, ...args),
     });

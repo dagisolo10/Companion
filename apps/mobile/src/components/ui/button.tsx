@@ -5,6 +5,7 @@ import { LucideIcon } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import { cn } from "cn";
 
+
 interface ButtonProps extends PressableProps, VariantProps<typeof buttonVariants> {
     asChild?: boolean;
     right?: LucideIcon;
@@ -49,8 +50,8 @@ const sizeConfig = {
 export default function Button({ variant = "default", size = "default", children, className, onPress, asChild, right: RightIcon, ...props }: ButtonProps) {
     const color = useColor();
 
-    const handlePress = (e: GestureResponderEvent) => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const handlePress = async (e: GestureResponderEvent) => {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onPress?.(e);
     };
 

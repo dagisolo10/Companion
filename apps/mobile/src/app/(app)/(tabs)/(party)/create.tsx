@@ -1,5 +1,5 @@
 import { useCreateParty } from "@/hooks/tan-stack/party";
-import BackButton from "@/components/back-button";
+import BackButton from "@/components/common/back-button";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";

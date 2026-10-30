@@ -1,7 +1,7 @@
-import ProfileView, { SkeletonProfileView } from "@/components/profile";
+import ProfileView, { SkeletonProfileView } from "@/components/profile/profile";
 import { useFindUser } from "@/hooks/tan-stack/user";
 import { useLocalSearchParams } from "expo-router";
-import BackButton from "@/components/back-button";
+import BackButton from "@/components/common/back-button";
 import Screen from "@/components/ui/screen";
 import Text from "@/components/ui/text";
 

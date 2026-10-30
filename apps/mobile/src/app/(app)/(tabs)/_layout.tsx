@@ -1,5 +1,5 @@
 import { House, Search, UserRound, UsersRound } from "lucide-react-native";
-import NeoBrutalTabBar from "@/components/neo-brutal-tab-bar";
+import NeoBrutalTabBar from "@/components/navigation/neo-brutal-tab-bar";
 import { useColor } from "@/hooks/custom/use-color";
 import { Tabs } from "expo-router";
 

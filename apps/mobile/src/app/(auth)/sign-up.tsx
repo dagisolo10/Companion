@@ -1,7 +1,7 @@
 import { ArrowRight, AtSign, Eye, EyeOff, Lock, Mail, User2 } from "lucide-react-native";
 import { rememberAccount } from "@/lib/auth/remembered-accounts";
 import { Platform, Pressable, Switch, View } from "react-native";
-import ErrorMessage from "@/components/error-message";
+import ErrorMessage from "@/components/common/error-message";
 import { useMutation } from "@tanstack/react-query";
 import { useColor } from "@/hooks/custom/use-color";
 import { requestApi } from "@/lib/api/request-api";

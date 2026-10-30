@@ -1,7 +1,7 @@
 import { useJoinParty } from "@/hooks/tan-stack/party-member";
 import { useSearchParty } from "@/hooks/tan-stack/party";
-import ErrorMessage from "@/components/error-message";
-import BackButton from "@/components/back-button";
+import ErrorMessage from "@/components/common/error-message";
+import BackButton from "@/components/common/back-button";
 import { relativeTime } from "@/utils/formatters";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";

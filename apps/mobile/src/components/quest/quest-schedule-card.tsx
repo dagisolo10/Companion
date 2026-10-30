@@ -1,4 +1,4 @@
-import QuestCountdown from "@/components/quest-countdown";
+import QuestCountdown from "@/components/quest/quest-countdown";
 import Text from "@/components/ui/text";
 import { Quest } from "@/types/models";
 import { formatDateTimeWithTime } from "@/utils/formatters";

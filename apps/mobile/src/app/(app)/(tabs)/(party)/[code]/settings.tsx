@@ -1,10 +1,10 @@
 import { useGetParty, useRegeneratePartyCode, useUpdateParty } from "@/hooks/tan-stack/party";
 import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
 import { router, useLocalSearchParams } from "expo-router";
-import ConfirmDialog from "@/components/confirm-dialog";
+import ConfirmDialog from "@/components/common/confirm-dialog";
 import { SkeletonCard } from "@/components/ui/skeleton";
 import { RefreshCw, Save } from "lucide-react-native";
-import BackButton from "@/components/back-button";
+import BackButton from "@/components/common/back-button";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";

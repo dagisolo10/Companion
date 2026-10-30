@@ -3,7 +3,7 @@ import { ActivityIndicator, Platform, Pressable, Switch, View } from "react-nati
 import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react-native";
 import { useMutation } from "@tanstack/react-query";
 import { Link, router, useFocusEffect } from "expo-router";
-import ErrorMessage from "@/components/error-message";
+import ErrorMessage from "@/components/common/error-message";
 import { useAuth } from "@/contexts/auth-context";
 import { useColor } from "@/hooks/custom/use-color";
 import { InputField } from "@/components/ui/input";

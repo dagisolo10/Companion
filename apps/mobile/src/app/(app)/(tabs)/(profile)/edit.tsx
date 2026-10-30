@@ -6,7 +6,7 @@ import { SkeletonCard } from "@/components/ui/skeleton";
 import useDebounce from "@/hooks/custom/use-debounce";
 import { InputField } from "@/components/ui/input";
 import { Switch, View } from "react-native";
-import BackButton from "@/components/back-button";
+import BackButton from "@/components/common/back-button";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
 import { useRef, useState } from "react";

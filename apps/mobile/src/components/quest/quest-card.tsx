@@ -1,10 +1,10 @@
-import DifficultyBadge from "@/components/difficulty-badge";
+import DifficultyBadge from "@/components/quest/difficulty-badge";
 import Button from "@/components/ui/button";
 import Text from "@/components/ui/text";
 import { useColor } from "@/hooks/custom/use-color";
 import { Quest } from "@/types/models";
 import { Award, CheckCircle2 } from "lucide-react-native";
-import QuestStatusBadge from "@/components/quest-status-badge";
+import QuestStatusBadge from "@/components/quest/quest-status-badge";
 import { Pressable, View } from "react-native";
 
 type QuestCardProps = {

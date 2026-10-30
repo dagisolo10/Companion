@@ -6,7 +6,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { SkeletonCard } from "@/components/ui/skeleton";
 import EmptyState from "@/components/ui/empty-state";
 import { useGetUser } from "@/hooks/tan-stack/user";
-import BackButton from "@/components/back-button";
+import BackButton from "@/components/common/back-button";
 import { Pressable, View } from "react-native";
 import { Trophy } from "lucide-react-native";
 import Screen from "@/components/ui/screen";

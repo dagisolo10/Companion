@@ -1,7 +1,7 @@
-import BackButton from "@/components/back-button";
-import DifficultyBadge from "@/components/difficulty-badge";
+import BackButton from "@/components/common/back-button";
+import DifficultyBadge from "@/components/quest/difficulty-badge";
 import PartySelector from "@/components/party/party-selector";
-import SectionHeader from "@/components/section-header";
+import SectionHeader from "@/components/common/section-header";
 import Button from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";

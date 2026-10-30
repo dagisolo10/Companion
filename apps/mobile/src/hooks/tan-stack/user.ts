@@ -1,14 +1,15 @@
-import { syncUserCaches } from "@/lib/query-cache";
-import { queryKeys, useInvalidateAll } from "@/constants/query-keys";
-import { useAuth } from "@/contexts/auth-context";
-import { api } from "@/lib/api/axios";
-import { requestApi } from "@/lib/api/request-api";
-import { UpdateUserDto } from "@/types/dto";
-import { User } from "@/types/models";
-import { TMutationOptions, TQueryOptions } from "@/types/options";
-import { SuccessResponse } from "@/types/response";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePaginatedQuery } from "@/hooks/custom/use-paginated-query";
+import { queryKeys, useInvalidateAll } from "@/constants/query-keys";
+import { TMutationOptions, TQueryOptions } from "@/types/options";
+import { syncUserCaches } from "@/lib/query-cache";
+import { SuccessResponse } from "@/types/response";
+import { requestApi } from "@/lib/api/request-api";
+import { useAuth } from "@/contexts/auth-context";
+import { UpdateUserDto } from "@/types/dto";
+import { User } from "@/types/models";
+import { api } from "@/lib/api/axios";
+
 
 export function useGetUser(options?: TQueryOptions<User>) {
     const { user } = useAuth();
@@ -69,8 +70,8 @@ export function useUpdateUser(options?: TMutationOptions<User, UpdateUserDto>) {
         ...options,
         mutationFn: async (data: UpdateUserDto) => requestApi(() => api.patch<User>("/user", data)),
         onError: (error, ...args) => options?.onError?.(error, ...args),
-        onSuccess: (user, ...args) => {
-            syncUserCaches(queryClient, user);
+        onSuccess: async (user, ...args) => {
+            await syncUserCaches(queryClient, user);
             options?.onSuccess?.(user, ...args);
         },
     });
@@ -82,8 +83,8 @@ export function useDeleteUser(options?: TMutationOptions<SuccessResponse>) {
     return useMutation({
         ...options,
         mutationFn: async () => requestApi(() => api.delete<SuccessResponse>("/user")),
-        onSuccess: (data, ...args) => {
-            invalidateALl();
+        onSuccess: async (data, ...args) => {
+            await invalidateALl();
             options?.onSuccess?.(data, ...args);
         },
         onError: (error, ...args) => options?.onError?.(error, ...args),

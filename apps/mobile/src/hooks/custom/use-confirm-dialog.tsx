@@ -1,4 +1,4 @@
-import ConfirmDialog from "@/components/confirm-dialog";
+import ConfirmDialog from "@/components/common/confirm-dialog";
 import { useCallback, useState } from "react";
 
 type DialogOptions = {

@@ -1,7 +1,7 @@
 import Animated, { createAnimatedComponent, Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { Check, ChevronDown, Users } from "lucide-react-native";
 import { SkeletonBlock } from "@/components/ui/skeleton";
-import SectionHeader from "@/components/section-header";
+import SectionHeader from "@/components/common/section-header";
 import { Pressable, View } from "react-native";
 import Button from "@/components/ui/button";
 import Text from "@/components/ui/text";

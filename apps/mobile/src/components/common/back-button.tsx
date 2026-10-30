@@ -1,10 +1,10 @@
 import { useColor } from "@/hooks/custom/use-color";
-import { cn } from "cn";
-import { router } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { Pressable, View } from "react-native";
+import Text from "@/components/ui/text";
+import { router } from "expo-router";
+import { cn } from "cn";
 
-import Text from "./ui/text";
 
 export default function BackButton({ onPress, className, label }: { onPress?: () => void; label: string; className?: string }) {
     const color = useColor();

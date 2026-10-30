@@ -1,7 +1,7 @@
-import BackButton from "@/components/back-button";
-import LargeHeader from "@/components/large-header";
+import BackButton from "@/components/common/back-button";
+import LargeHeader from "@/components/common/large-header";
 import PartyCard from "@/components/party/party-card";
-import SectionHeader from "@/components/section-header";
+import SectionHeader from "@/components/common/section-header";
 import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";

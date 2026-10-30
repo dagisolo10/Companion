@@ -4,9 +4,9 @@ import { getRememberedAccounts, rememberAccount } from "@/lib/auth/remembered-ac
 import { useAuth } from "@/contexts/auth-context";
 import { Platform, Pressable, Switch, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import ErrorMessage from "@/components/error-message";
+import ErrorMessage from "@/components/common/error-message";
 import { InputField } from "@/components/ui/input";
-import BackButton from "@/components/back-button";
+import BackButton from "@/components/common/back-button";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
 import { useState } from "react";

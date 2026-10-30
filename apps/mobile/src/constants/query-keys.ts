@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Filter } from "@/types/models";
 import { useCallback } from "react";
 
+
 export const queryRoots = {
     user: ["user"] as const,
     party: ["party"] as const,
@@ -43,11 +44,11 @@ export const queryKeys = {
 export function useInvalidateAll() {
     const queryClient = useQueryClient();
 
-    return useCallback(() => {
-        queryClient.invalidateQueries({ queryKey: queryRoots.questActivity });
-        queryClient.invalidateQueries({ queryKey: queryRoots.dashboard });
-        queryClient.invalidateQueries({ queryKey: queryRoots.quest });
-        queryClient.invalidateQueries({ queryKey: queryRoots.party });
-        queryClient.invalidateQueries({ queryKey: queryRoots.user });
+    return useCallback(async () => {
+        await queryClient.invalidateQueries({ queryKey: queryRoots.questActivity });
+        await queryClient.invalidateQueries({ queryKey: queryRoots.dashboard });
+        await queryClient.invalidateQueries({ queryKey: queryRoots.quest });
+        await queryClient.invalidateQueries({ queryKey: queryRoots.party });
+        await queryClient.invalidateQueries({ queryKey: queryRoots.user });
     }, [queryClient]);
 }

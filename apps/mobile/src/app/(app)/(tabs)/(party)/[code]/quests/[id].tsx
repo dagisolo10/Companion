@@ -1,7 +1,7 @@
-import BackButton from "@/components/back-button";
-import DifficultyBadge from "@/components/difficulty-badge";
-import QuestStatusBadge from "@/components/quest-status-badge";
-import QuestScheduleCard from "@/components/quest/quert-schedule-card";
+import BackButton from "@/components/common/back-button";
+import DifficultyBadge from "@/components/quest/difficulty-badge";
+import QuestStatusBadge from "@/components/quest/quest-status-badge";
+import QuestScheduleCard from "@/components/quest/quest-schedule-card";
 import Button from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";

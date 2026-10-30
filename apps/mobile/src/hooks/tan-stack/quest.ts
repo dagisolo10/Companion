@@ -1,12 +1,13 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { updateQuestCaches } from "@/lib/query-cache";
-import { queryKeys, queryRoots } from "@/constants/query-keys";
+import { usePaginatedQuery } from "@/hooks/custom/use-paginated-query";
 import { TMutationOptions, TQueryOptions } from "@/types/options";
+import { queryKeys, queryRoots } from "@/constants/query-keys";
 import { CreateQuestDto, UpdateQuestDto } from "@/types/dto";
 import { Filter, Quest, QuestDetail } from "@/types/models";
+import { updateQuestCaches } from "@/lib/query-cache";
 import { requestApi } from "@/lib/api/request-api";
 import { api } from "@/lib/api/axios";
-import { usePaginatedQuery } from "@/hooks/custom/use-paginated-query";
+
 
 export function useGetPartyQuests(code: string, status?: Filter, options?: TQueryOptions<Quest[]>) {
     return useQuery({
@@ -55,8 +56,8 @@ export function useCreateQuest(options?: TMutationOptions<Quest, CreateQuestDto>
         ...options,
         mutationFn: async (data: CreateQuestDto) => requestApi(() => api.post<Quest>("/quest", data)),
         onError: (error, ...args) => options?.onError?.(error, ...args),
-        onSuccess: (quest, ...args) => {
-            updateQuestCaches(queryClient, quest, { prependWhenMissing: true });
+        onSuccess: async (quest, ...args) => {
+            await updateQuestCaches(queryClient, quest, { prependWhenMissing: true });
             options?.onSuccess?.(quest, ...args);
         },
     });
@@ -68,8 +69,8 @@ export function useUpdateQuest(options?: TMutationOptions<Quest, { id: string; d
         ...options,
         mutationFn: async ({ id, data }) => requestApi(() => api.patch<Quest>(`/quest/${id}`, data)),
         onError: (error, ...args) => options?.onError?.(error, ...args),
-        onSuccess: (quest, ...args) => {
-            updateQuestCaches(queryClient, quest);
+        onSuccess: async (quest, ...args) => {
+            await updateQuestCaches(queryClient, quest);
             options?.onSuccess?.(quest, ...args);
         },
     });
@@ -82,16 +83,16 @@ export function useCompleteQuest(options?: TMutationOptions<Quest, { id: string;
         ...options,
         mutationFn: async ({ id, code }) => requestApi(() => api.patch<Quest>(`/quest/${id}/${code}/complete`)),
         onError: (error, ...args) => options?.onError?.(error, ...args),
-        onSuccess: (quest, ...args) => {
-            updateQuestCaches(queryClient, quest, { prependWhenMissing: true });
+        onSuccess: async (quest, ...args) => {
+            await updateQuestCaches(queryClient, quest, { prependWhenMissing: true });
 
-            queryClient.invalidateQueries({ queryKey: queryKeys.quest.byId(quest.id, quest.party.code) });
-            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() });
-            queryClient.invalidateQueries({ queryKey: [...queryRoots.questActivity, "my"] });
-            queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.questActivity] });
-            queryClient.invalidateQueries({ queryKey: [...queryRoots.user, "me"] });
-            queryClient.invalidateQueries({ queryKey: queryKeys.user.leaderboard() });
-            queryClient.invalidateQueries({ queryKey: queryKeys.party.leaderboard(quest.party.code) });
+            await queryClient.invalidateQueries({ queryKey: queryKeys.quest.byId(quest.id, quest.party.code) });
+            await queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() });
+            await queryClient.invalidateQueries({ queryKey: [...queryRoots.questActivity, "my"] });
+            await queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.questActivity] });
+            await queryClient.invalidateQueries({ queryKey: [...queryRoots.user, "me"] });
+            await queryClient.invalidateQueries({ queryKey: queryKeys.user.leaderboard() });
+            await queryClient.invalidateQueries({ queryKey: queryKeys.party.leaderboard(quest.party.code) });
 
             options?.onSuccess?.(quest, ...args);
         },

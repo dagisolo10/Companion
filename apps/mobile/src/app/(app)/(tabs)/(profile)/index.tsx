@@ -1,12 +1,12 @@
 import { ChevronRight, LogOut, LucideIcon, Moon, Sun, Trash2, User } from "lucide-react-native";
 import { Appearance, Pressable, Switch, View, useColorScheme } from "react-native";
-import ProfileView, { SkeletonProfileView } from "@/components/profile";
+import ProfileView, { SkeletonProfileView } from "@/components/profile/profile";
 import { useDeleteUser, useGetUser } from "@/hooks/tan-stack/user";
 import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
 import { PropsWithChildren, ReactNode, useState } from "react";
 import { forgetAccount } from "@/lib/auth/remembered-accounts";
-import AccountSwitcher from "@/components/account-switcher";
-import ConfirmDialog from "@/components/confirm-dialog";
+import AccountSwitcher from "@/components/account/account-switcher";
+import ConfirmDialog from "@/components/common/confirm-dialog";
 import { useColor } from "@/hooks/custom/use-color";
 import { useAuth } from "@/contexts/auth-context";
 import Screen from "@/components/ui/screen";

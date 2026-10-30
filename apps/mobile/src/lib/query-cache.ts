@@ -3,6 +3,7 @@ import type { QueryClient, QueryKey } from "@tanstack/react-query";
 import type { PartyLeaderboardMember } from "@/types/leaderboard";
 import { queryKeys, queryRoots } from "@/constants/query-keys";
 
+
 function isQuestDetailKey(key: QueryKey) {
     return key.length === 3 && key[0] === "quest" && key[1] !== "my" && key[1] !== "party";
 }
@@ -39,7 +40,7 @@ export function mergeQuestDetail(previous: QuestDetail | undefined, quest: Quest
     return previous ? { ...previous, ...quest, questActivities: previous.questActivities } : { ...quest, questActivities: [] };
 }
 
-export function updateQuestCaches(queryClient: QueryClient, quest: Quest, options: { prependWhenMissing?: boolean; updateDetail?: boolean } = {}) {
+export async function updateQuestCaches(queryClient: QueryClient, quest: Quest, options: { prependWhenMissing?: boolean; updateDetail?: boolean } = {}) {
     const { prependWhenMissing = false, updateDetail = true } = options;
 
     if (updateDetail) {
@@ -54,7 +55,7 @@ export function updateQuestCaches(queryClient: QueryClient, quest: Quest, option
 
         const wasRemoved = list.some((item) => item.id === quest.id) && !next.some((item) => item.id === quest.id);
         if (wasRemoved && typeof key[3] === "number") {
-            queryClient.invalidateQueries({ queryKey: key });
+            await queryClient.invalidateQueries({ queryKey: key });
         }
     }
 
@@ -64,7 +65,7 @@ export function updateQuestCaches(queryClient: QueryClient, quest: Quest, option
         queryClient.setQueryData(key, applyQuestToList(list, quest, key[3], undefined, prependWhenMissing));
     }
 
-    queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.quest] });
+    await queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.quest] });
 }
 
 function removeQuestsByParty(queryClient: QueryClient, code: string) {
@@ -123,7 +124,7 @@ function adjustPartyMemberCount(queryClient: QueryClient, code: string, delta: n
     );
 }
 
-export function createPartyCaches(queryClient: QueryClient, party: Party) {
+export async function createPartyCaches(queryClient: QueryClient, party: Party) {
     const detail: PartyDetail = { ...party, _count: { members: 1 }, isMember: true };
 
     queryClient.setQueryData(queryKeys.party.byCode(party.code), detail);
@@ -143,20 +144,20 @@ export function createPartyCaches(queryClient: QueryClient, party: Party) {
 
         queryClient.setQueryData(key, next);
     }
-    queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.party] });
+    await queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.party] });
 }
 
-export function updatePartyCaches(queryClient: QueryClient, party: Party) {
+export async function updatePartyCaches(queryClient: QueryClient, party: Party) {
     queryClient.setQueryData<PartyDetail>(queryKeys.party.byCode(party.code), (previous) => (previous ? { ...previous, ...party } : previous));
 
     const apply = (list?: PartyDetail[]) => list?.map((item) => (item.id === party.id ? { ...item, ...party } : item));
 
     queryClient.setQueriesData<PartyDetail[]>({ queryKey: queryKeys.party.my() }, apply);
     queryClient.setQueriesData<PartyDetail[]>({ queryKey: [...queryRoots.party, "all"] }, apply);
-    queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.party] });
+    await queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.party] });
 }
 
-export function regeneratePartyCaches(queryClient: QueryClient, party: Party) {
+export async function regeneratePartyCaches(queryClient: QueryClient, party: Party) {
     const previousCodes = new Set<string>();
     let previousDetail: PartyDetail | undefined;
 
@@ -170,7 +171,7 @@ export function regeneratePartyCaches(queryClient: QueryClient, party: Party) {
         }
     }
 
-    updatePartyCaches(queryClient, party);
+    await updatePartyCaches(queryClient, party);
 
     if (previousDetail) {
         queryClient.setQueryData(queryKeys.party.byCode(party.code), { ...previousDetail, ...party });
@@ -187,7 +188,7 @@ export function regeneratePartyCaches(queryClient: QueryClient, party: Party) {
     }
 }
 
-export function joinPartyCaches(queryClient: QueryClient, code: string, member: PartyMember) {
+export async function joinPartyCaches(queryClient: QueryClient, code: string, member: PartyMember) {
     const members = queryClient.getQueryData<PartyMember[]>(queryKeys.partyMember.members(code));
     const user = findCurrentUser(queryClient);
     const leaderboard = queryClient.getQueryData<PartyLeaderboardMember[]>(queryKeys.party.leaderboard(code));
@@ -201,8 +202,8 @@ export function joinPartyCaches(queryClient: QueryClient, code: string, member: 
             queryClient.setQueryData<PartyMember[]>(queryKeys.partyMember.members(code), (previous) => (previous?.some((item) => item.id === member.id) ? previous : [...(previous ?? []), { ...member, user: { id: user.id, name: user.name, username: user.username } }]));
         }
     } else {
-        if (leaderboard) queryClient.invalidateQueries({ queryKey: queryKeys.party.leaderboard(code) });
-        if (members) queryClient.invalidateQueries({ queryKey: queryKeys.partyMember.members(code) });
+        if (leaderboard) await queryClient.invalidateQueries({ queryKey: queryKeys.party.leaderboard(code) });
+        if (members) await queryClient.invalidateQueries({ queryKey: queryKeys.partyMember.members(code) });
     }
 
     adjustPartyMemberCount(queryClient, code, 1, true);
@@ -214,14 +215,14 @@ export function joinPartyCaches(queryClient: QueryClient, code: string, member: 
             return list.some((item) => item.id === detail.id) ? list.map((item) => (item.id === detail.id ? detail : item)) : [detail, ...list];
         });
     } else if (queryClient.getQueryData<PartyDetail[]>(queryKeys.party.my())) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.party.my() });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.party.my() });
     }
 
-    queryClient.invalidateQueries({ queryKey: [...queryRoots.quest, "my"] });
-    queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.partyMember] });
+    await queryClient.invalidateQueries({ queryKey: [...queryRoots.quest, "my"] });
+    await queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.partyMember] });
 }
 
-export function leavePartyCaches(queryClient: QueryClient, code: string) {
+export async function leavePartyCaches(queryClient: QueryClient, code: string) {
     const user = findCurrentUser(queryClient);
     const members = queryClient.getQueryData<PartyMember[]>(queryKeys.partyMember.members(code));
     const leaderboard = queryClient.getQueryData<PartyLeaderboardMember[]>(queryKeys.party.leaderboard(code));
@@ -230,25 +231,25 @@ export function leavePartyCaches(queryClient: QueryClient, code: string) {
         if (members) queryClient.setQueryData<PartyMember[]>(queryKeys.partyMember.members(code), (previous) => previous?.filter((item) => item.userId !== user.id));
         if (leaderboard) queryClient.setQueryData<PartyLeaderboardMember[]>(queryKeys.party.leaderboard(code), (previous) => previous?.filter((item) => item.userId !== user.id));
     } else {
-        if (members) queryClient.invalidateQueries({ queryKey: queryKeys.partyMember.members(code) });
-        if (leaderboard) queryClient.invalidateQueries({ queryKey: queryKeys.party.leaderboard(code) });
+        if (members) await queryClient.invalidateQueries({ queryKey: queryKeys.partyMember.members(code) });
+        if (leaderboard) await queryClient.invalidateQueries({ queryKey: queryKeys.party.leaderboard(code) });
     }
 
     adjustPartyMemberCount(queryClient, code, -1, false);
     queryClient.setQueriesData<PartyDetail[]>({ queryKey: queryKeys.party.my() }, (list) => list?.filter((party) => party.code !== code));
     removeQuestsByParty(queryClient, code);
-    queryClient.invalidateQueries({ queryKey: [...queryRoots.questActivity, "my"] });
-    queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.partyMember] });
+    await queryClient.invalidateQueries({ queryKey: [...queryRoots.questActivity, "my"] });
+    await queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.partyMember] });
 }
 
-export function removePartyMemberCaches(queryClient: QueryClient, code: string, member: PartyMember) {
+export async function removePartyMemberCaches(queryClient: QueryClient, code: string, member: PartyMember) {
     queryClient.setQueryData<PartyMember[]>(queryKeys.partyMember.members(code), (previous) => previous?.filter((item) => item.id !== member.id));
     queryClient.setQueryData<PartyLeaderboardMember[]>(queryKeys.party.leaderboard(code), (previous) => previous?.filter((item) => item.id !== member.id && item.userId !== member.userId));
     adjustPartyMemberCount(queryClient, code, -1);
-    queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.partyMember] });
+    await queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.partyMember] });
 }
 
-export function deletePartyCaches(queryClient: QueryClient, party: Party) {
+export async function deletePartyCaches(queryClient: QueryClient, party: Party) {
     queryClient.setQueriesData<PartyDetail[]>({ queryKey: queryKeys.party.my() }, (list) => list?.filter((item) => item.id !== party.id));
     queryClient.setQueriesData<PartyDetail[]>({ queryKey: [...queryRoots.party, "all"] }, (list) => list?.filter((item) => item.id !== party.id));
     queryClient.removeQueries({ queryKey: queryKeys.party.byCode(party.code) });
@@ -256,9 +257,9 @@ export function deletePartyCaches(queryClient: QueryClient, party: Party) {
     queryClient.removeQueries({ queryKey: queryKeys.party.leaderboard(party.code) });
     queryClient.removeQueries({ queryKey: queryKeys.partyMember.members(party.code) });
     removeQuestsByParty(queryClient, party.code);
-    queryClient.invalidateQueries({ queryKey: [...queryRoots.questActivity, "my"] });
-    queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() });
-    queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.party] });
+    await queryClient.invalidateQueries({ queryKey: [...queryRoots.questActivity, "my"] });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() });
+    await queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.party] });
 }
 
 export function findCurrentUser(queryClient: QueryClient) {
@@ -283,14 +284,14 @@ function syncQuestDetailUser(quest: QuestDetail, user: User): QuestDetail {
     };
 }
 
-export function syncUserCaches(queryClient: QueryClient, user: User) {
+export async function syncUserCaches(queryClient: QueryClient, user: User) {
     queryClient.setQueryData<User>(queryKeys.user.me(user.id), user);
 
     queryClient.setQueriesData<User[]>({ queryKey: [...queryRoots.user, "search"] }, (list) => list?.map((item) => (item.id === user.id ? user : item)));
     queryClient.setQueriesData<User[]>({ queryKey: queryKeys.user.leaderboard() }, (list) => list?.map((item) => (item.id === user.id ? user : item)));
     queryClient.setQueryData<User>(queryKeys.user.other(user.username), user);
     queryClient.setQueryData<boolean>(queryKeys.user.username(user.username), true);
-    queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.user] });
+    await queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.user] });
 
     queryClient.setQueriesData<PartyMember[]>({ queryKey: queryRoots.partyMember }, (list) => list?.map((member) => (member.user.id === user.id ? { ...member, user: { id: user.id, name: user.name, username: user.username } } : member)));
     queryClient.setQueriesData<PartyLeaderboardMember[]>({ queryKey: [...queryRoots.party, "leaderboard"] }, (list) => list?.map((member) => (member.user.id === user.id ? { ...member, user } : member)));

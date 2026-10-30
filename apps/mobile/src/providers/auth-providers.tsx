@@ -41,11 +41,11 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     }, [token]);
 
     useEffect(() => {
-        const listener = AppState.addEventListener("change", (state) => {
+        const listener = AppState.addEventListener("change", async (state) => {
             if (state === "active") {
-                supabase.auth.startAutoRefresh();
+                await supabase.auth.startAutoRefresh();
             } else {
-                supabase.auth.stopAutoRefresh();
+                await supabase.auth.stopAutoRefresh();
             }
         });
 
@@ -70,7 +70,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
             setIsLoading(false);
         }
 
-        initializeAuth();
+        void initializeAuth();
 
         const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
             if (session) {

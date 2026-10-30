@@ -4,7 +4,7 @@ import { Check, ChevronDown, LogIn, Trash2, UserPlus, UsersRound } from "lucide-
 import { ActivityIndicator, Pressable, View } from "react-native";
 import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
 import { useCallback, useEffect, useState } from "react";
-import SectionHeader from "@/components/section-header";
+import SectionHeader from "@/components/common/section-header";
 import { router, useFocusEffect } from "expo-router";
 import { useMutation } from "@tanstack/react-query";
 import { useColor } from "@/hooks/custom/use-color";

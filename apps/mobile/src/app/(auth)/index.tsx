@@ -1,5 +1,5 @@
 import { ArrowRight, Compass, Swords, Trophy, Users } from "lucide-react-native";
-import BrandMark from "@/components/brand-mark";
+import BrandMark from "@/components/common/brand-mark";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
 import Text from "@/components/ui/text";

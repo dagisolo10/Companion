@@ -2,9 +2,9 @@ import { CheckCircle2, Flame, Globe, Lock, Sparkles, Trophy } from "lucide-react
 import { SkeletonBlock, SkeletonCard } from "@/components/ui/skeleton";
 import { useColor } from "@/hooks/custom/use-color";
 import { formatDateTime } from "@/utils/formatters";
-import StreakCard from "@/components/streak-card";
-import BackButton from "@/components/back-button";
-import LevelCard from "@/components/level-card";
+import StreakCard from "@/components/profile/streak-card";
+import BackButton from "@/components/common/back-button";
+import LevelCard from "@/components/profile/level-card";
 import Screen from "@/components/ui/screen";
 import Text from "@/components/ui/text";
 import { User } from "@/types/models";
