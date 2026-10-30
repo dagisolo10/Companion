@@ -1,4 +1,5 @@
 import { useCompleteQuest, useGetPartyQuestsInfinite } from "@/hooks/tan-stack/quest";
+import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
 import { SkeletonQuestCard } from "@/components/ui/skeleton";
 import { CheckCircle2, Sparkles } from "lucide-react-native";
 import { router, useLocalSearchParams } from "expo-router";
@@ -9,7 +10,7 @@ import QuestCard from "@/components/quest-card";
 import { Filter, Quest } from "@/types/models";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
-import { ActivityIndicator, Alert, FlatList, ScrollView, View } from "react-native";
+import { ActivityIndicator, FlatList, ScrollView, View } from "react-native";
 import Text from "@/components/ui/text";
 import { useState } from "react";
 import { cn } from "cn";
@@ -21,17 +22,24 @@ export default function PartyQuests() {
 
     const questsQuery = useGetPartyQuestsInfinite(code, filter);
     const completeQuestMutation = useCompleteQuest();
+    const { showConfirmDialog, confirmDialog } = useConfirmDialog();
 
     const isLoading = questsQuery.isLoading;
 
     function handleComplete(quest: Quest) {
-        Alert.alert("Complete Quest", `Mark "${quest.title}" as completed?`, [
-            { text: "Cancel", style: "cancel" },
-            {
-                text: "Complete",
-                onPress: () => completeQuestMutation.mutate({ id: quest.id, code: quest.party.code }, { onSuccess: () => Alert.alert("Done", "Quest completed!"), onError: (err) => Alert.alert("Error", err.message || "Failed to complete quest") }),
-            },
-        ]);
+        showConfirmDialog({
+            title: "Complete Quest",
+            description: `Mark "${quest.title}" as completed?`,
+            confirmLabel: "Complete",
+            onConfirm: () =>
+                completeQuestMutation.mutate(
+                    { id: quest.id, code: quest.party.code },
+                    {
+                        onSuccess: () => showConfirmDialog({ title: "Done", description: "Quest completed!" }),
+                        onError: (err) => showConfirmDialog({ title: "Error", description: err.message || "Failed to complete quest" }),
+                    },
+                ),
+        });
     }
 
     if (questsQuery.error) {
@@ -44,6 +52,7 @@ export default function PartyQuests() {
 
     return (
         <Screen nonScrollable>
+            {confirmDialog}
             <FlatList
                 style={{ flex: 1 }}
                 data={questsQuery.data}

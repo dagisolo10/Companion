@@ -1,19 +1,19 @@
-import { useGetAllPartiesInfinite, useGetMyParties } from "@/hooks/tan-stack/party";
-import { Compass, Plus, Search, UserPlus, Users } from "lucide-react-native";
-import { ActivityIndicator, FlatList, View } from "react-native";
-import { SkeletonPartyList } from "@/components/ui/skeleton";
-import SectionHeader from "@/components/section-header";
-import useDebounce from "@/hooks/custom/use-debounce";
-import PartyCard from "@/components/party/party-card";
-import EmptyState from "@/components/ui/empty-state";
-import LargeHeader from "@/components/large-header";
 import BackButton from "@/components/back-button";
+import LargeHeader from "@/components/large-header";
+import PartyCard from "@/components/party/party-card";
+import SectionHeader from "@/components/section-header";
+import Button from "@/components/ui/button";
+import EmptyState from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
-import Button from "@/components/ui/button";
-import { useMemo, useState } from "react";
+import { SkeletonPartyList } from "@/components/ui/skeleton";
 import Text from "@/components/ui/text";
+import useDebounce from "@/hooks/custom/use-debounce";
+import { useGetAllPartiesInfinite, useGetMyParties } from "@/hooks/tan-stack/party";
 import { router } from "expo-router";
+import { Compass, Plus, Search, UserPlus, Users } from "lucide-react-native";
+import { useMemo, useState } from "react";
+import { ActivityIndicator, FlatList, View } from "react-native";
 
 export default function PartiesScreen() {
     const [search, setSearch] = useState("");
@@ -68,9 +68,9 @@ export default function PartiesScreen() {
                             {myPartiesQuery.data.length === 0 ? (
                                 <EmptyState icon={Users} title="No parties yet" description="Create a party or join one to start questing with friends." />
                             ) : (
-                                <View className="gap-3">
+                                <View className="gap-3 px-1">
                                     {myPartiesQuery.data.map((party) => (
-                                        <PartyCard key={party.id} party={party} memberCount={party._count.members} onPress={() => router.push(`/(app)/(tabs)/(party)/${party.code}`)} />
+                                        <PartyCard key={party.id} party={party} />
                                     ))}
                                 </View>
                             )}
@@ -89,7 +89,7 @@ export default function PartiesScreen() {
                         </View>
                     </View>
                 }
-                renderItem={({ item: party }) => <PartyCard party={party} memberCount={party._count.members} onPress={() => router.push(`/(app)/(tabs)/(party)/${party.code}`)} />}
+                renderItem={({ item: party }) => <PartyCard party={party} />}
                 ListEmptyComponent={!allPartiesQuery.isLoading ? <EmptyState icon={Compass} title={search ? "No parties found" : "No other parties"} description={search ? "Try a different name or code." : "There are no other parties to discover right now."} /> : undefined}
                 ListFooterComponent={allPartiesQuery.isFetchingNextPage ? <ActivityIndicator /> : undefined}
             />

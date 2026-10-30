@@ -9,6 +9,7 @@ import { SkeletonCard } from "@/components/ui/skeleton";
 import Text from "@/components/ui/text";
 import { useAuth } from "@/contexts/auth-context";
 import { useColor } from "@/hooks/custom/use-color";
+import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
 import { useCompleteQuest, useGetQuest, useUpdateQuest } from "@/hooks/tan-stack/quest";
 import { UpdateQuestDto } from "@/types/dto";
 import { Difficulty, Mode } from "@/types/models";
@@ -17,7 +18,7 @@ import { cn } from "cn";
 import { useLocalSearchParams } from "expo-router";
 import { AlertCircle, Award, CheckCircle2, Edit3, Flame, Save, Users, Zap } from "lucide-react-native";
 import { useState } from "react";
-import { Alert, Pressable, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { DIFFICULTIES, REWARD_MAP } from "./create";
 
@@ -36,20 +37,20 @@ export default function QuestDetail() {
     const [editDifficulty, setEditDifficulty] = useState<Difficulty>("Normal");
     const [editMode, setEditMode] = useState<Mode>("Normal");
     const [errors, setErrors] = useState<{ title?: string; description?: string; general?: string }>({});
+    const { showConfirmDialog, confirmDialog } = useConfirmDialog();
 
     function handleComplete() {
         const quest = questQuery.data;
         if (!quest) return;
-        Alert.alert("Complete Quest", `Mark "${quest.title}" as completed?`, [
-            { text: "Cancel", style: "cancel" },
-            {
-                text: "Complete",
-                onPress: () => {
-                    setErrors((prev) => ({ ...prev, general: undefined }));
-                    completeQuestMutation.mutate({ id: quest.id, code: quest.party.code }, { onError: (err) => setErrors((prev) => ({ ...prev, general: err.message || "Failed to complete quest. Please try again." })) });
-                },
+        showConfirmDialog({
+            title: "Complete Quest",
+            description: `Mark "${quest.title}" as completed?`,
+            confirmLabel: "Complete",
+            onConfirm: () => {
+                setErrors((prev) => ({ ...prev, general: undefined }));
+                completeQuestMutation.mutate({ id: quest.id, code: quest.party.code }, { onError: (err) => setErrors((prev) => ({ ...prev, general: err.message || "Failed to complete quest. Please try again." })) });
             },
-        ]);
+        });
     }
 
     function startEditing() {
@@ -135,6 +136,8 @@ export default function QuestDetail() {
                     <Text className="flex-1 text-xs font-bold text-red-700">{errors.general}</Text>
                 </View>
             )}
+
+            {confirmDialog}
 
             {editing ? (
                 <>

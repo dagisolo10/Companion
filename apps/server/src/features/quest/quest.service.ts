@@ -239,8 +239,6 @@ export class QuestService implements OnModuleInit, OnModuleDestroy {
             },
         });
 
-        console.log("QUEST", JSON.stringify(quest, null, 4));
-
         if (!quest) {
             throw new NotFoundException("Quest not found");
         }

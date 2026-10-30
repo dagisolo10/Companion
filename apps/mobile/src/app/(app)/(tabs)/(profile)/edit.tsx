@@ -1,10 +1,11 @@
 import { AlertCircle, AtSign, CheckCircle2, Save, User2, XCircle } from "lucide-react-native";
 import { useGetUser, useIsUsernameAvailable, useUpdateUser } from "@/hooks/tan-stack/user";
+import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
 import { slugifyUsername } from "@/utils/helper-functions";
 import { SkeletonCard } from "@/components/ui/skeleton";
 import useDebounce from "@/hooks/custom/use-debounce";
 import { InputField } from "@/components/ui/input";
-import { Alert, Switch, View } from "react-native";
+import { Switch, View } from "react-native";
 import BackButton from "@/components/back-button";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
@@ -44,6 +45,7 @@ function EditProfileForm({ user }: { user: User }) {
     const [username, setUsername] = useState(user.username);
     const [apiError, setApiError] = useState<string | null>(null);
     const isUpdatingVisibility = useRef(false);
+    const { showConfirmDialog, confirmDialog } = useConfirmDialog();
 
     const slugValue = slugifyUsername(username);
     const debounced = useDebounce(slugValue, 1000);
@@ -77,9 +79,7 @@ function EditProfileForm({ user }: { user: User }) {
         updateUserMutation.mutate(
             { public: value },
             {
-                onSuccess: (data) => {
-                    Alert.alert(`Visibility Updated. Your profile is now ${data.public ? "publicly accessible" : "private"}`);
-                },
+                onSuccess: (data) => showConfirmDialog({ title: "Visibility Updated", description: `Your profile is now ${data.public ? "publicly accessible" : "private"}.` }),
                 onError: (err) => {
                     setIsPublic(!value);
                     setApiError(err.message || "Failed to update profile visibility.");
@@ -98,7 +98,7 @@ function EditProfileForm({ user }: { user: User }) {
         updateUserMutation.mutate(
             { name: name.trim(), username: slugValue },
             {
-                onSuccess: () => Alert.alert("Profile Updated"),
+                onSuccess: () => showConfirmDialog({ title: "Profile Updated", description: "Your profile details have been saved." }),
                 onError: (err) => setApiError(err.message || "Failed to update profile."),
             },
         );
@@ -106,6 +106,7 @@ function EditProfileForm({ user }: { user: User }) {
 
     return (
         <Screen className="gap-6">
+            {confirmDialog}
             <BackButton label="Edit Profile" />
 
             <InputField

@@ -1,17 +1,16 @@
+import Text from "@/components/ui/text";
+import { PartyDetail } from "@/types/models";
+import { router } from "expo-router";
 import { ChevronRight, Users } from "lucide-react-native";
 import { Pressable, View } from "react-native";
-import Text from "@/components/ui/text";
-import { Party } from "@/types/models";
 
 type PartyCardProps = {
-    party: Party;
-    memberCount?: number;
-    onPress?: () => void;
+    party: PartyDetail;
 };
 
-export default function PartyCard({ party, memberCount, onPress }: PartyCardProps) {
+export default function PartyCard({ party }: PartyCardProps) {
     return (
-        <Pressable onPress={onPress} className="card active:shadow-nb-active gap-3.5 transition-all duration-300 active:translate-x-[1px] active:translate-y-[1px]">
+        <Pressable onPress={() => router.push(`/(app)/(tabs)/(party)/${party.code}`)} className="card active:shadow-nb-active gap-3.5 transition-all duration-300 active:translate-x-[1px] active:translate-y-[1px]">
             <View className="flex-row items-start justify-between gap-3">
                 <View className="flex-1 gap-1.5">
                     <Text className="text-lg font-extrabold tracking-tight" numberOfLines={1}>
@@ -25,7 +24,7 @@ export default function PartyCard({ party, memberCount, onPress }: PartyCardProp
 
                 <View className="border-foreground bg-purple flex-row items-center gap-1.5 border-2 px-3 py-1.5 shadow-xs">
                     <Users size={14} color="#000000" strokeWidth={2.5} />
-                    <Text className="text-xs font-extrabold text-black">{memberCount ?? "—"}</Text>
+                    <Text className="text-xs font-extrabold text-black">{party._count.members ?? "—"}</Text>
                 </View>
             </View>
 

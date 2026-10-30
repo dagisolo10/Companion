@@ -36,7 +36,6 @@ export default function QuestScheduleCard({ quest }: QuestScheduleCardProps) {
             </View>
 
             <View className="flex-row gap-3">
-                {/* Starts Box */}
                 <View className="border-foreground bg-amber flex-1 gap-2 border-2 p-3 shadow-xs">
                     <View className="flex-row items-center justify-between">
                         <Text className="text-[10px] font-extrabold tracking-widest text-black/70 uppercase">Starts</Text>
@@ -52,7 +51,6 @@ export default function QuestScheduleCard({ quest }: QuestScheduleCardProps) {
                     </Text>
                 </View>
 
-                {/* Expires Box */}
                 {quest.expiresAt && (
                     <View className="border-foreground bg-lime flex-1 gap-2 border-2 p-3 shadow-xs">
                         <View className="flex-row items-center justify-between">
@@ -62,7 +60,6 @@ export default function QuestScheduleCard({ quest }: QuestScheduleCardProps) {
                             </Animated.View>
                         </View>
 
-                        {/* Counts down as long as it's not completed or expired, regardless of whether it just started */}
                         {!isFinished ? <QuestCountdown target={quest.expiresAt} reachedLabel="Expired" /> : <Text className="text-sm font-extrabold text-black">{quest.status === "Completed" ? "Completed" : "Expired"}</Text>}
 
                         <Text className="text-[10px] font-bold text-black/60" numberOfLines={1}>

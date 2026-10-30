@@ -1,15 +1,16 @@
-import { ChevronRight, LogOut, LucideIcon, Moon, Sun, Trash2, User } from "lucide-react-native";
-import { Alert, Appearance, Pressable, Switch, View, useColorScheme } from "react-native";
-import ProfileView, { SkeletonProfileView } from "@/components/profile";
-import { useDeleteUser, useGetUser } from "@/hooks/tan-stack/user";
-import { PropsWithChildren, ReactNode, useState } from "react";
 import ConfirmDialog from "@/components/confirm-dialog";
-import { useColor } from "@/hooks/custom/use-color";
+import ProfileView, { SkeletonProfileView } from "@/components/profile";
 import Screen from "@/components/ui/screen";
-import { supabase } from "@/lib/supabase";
 import Text from "@/components/ui/text";
-import { router } from "expo-router";
+import { useColor } from "@/hooks/custom/use-color";
+import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
+import { useDeleteUser, useGetUser } from "@/hooks/tan-stack/user";
+import { supabase } from "@/lib/supabase";
 import { cn } from "cn";
+import { router } from "expo-router";
+import { ChevronRight, LogOut, LucideIcon, Moon, Sun, Trash2, User } from "lucide-react-native";
+import { PropsWithChildren, ReactNode, useState } from "react";
+import { Appearance, Pressable, Switch, View, useColorScheme } from "react-native";
 
 export default function Profile() {
     const scheme = useColorScheme();
@@ -18,12 +19,13 @@ export default function Profile() {
     const deleteUserMutation = useDeleteUser();
 
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const { showConfirmDialog, confirmDialog } = useConfirmDialog();
 
     async function handleSignOut() {
         const { error } = await supabase.auth.signOut();
 
         if (error) {
-            Alert.alert("Sign Out", "Failed to sign out. Try Again!");
+            showConfirmDialog({ title: "Sign Out", description: "Failed to sign out. Try again." });
             return;
         }
 
@@ -42,7 +44,7 @@ export default function Profile() {
                 setShowDeleteDialog(false);
                 router.replace("/(auth)/sign-in");
             },
-            onError: (err) => Alert.alert("Error", err.message),
+            onError: (err) => showConfirmDialog({ title: "Error", description: err.message }),
         });
     }
 
@@ -60,6 +62,7 @@ export default function Profile() {
 
     return (
         <Screen className="gap-5">
+            {confirmDialog}
             <ProfileView user={userQuery.data} visibility />
 
             <SettingGroup label="Settings">

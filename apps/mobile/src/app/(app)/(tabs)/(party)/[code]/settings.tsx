@@ -1,4 +1,5 @@
 import { useGetParty, useRegeneratePartyCode, useUpdateParty } from "@/hooks/tan-stack/party";
+import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
 import { router, useLocalSearchParams } from "expo-router";
 import ConfirmDialog from "@/components/confirm-dialog";
 import { SkeletonCard } from "@/components/ui/skeleton";
@@ -7,7 +8,7 @@ import BackButton from "@/components/back-button";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
-import { Alert, Switch, View } from "react-native";
+import { Switch, View } from "react-native";
 import Text from "@/components/ui/text";
 import { Party } from "@/types/models";
 import { useState } from "react";
@@ -42,17 +43,18 @@ function PartySettingsForm({ party }: { party: Party }) {
     const [name, setName] = useState(party.name);
     const [isPublic, setIsPublic] = useState(party.public);
     const [showRegenerateDialog, setShowRegenerateDialog] = useState(false);
+    const { showConfirmDialog, confirmDialog } = useConfirmDialog();
 
     function handleSave() {
         if (!name.trim()) {
-            Alert.alert("Missing name", "Party name cannot be empty.");
+            showConfirmDialog({ title: "Missing name", description: "Party name cannot be empty." });
             return;
         }
         updatePartyMutation.mutate(
             { id: party.id, data: { name: name.trim(), public: isPublic } },
             {
                 onSuccess: () => router.back(),
-                onError: (err) => Alert.alert("Error", err.message),
+                onError: (err) => showConfirmDialog({ title: "Error", description: err.message }),
             },
         );
     }
@@ -63,12 +65,13 @@ function PartySettingsForm({ party }: { party: Party }) {
                 setShowRegenerateDialog(false);
                 router.push({ pathname: "/(app)/(tabs)/(party)/[code]", params: { code } });
             },
-            onError: (err) => Alert.alert("Error", err.message),
+            onError: (err) => showConfirmDialog({ title: "Error", description: err.message }),
         });
     }
 
     return (
         <Screen className="gap-5">
+            {confirmDialog}
             <BackButton label="Settings" />
 
             <View className="gap-1.5">

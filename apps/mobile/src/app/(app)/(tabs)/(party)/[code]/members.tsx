@@ -1,11 +1,12 @@
 import { useGetMembersInfinite, useRemoveMember } from "@/hooks/tan-stack/party-member";
 import { useGetParty, useTransferParty } from "@/hooks/tan-stack/party";
+import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
 import { Crown, Shield, UserMinus, Users } from "lucide-react-native";
 import { useFindUser, useGetUser } from "@/hooks/tan-stack/user";
 import { router, useLocalSearchParams } from "expo-router";
 import ConfirmDialog from "@/components/confirm-dialog";
 import { SkeletonCard } from "@/components/ui/skeleton";
-import { ActivityIndicator, Alert, FlatList, Pressable, View } from "react-native";
+import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
 import EmptyState from "@/components/ui/empty-state";
 import BackButton from "@/components/back-button";
 import { relativeTime } from "@/utils/formatters";
@@ -23,6 +24,7 @@ export default function PartyMembersScreen() {
     const [transferUsername, setTransferUsername] = useState("");
     const [showTransferInput, setShowTransferInput] = useState(false);
     const [removeTarget, setRemoveTarget] = useState<string | null>(null);
+    const { showConfirmDialog, confirmDialog } = useConfirmDialog();
 
     const userQuery = useGetUser();
     const partyQuery = useGetParty(code!);
@@ -59,10 +61,12 @@ export default function PartyMembersScreen() {
 
     function handleTransfer(memberId: string) {
         if (!party) return;
-        Alert.alert("Transfer Ownership", "Are you sure you want to transfer party ownership?", [
-            { text: "Cancel", style: "cancel" },
-            { text: "Transfer", onPress: () => transferPartyMutation.mutate({ id: party.id, data: { partyMemberId: memberId } }) },
-        ]);
+        showConfirmDialog({
+            title: "Transfer Ownership",
+            description: "Are you sure you want to transfer party ownership?",
+            confirmLabel: "Transfer",
+            onConfirm: () => transferPartyMutation.mutate({ id: party.id, data: { partyMemberId: memberId } }),
+        });
     }
 
     function handleTransferByUsername() {
@@ -77,6 +81,7 @@ export default function PartyMembersScreen() {
 
     return (
         <Screen nonScrollable>
+            {confirmDialog}
             <FlatList
                 style={{ flex: 1 }}
                 data={members}
