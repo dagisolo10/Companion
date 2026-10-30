@@ -44,7 +44,7 @@ export default function QuestScheduleCard({ quest }: QuestScheduleCardProps) {
                         </Animated.View>
                     </View>
 
-                    {!isFinished && new Date(quest.startsAt).getTime() > Date.now() ? <QuestCountdown target={quest.startsAt} reachedLabel="Starting now" /> : <Text className="text-sm font-extrabold text-black">Started</Text>}
+                    {!isFinished ? <QuestCountdown target={quest.startsAt} reachedLabel="Starting now" /> : <Text className="text-sm font-extrabold text-black">Started</Text>}
 
                     <Text className="text-[10px] font-bold text-black/60" numberOfLines={1}>
                         {formatDateTimeWithTime(quest.startsAt)}
