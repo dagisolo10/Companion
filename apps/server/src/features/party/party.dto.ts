@@ -1,12 +1,13 @@
 import { PartialType } from "@nestjs/mapped-types";
-import { IsBoolean, IsString } from "class-validator";
+import { IsBoolean, IsOptional, IsString } from "class-validator";
 
 export class CreatePartyDto {
     @IsString()
     name!: string;
 
+    @IsOptional()
     @IsBoolean()
-    public = true;
+    public?: boolean;
 }
 
 export class UpdatePartyDto extends PartialType(CreatePartyDto) {}

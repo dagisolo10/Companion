@@ -1,6 +1,6 @@
 import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react-native";
 import { useMutation } from "@tanstack/react-query";
-import { rememberAccount } from "@/lib/auth/remembered-accounts";
+import { getRememberedAccounts, rememberAccount } from "@/lib/auth/remembered-accounts";
 import { useAuth } from "@/contexts/auth-context";
 import { Platform, Pressable, Switch, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
@@ -26,10 +26,17 @@ export default function AddAccountScreen() {
 
     const addAccountMutation = useMutation({
         mutationFn: async () => {
+            if (Platform.OS !== "web") {
+                const { data: current } = await supabase.auth.getSession();
+                if (current.session && !getRememberedAccounts().some((account) => account.userId === current.session.user.id)) {
+                    await rememberAccount(current.session).catch(() => undefined);
+                }
+            }
+
             const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
             if (error) throw error;
             if (!data.session) throw new Error("Supabase did not return an active session.");
-            if (rememberThisAccount) await rememberAccount(data.session);
+            if (rememberThisAccount) await rememberAccount(data.session).catch(() => undefined);
             return data.session;
         },
         onSuccess: (session) => {

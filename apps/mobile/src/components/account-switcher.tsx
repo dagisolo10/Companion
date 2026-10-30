@@ -1,4 +1,4 @@
-import { forgetAccount, getRememberedAccounts, getRememberedRefreshToken, RememberedAccount, updateRememberedAccountSession } from "@/lib/auth/remembered-accounts";
+import { forgetAccount, getRememberedAccounts, RememberedAccount, restoreRememberedAccount } from "@/lib/auth/remembered-accounts";
 import Animated, { createAnimatedComponent, Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { Check, ChevronDown, LogIn, Trash2, UserPlus, UsersRound } from "lucide-react-native";
 import { ActivityIndicator, Pressable, View } from "react-native";
@@ -7,10 +7,9 @@ import { useCallback, useEffect, useState } from "react";
 import SectionHeader from "@/components/section-header";
 import { router, useFocusEffect } from "expo-router";
 import { useMutation } from "@tanstack/react-query";
+import { useColor } from "@/hooks/custom/use-color";
 import { useAuth } from "@/contexts/auth-context";
-import { Session } from "@supabase/supabase-js";
 import Button from "@/components/ui/button";
-import { supabase } from "@/lib/supabase";
 import Text from "@/components/ui/text";
 import { cn } from "cn";
 
@@ -21,6 +20,7 @@ export default function AccountSwitcher({ currentUserId }: { currentUserId: stri
     const [accounts, setAccounts] = useState<RememberedAccount[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
 
+    const color = useColor();
     const { applySession } = useAuth();
     const { showConfirmDialog, confirmDialog } = useConfirmDialog();
 
@@ -46,18 +46,8 @@ export default function AccountSwitcher({ currentUserId }: { currentUserId: stri
 
     const currentAccount = accounts.find((acc) => acc.userId === currentUserId);
 
-    const switchAccountMutation = useMutation<Session, Error, RememberedAccount>({
-        mutationFn: async (account) => {
-            const refresh_token = await getRememberedRefreshToken(account.userId);
-            if (!refresh_token) throw new Error("The saved session is no longer available. Sign in again and choose Remember this account.");
-
-            const { data, error } = await supabase.auth.refreshSession({ refresh_token });
-            if (error) throw error;
-            if (!data.session) throw new Error("Could not restore this account. Sign in again to save it.");
-
-            await updateRememberedAccountSession(data.session);
-            return data.session;
-        },
+    const switchAccountMutation = useMutation({
+        mutationFn: (account: RememberedAccount) => restoreRememberedAccount(account.userId),
         onSuccess: (session) => {
             applySession(session);
             refreshAccounts();
@@ -133,7 +123,7 @@ export default function AccountSwitcher({ currentUserId }: { currentUserId: stri
                         </Text>
                     </View>
                 </View>
-                <AnimatedChevron size={18} color="#000" strokeWidth={2.5} style={chevronStyle} />
+                <AnimatedChevron size={18} color={color.foreground} strokeWidth={2.5} style={chevronStyle} />
             </Pressable>
 
             <Animated.View style={[dynamicDropdownStyle]} className="overflow-hidden">
@@ -164,12 +154,12 @@ export default function AccountSwitcher({ currentUserId }: { currentUserId: stri
                                         <Check size={18} color="#000" strokeWidth={3} />
                                     ) : (
                                         <Button size="sm" variant="outline" onPress={() => switchAccountMutation.mutate(account)} disabled={switchAccountMutation.isPending || forgetAccountMutation.isPending}>
-                                            {isSwitching ? <ActivityIndicator size="small" color="#000" /> : <LogIn size={14} color="#000" strokeWidth={2.5} />}
+                                            {isSwitching ? <ActivityIndicator size="small" color={color.foreground} /> : <LogIn size={14} color={color.foreground} strokeWidth={2.5} />}
                                         </Button>
                                     )}
 
                                     <Button size="icon" variant="ghost" onPress={() => handleForget(account)} disabled={switchAccountMutation.isPending || forgetAccountMutation.isPending} accessibilityLabel={`Forget ${account.email}`}>
-                                        <Trash2 size={16} color={isCurrent ? "#000" : "#666"} strokeWidth={2.5} />
+                                        <Trash2 size={16} color={isCurrent ? "#000" : color.mutedForeground} strokeWidth={2.5} />
                                     </Button>
                                 </View>
                             </View>

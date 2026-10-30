@@ -22,7 +22,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         (session: Session | null) => {
             const nextUserId = session?.user.id ?? null;
             if (activeUserId.current && activeUserId.current !== nextUserId) {
-                queryClient.getQueryCache().clear();
+                void queryClient.resetQueries();
             }
             activeUserId.current = nextUserId;
             const nextToken = session?.access_token ?? null;

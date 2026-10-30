@@ -61,7 +61,7 @@ export default function SignUp() {
                 throw new Error(response.error.message);
             }
 
-            if (rememberThisAccount && response.data.session) await rememberAccount(response.data.session);
+            if (rememberThisAccount && response.data.session) await rememberAccount(response.data.session).catch(() => undefined);
         },
         onSuccess: () => {
             router.replace("/(app)/(home)");
