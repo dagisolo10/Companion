@@ -1,16 +1,18 @@
+import { SkeletonChatList, SkeletonChatListItem } from "@/components/ui/skeleton";
+import { useGetChatConversations } from "@/hooks/tan-stack/chat";
 import LargeHeader from "@/components/common/large-header";
+import { Bell, MessageCircle } from "lucide-react-native";
+import { FlatList, Pressable, View } from "react-native";
 import EmptyState from "@/components/ui/empty-state";
+import { useColor } from "@/hooks/custom/use-color";
+import { useAuth } from "@/contexts/auth-context";
+import { relativeTime } from "@/utils/formatters";
+import { totalUnread } from "@/lib/chat-cache";
 import Screen from "@/components/ui/screen";
 import Text from "@/components/ui/text";
-import { useAuth } from "@/contexts/auth-context";
-import { useColor } from "@/hooks/custom/use-color";
-import { useGetChatConversations } from "@/hooks/tan-stack/chat";
-import { totalUnread } from "@/lib/chat-cache";
-import { relativeTime } from "@/utils/formatters";
-import { cn } from "cn";
 import { router } from "expo-router";
-import { Bell, MessageCircle } from "lucide-react-native";
-import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
+import { cn } from "cn";
+
 
 const AVATAR_COLORS = ["bg-lime", "bg-pink", "bg-amber", "bg-purple"];
 
@@ -27,9 +29,9 @@ export default function ChatsScreen() {
             <FlatList
                 style={{ flex: 1 }}
                 data={conversations}
+                showsVerticalScrollIndicator={false}
                 keyExtractor={(conversation) => conversation.party.id}
                 contentContainerStyle={{ gap: 12, paddingBottom: 24, flexGrow: 1 }}
-                showsVerticalScrollIndicator={false}
                 ListHeaderComponent={
                     <View className="mb-2 gap-1">
                         <LargeHeader header="Chats" />
@@ -87,14 +89,20 @@ export default function ChatsScreen() {
                 }}
                 ListEmptyComponent={
                     conversationsQuery.isFetching ? (
-                        <View className="flex-1 items-center justify-center py-16">
-                            <ActivityIndicator />
+                        <View className="py-4">
+                            <SkeletonChatList count={5} />
                         </View>
                     ) : (
                         <EmptyState icon={MessageCircle} title="No conversations yet" description="Join a party to start chatting with your companions." actionLabel="Find a party" onAction={() => router.push("/(app)/(tabs)/(party)")} />
                     )
                 }
-                ListFooterComponent={conversationsQuery.isFetching && conversations.length > 0 ? <ActivityIndicator /> : undefined}
+                ListFooterComponent={
+                    conversationsQuery.isFetching && conversations.length > 0 ? (
+                        <View className="py-3">
+                            <SkeletonChatListItem />
+                        </View>
+                    ) : undefined
+                }
             />
         </Screen>
     );

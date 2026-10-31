@@ -71,16 +71,18 @@ function updateMessageCaches(queryClient: QueryClient, partyCode: string, update
     }
 }
 
-export function applyChatMessage(queryClient: QueryClient, partyCode: string, message: ChatMessage, currentUserId: string | undefined, activePartyCode: string | null) {
+export function applyChatMessage(queryClient: QueryClient, partyCode: string, message: ChatMessage, currentUserId: string | undefined, _activePartyCode: string | null) {
     updateMessageCaches(queryClient, partyCode, (messages) => [message, ...messages.filter((item) => item.id !== message.id)]);
 
     const isMine = message.senderId === currentUserId;
-    const isActive = activePartyCode === partyCode;
 
+    // Always increment unread count for incoming messages from others.
+    // The chat room component is responsible for clearing it when the user actually sees the message.
+    // This ensures unread count is accurate regardless of whether the user is inside the chat or not.
     updateConversation(queryClient, partyCode, (conversation) => ({
         ...conversation,
         lastMessage: message,
-        unreadCount: isMine ? conversation.unreadCount : isActive ? 0 : conversation.unreadCount + 1,
+        unreadCount: isMine ? conversation.unreadCount : conversation.unreadCount + 1,
     }));
 }
 
@@ -116,4 +118,8 @@ export function applyChatPresence(queryClient: QueryClient, presence: ChatPresen
 
 export function totalUnread(conversations: ChatConversation[] | undefined) {
     return conversations?.reduce((sum, conversation) => sum + conversation.unreadCount, 0) ?? 0;
+}
+
+export function setConversationUnread(queryClient: QueryClient, partyCode: string, unreadCount: number) {
+    updateConversation(queryClient, partyCode, (conversation) => ({ ...conversation, unreadCount }));
 }
