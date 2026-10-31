@@ -1,16 +1,18 @@
 import { applyChatMessage, applyChatMessageDelete, applyChatMessageUpdate, applyChatRead, setConversationUnread } from "@/lib/chat-cache";
 import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, Pressable, TextInput, View } from "react-native";
-import { ArrowDown, Check, ChevronLeft, MessageCircle, Send, X } from "lucide-react-native";
 import { useGetChatMessagesInfinite, useGetChatPresence } from "@/hooks/tan-stack/chat";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { ArrowDown, Check, MessageCircle, Send, X } from "lucide-react-native";
 import type { ChatMessage, ChatTypingEvent } from "@companion/shared-types";
 import MessageActionsDialog from "@/components/chat/message-actions-dialog";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { formatDateSeparator, getDateString } from "@/utils/formatters";
 import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { SkeletonChatRoom } from "@/components/ui/skeleton";
 import { useSocketIo } from "@/contexts/socket.io-context";
 import { ScrollView } from "react-native-gesture-handler";
+import BackButton from "@/components/common/back-button";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetParty } from "@/hooks/tan-stack/party";
 import EmptyState from "@/components/ui/empty-state";
@@ -21,7 +23,6 @@ import useToast from "@/hooks/custom/use-toast";
 import Button from "@/components/ui/button";
 import Text from "@/components/ui/text";
 import { cn } from "cn";
-import { formatDateSeparator, getDateString } from "@/utils/formatters";
 
 
 type PendingMessage = {
@@ -40,6 +41,8 @@ function formatMessageTime(date: string) {
 }
 
 export default function ChatRoomScreen() {
+    const insets = useSafeAreaInsets();
+
     const { code } = useLocalSearchParams<{ code: string }>();
     const color = useColor();
     const queryClient = useQueryClient();
@@ -75,10 +78,7 @@ export default function ChatRoomScreen() {
 
     const listData = useMemo<ChatListItem[]>(() => {
         // Combine pending and server messages, then insert date separators
-        const items: ChatListItem[] = [
-            ...pending.map((item) => ({ type: "pending" as const, pending: item })),
-            ...messages.map((message) => ({ type: "message" as const, message })),
-        ];
+        const items: ChatListItem[] = [...pending.map((item) => ({ type: "pending" as const, pending: item })), ...messages.map((message) => ({ type: "message" as const, message }))];
 
         const result: ChatListItem[] = [];
         let lastDate: string | null = null;
@@ -378,11 +378,9 @@ export default function ChatRoomScreen() {
 
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-            <SafeAreaView style={{ backgroundColor: color.background, flex: 1 }} edges={["top"]}>
-                <View className="border-foreground flex-row items-center gap-3 border-b-2 px-4 py-3">
-                    <Pressable onPress={() => router.back()} className="border-foreground bg-card shadow-nb-sm size-10 items-center justify-center border-2">
-                        <ChevronLeft size={20} color={color.foreground} strokeWidth={2.5} />
-                    </Pressable>
+            <SafeAreaView style={{ backgroundColor: color.background, flex: 1, paddingBottom: insets.bottom + 56 }} edges={["top"]}>
+                <View className="border-foreground flex-row items-center border-b-2 px-4 py-3">
+                    <BackButton label="" />
 
                     <Pressable onPress={() => router.push({ pathname: "/(app)/(tabs)/(party)/[code]", params: { code } })} className="flex-1">
                         <Text className="font-jakarta-extrabold text-lg" numberOfLines={1}>
@@ -422,13 +420,11 @@ export default function ChatRoomScreen() {
                                 if (item.type === "dateSeparator") {
                                     return (
                                         <View className="flex-row items-center gap-3 py-2">
-                                            <View className="border-muted flex-1 h-px" />
+                                            <View className="border-muted h-px flex-1" />
                                             <View className="border-foreground bg-card shadow-nb-sm border-2 px-3 py-1">
-                                                <Text className="text-muted-foreground font-jakarta-bold text-[10px] tracking-widest uppercase">
-                                                    {formatDateSeparator(item.date)}
-                                                </Text>
+                                                <Text className="text-muted-foreground font-jakarta-bold text-[10px] tracking-widest uppercase">{formatDateSeparator(item.date)}</Text>
                                             </View>
-                                            <View className="border-muted flex-1 h-px" />
+                                            <View className="border-muted h-px flex-1" />
                                         </View>
                                     );
                                 }

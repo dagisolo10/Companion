@@ -18,7 +18,12 @@ export default function AppTabsLayout() {
                 tabBarActiveTintColor: color.foreground,
                 tabBarLabelStyle: { fontWeight: "700" },
                 tabBarInactiveTintColor: color.mutedForeground,
-                tabBarStyle: { backgroundColor: color.background, borderTopColor: color.border },
+                tabBarStyle: {
+                    backgroundColor: "transparent",
+                    borderTopColor: "transparent",
+                    elevation: 0,
+                    shadowOpacity: 0,
+                },
             }}
         >
             <Tabs.Screen name="(home)" options={{ title: "Home", tabBarIcon: ({ color: iconColor, size }) => <House color={iconColor} size={size} /> }} />

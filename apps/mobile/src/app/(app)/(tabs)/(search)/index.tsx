@@ -1,23 +1,26 @@
+import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
+import { useSearchUsersInfinite } from "@/hooks/tan-stack/user";
 import ErrorMessage from "@/components/common/error-message";
 import LargeHeader from "@/components/common/large-header";
-import EmptyState from "@/components/ui/empty-state";
+import { Search, UserRound, X } from "lucide-react-native";
 import { SkeletonCard } from "@/components/ui/skeleton";
-import Text from "@/components/ui/text";
-import { useColor } from "@/hooks/custom/use-color";
 import useDebounce from "@/hooks/custom/use-debounce";
-import { useSearchUsersInfinite } from "@/hooks/tan-stack/user";
+import EmptyState from "@/components/ui/empty-state";
+import { useColor } from "@/hooks/custom/use-color";
 import { getLevel } from "@/utils/helper-functions";
+import { Input } from "@/components/ui/input";
+import Text from "@/components/ui/text";
+import { router } from "expo-router";
+import { useState } from "react";
 import { cn } from "cn";
-import { router, useLocalSearchParams } from "expo-router";
-import { Search, UserRound } from "lucide-react-native";
-import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
+
 
 const AVATAR_COLORS = ["bg-lime", "bg-pink", "bg-amber", "bg-purple"];
 
 export default function SearchScreen() {
     const color = useColor();
 
-    const { query = "" } = useLocalSearchParams<{ query?: string }>();
+    const [query, setQuery] = useState("");
     const debouncedQuery = useDebounce(query, 300);
 
     const usersQuery = useSearchUsersInfinite(debouncedQuery, debouncedQuery.trim().length >= 2);
@@ -25,21 +28,47 @@ export default function SearchScreen() {
 
     return (
         <FlatList
-            style={{ flex: 1, backgroundColor: color.background }}
             data={usersQuery.data}
-            keyExtractor={(user) => user.id}
+            onEndReachedThreshold={0.5}
             keyboardDismissMode="on-drag"
+            keyExtractor={(user) => user.id}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
             contentInsetAdjustmentBehavior="automatic"
-            contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 16, gap: 12, flexGrow: 1 }}
+            style={{ flex: 1, backgroundColor: color.background }}
+            contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 24, gap: 12, flexGrow: 1 }}
             onEndReached={() => {
                 if (usersQuery.hasNextPage && !usersQuery.isFetchingNextPage) void usersQuery.fetchNextPage();
             }}
-            onEndReachedThreshold={0.5}
+            ListHeaderComponent={
+                <View className="gap-4 pb-2">
+                    <LargeHeader header="Find Players" />
+
+                    <View className="relative">
+                        <View className="absolute top-1/2 left-4 z-10 -translate-y-1/2">
+                            <Search size={20} color={color.mutedForeground} strokeWidth={2.5} />
+                        </View>
+
+                        <Input
+                            value={query}
+                            autoCorrect={false}
+                            autoCapitalize="none"
+                            onChangeText={setQuery}
+                            placeholder="Search by name or username..."
+                            placeholderTextColor={color.mutedForeground}
+                            className="border-foreground shadow-nb-sm bg-card font-jakarta-bold border-2 pr-12 pl-12"
+                        />
+                        {query.length > 0 ? (
+                            <Pressable onPress={() => setQuery("")} className="absolute top-1/2 right-4 z-10 -translate-y-1/2" hitSlop={12} accessibilityRole="button" accessibilityLabel="Clear search query">
+                                <X size={18} color={color.foreground} strokeWidth={2.5} />
+                            </Pressable>
+                        ) : null}
+                    </View>
+                </View>
+            }
             ListEmptyComponent={
                 usersQuery.isFetching ? (
-                    <View className="gap-3">
+                    <View className="gap-3 pt-2">
                         <SkeletonCard lines={1} />
                         <SkeletonCard lines={1} />
                     </View>
@@ -70,8 +99,7 @@ export default function SearchScreen() {
                     </View>
                 );
             }}
-            ListHeaderComponent={<LargeHeader header="Find Players" />}
-            ListFooterComponent={usersQuery.isFetchingNextPage ? <ActivityIndicator /> : undefined}
+            ListFooterComponent={usersQuery.isFetchingNextPage ? <ActivityIndicator className="py-4" color={color.foreground} /> : undefined}
         />
     );
 }

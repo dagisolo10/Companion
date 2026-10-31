@@ -1,9 +1,10 @@
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useColor } from "@/hooks/custom/use-color";
-import { PropsWithChildren, RefObject } from "react";
 import type { ScrollViewInstance } from "react-native";
+import { PropsWithChildren, RefObject } from "react";
+import { useColor } from "@/hooks/custom/use-color";
 import { cn } from "cn";
+
 
 type ScreenProps = PropsWithChildren & {
     header?: boolean;
@@ -14,6 +15,7 @@ type ScreenProps = PropsWithChildren & {
 };
 
 export default function Screen({ children, nonScrollable = false, fullscreen = false, header = false, className, scrollRef }: ScreenProps) {
+    const insets = useSafeAreaInsets();
     const color = useColor();
 
     return (
@@ -30,7 +32,7 @@ export default function Screen({ children, nonScrollable = false, fullscreen = f
                         contentInsetAdjustmentBehavior={header ? "automatic" : "never"}
                         contentContainerStyle={{ flexGrow: 1, ...(fullscreen && { flex: 1 }) }}
                     >
-                        <View style={{ paddingHorizontal: 20, paddingVertical: 16 }} className={cn(fullscreen && "flex-1", className)}>
+                        <View style={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 96, paddingVertical: 16 }} className={cn(fullscreen && "flex-1", className)}>
                             {children}
                         </View>
                     </ScrollView>

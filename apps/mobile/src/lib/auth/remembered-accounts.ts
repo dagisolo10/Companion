@@ -2,8 +2,9 @@ import "expo-sqlite/localStorage/install";
 
 import type { Session } from "@supabase/supabase-js";
 import * as SecureStore from "expo-secure-store";
-import { Platform } from "react-native";
 import { supabase } from "@/lib/supabase";
+import { Platform } from "react-native";
+
 
 export type RememberedAccount = {
     userId: string;
@@ -18,7 +19,7 @@ export function getRememberedAccounts(): RememberedAccount[] {
     if (Platform.OS === "web") return [];
 
     try {
-        const raw = localStorage.getItem(ACCOUNTS_KEY);
+        const raw = globalThis.localStorage.getItem(ACCOUNTS_KEY);
         if (!raw) return [];
 
         const parsed: unknown = JSON.parse(raw);
@@ -41,7 +42,7 @@ function getAccountSummary(session: Session): RememberedAccount {
 }
 
 function saveAccountList(accounts: RememberedAccount[]) {
-    localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+    globalThis.localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
 }
 
 export async function rememberAccount(session: Session) {
