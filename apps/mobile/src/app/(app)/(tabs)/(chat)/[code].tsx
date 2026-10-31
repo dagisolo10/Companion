@@ -1,25 +1,24 @@
-import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, Pressable, TextInput, View } from "react-native";
-import { applyChatMessage, applyChatMessageDelete, applyChatMessageUpdate, applyChatRead } from "@/lib/chat-cache";
-import { useGetChatMessagesInfinite, useGetChatPresence } from "@/hooks/tan-stack/chat";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { Check, ChevronLeft, MessageCircle, Send, X } from "lucide-react-native";
-import type { ChatMessage, ChatTypingEvent } from "@companion/shared-types";
 import MessageActionsDialog from "@/components/chat/message-actions-dialog";
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
-import { useSocketIo } from "@/contexts/socket.io-context";
-import { useQueryClient } from "@tanstack/react-query";
-import { useGetParty } from "@/hooks/tan-stack/party";
-import EmptyState from "@/components/ui/empty-state";
-import { useGetUser } from "@/hooks/tan-stack/user";
-import { useColor } from "@/hooks/custom/use-color";
-import { useAuth } from "@/contexts/auth-context";
-import useToast from "@/hooks/custom/use-toast";
 import Button from "@/components/ui/button";
+import EmptyState from "@/components/ui/empty-state";
 import Text from "@/components/ui/text";
+import { useAuth } from "@/contexts/auth-context";
+import { useSocketIo } from "@/contexts/socket.io-context";
+import { useColor } from "@/hooks/custom/use-color";
+import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
+import useToast from "@/hooks/custom/use-toast";
+import { useGetChatMessagesInfinite, useGetChatPresence } from "@/hooks/tan-stack/chat";
+import { useGetParty } from "@/hooks/tan-stack/party";
+import { useGetUser } from "@/hooks/tan-stack/user";
+import { applyChatMessage, applyChatMessageDelete, applyChatMessageUpdate, applyChatRead } from "@/lib/chat-cache";
+import type { ChatMessage, ChatTypingEvent } from "@companion/shared-types";
+import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "cn";
-
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { Check, ChevronLeft, MessageCircle, Send, X } from "lucide-react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, Pressable, TextInput, View } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 type PendingMessage = {
     clientId: string;
@@ -285,12 +284,12 @@ export default function ChatRoomScreen() {
                     </Pressable>
 
                     <View className="flex-1">
-                        <Text className="text-lg font-extrabold" numberOfLines={1}>
+                        <Text className="font-jakarta-extrabold text-lg" numberOfLines={1}>
                             {party?.name ?? "Party chat"}
                         </Text>
                         <View className="flex-row items-center gap-1.5">
                             <View className={cn("border-foreground size-2 rounded-full border", onlineCount > 0 ? "bg-lime" : "bg-muted")} />
-                            <Text className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">{onlineCount > 0 ? `${onlineCount} online` : "No one online"}</Text>
+                            <Text className="text-muted-foreground font-jakarta-bold text-[10px] tracking-widest uppercase">{onlineCount > 0 ? `${onlineCount} online` : "No one online"}</Text>
                         </View>
                     </View>
                 </View>
@@ -324,7 +323,7 @@ export default function ChatRoomScreen() {
 
                             return (
                                 <View className={cn("max-w-[82%] gap-1", isMine ? "items-end self-end" : "items-start self-start")}>
-                                    {!isMine && <Text className="text-muted-foreground text-[10px] font-bold">{senderName}</Text>}
+                                    {!isMine && <Text className="text-muted-foreground font-jakarta-bold text-[10px]">{senderName}</Text>}
 
                                     <Pressable
                                         delayLongPress={350}
@@ -332,14 +331,14 @@ export default function ChatRoomScreen() {
                                         onLongPress={message ? () => handleLongPress(message) : pendingMessage ? () => removePending(pendingMessage.clientId) : undefined}
                                         className={cn("border-foreground shadow-nb-sm border-2 px-3 py-2", isMine ? "bg-lime" : "bg-card", isFailed && "border-destructive", pendingMessage?.status === "sending" && "opacity-70")}
                                     >
-                                        <Text className={cn("text-sm font-semibold", isMine ? "text-black" : "text-foreground")}>{content}</Text>
+                                        <Text className={cn("font-jakarta-semibold text-sm", isMine ? "text-black" : "text-foreground")}>{content}</Text>
                                     </Pressable>
 
                                     <View className="flex-row items-center gap-1.5">
-                                        <Text className="text-muted-foreground text-[9px] font-bold">{formatMessageTime(createdAt)}</Text>
-                                        {message?.editedAt ? <Text className="text-muted-foreground text-[9px] font-bold">edited</Text> : null}
+                                        <Text className="text-muted-foreground font-jakarta-bold text-[9px]">{formatMessageTime(createdAt)}</Text>
+                                        {message?.editedAt ? <Text className="text-muted-foreground font-jakarta-bold text-[9px]">edited</Text> : null}
                                         {pendingMessage?.status === "sending" ? <ActivityIndicator size="small" color={color.mutedForeground} /> : null}
-                                        {isFailed ? <Text className="text-destructive text-[9px] font-bold">Tap to retry</Text> : null}
+                                        {isFailed ? <Text className="text-destructive font-jakarta-bold text-[9px]">Tap to retry</Text> : null}
                                     </View>
                                 </View>
                             );
@@ -351,7 +350,7 @@ export default function ChatRoomScreen() {
                                 </View>
                             ) : !messagesQuery.hasNextPage && listData.length > 0 ? (
                                 <View className="items-center py-3">
-                                    <Text className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">Start of conversation</Text>
+                                    <Text className="text-muted-foreground font-jakarta-bold text-[10px] tracking-widest uppercase">Start of conversation</Text>
                                 </View>
                             ) : undefined
                         }
@@ -365,7 +364,7 @@ export default function ChatRoomScreen() {
 
                 {typingUsers.length > 0 ? (
                     <View className="px-4 pb-1">
-                        <Text className="text-muted-foreground text-[10px] font-bold">
+                        <Text className="text-muted-foreground font-jakarta-bold text-[10px]">
                             {typingUsers.map((item) => item.name).join(", ")} {typingUsers.length === 1 ? "is" : "are"} typing...
                         </Text>
                     </View>
@@ -375,8 +374,8 @@ export default function ChatRoomScreen() {
                     {editingMessage ? (
                         <View className="border-foreground bg-amber mb-2 flex-row items-center justify-between gap-2 border-2 px-3 py-2">
                             <View className="flex-1">
-                                <Text className="text-[10px] font-extrabold tracking-widest uppercase">Editing message</Text>
-                                <Text className="text-xs font-bold" numberOfLines={1}>
+                                <Text className="font-jakarta-extrabold text-[10px] tracking-widest uppercase">Editing message</Text>
+                                <Text className="font-jakarta-bold text-xs" numberOfLines={1}>
                                     {editingMessage.content}
                                 </Text>
                             </View>
@@ -394,7 +393,7 @@ export default function ChatRoomScreen() {
                             placeholderTextColor={color.mutedForeground}
                             multiline
                             maxLength={2000}
-                            className="border-foreground bg-muted text-foreground max-h-32 min-h-12 flex-1 border-2 px-3 py-3 font-semibold"
+                            className="border-foreground bg-muted text-foreground font-jakarta-semibold max-h-32 min-h-12 flex-1 border-2 px-3 py-3"
                         />
 
                         <Button size="icon" onPress={handleSend} disabled={!draft.trim()} accessibilityLabel={editingMessage ? "Save message" : "Send message"}>

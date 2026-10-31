@@ -1,16 +1,16 @@
-import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
-import { useSearchUsersInfinite } from "@/hooks/tan-stack/user";
-import { router, useLocalSearchParams } from "expo-router";
-import { SkeletonCard } from "@/components/ui/skeleton";
-import { Search, UserRound } from "lucide-react-native";
-import useDebounce from "@/hooks/custom/use-debounce";
 import ErrorMessage from "@/components/common/error-message";
-import EmptyState from "@/components/ui/empty-state";
 import LargeHeader from "@/components/common/large-header";
-import { useColor } from "@/hooks/custom/use-color";
-import { getLevel } from "@/utils/helper-functions";
+import EmptyState from "@/components/ui/empty-state";
+import { SkeletonCard } from "@/components/ui/skeleton";
 import Text from "@/components/ui/text";
+import { useColor } from "@/hooks/custom/use-color";
+import useDebounce from "@/hooks/custom/use-debounce";
+import { useSearchUsersInfinite } from "@/hooks/tan-stack/user";
+import { getLevel } from "@/utils/helper-functions";
 import { cn } from "cn";
+import { router, useLocalSearchParams } from "expo-router";
+import { Search, UserRound } from "lucide-react-native";
+import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
 
 const AVATAR_COLORS = ["bg-lime", "bg-pink", "bg-amber", "bg-purple"];
 
@@ -59,13 +59,13 @@ export default function SearchScreen() {
                     <View>
                         <Pressable onPress={() => router.push({ pathname: "/(app)/user/[username]", params: { username: user.username } })} className="shadow-nb-sm border-foreground bg-card flex-row items-center gap-3 border-2 p-4">
                             <View className={cn(bgColor, "border-foreground shadow-nb-sm h-12 w-12 items-center justify-center border-2")}>
-                                <Text className="text-lg font-extrabold text-black">{initial}</Text>
+                                <Text className="font-jakarta-extrabold text-lg text-black">{initial}</Text>
                             </View>
                             <View className="flex-1">
-                                <Text className="text-lg font-bold">{user.name}</Text>
-                                <Text className="text-muted-foreground text-xs font-bold">@{user.username}</Text>
+                                <Text className="font-jakarta-bold text-lg">{user.name}</Text>
+                                <Text className="text-muted-foreground font-jakarta-bold text-xs">@{user.username}</Text>
                             </View>
-                            <Text className="text-muted-foreground text-xs font-extrabold">Lv {getLevel(user.experience).level}</Text>
+                            <Text className="text-muted-foreground font-jakarta-extrabold text-xs">Lv {getLevel(user.experience).level}</Text>
                         </Pressable>
                     </View>
                 );

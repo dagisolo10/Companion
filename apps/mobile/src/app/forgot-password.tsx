@@ -26,7 +26,7 @@ export default function ForgotPassword() {
         <Screen fullscreen className="justify-center gap-8">
             <View className="max-w-86 items-start">
                 <Text className="font-bebas text-6xl">Forgot Password</Text>
-                <Text className="text-muted-foreground text-xl font-medium">Enter your email address and we&apos;ll send you a code to verify ownership.</Text>
+                <Text className="text-muted-foreground font-jakarta-medium text-xl">Enter your email address and we&apos;ll send you a code to verify ownership.</Text>
             </View>
 
             <View className="gap-5">
@@ -41,8 +41,8 @@ export default function ForgotPassword() {
                 <View className="mt-2 flex-row justify-center">
                     <Link asChild href="/(auth)/sign-in">
                         <Pressable>
-                            <Text className="text-muted-foreground text-lg font-medium">
-                                Remember your password? <Text className="font-bold underline">Sign In</Text>
+                            <Text className="text-muted-foreground font-jakarta-medium text-lg">
+                                Remember your password? <Text className="font-jakarta-bold underline">Sign In</Text>
                             </Text>
                         </Pressable>
                     </Link>

@@ -45,8 +45,8 @@ export default function Toast({ title, description, variant = "info", icon, onDi
                 </View>
 
                 <View className="flex-1 gap-0.5">
-                    <Text className={cn("text-base font-extrabold", styles.text)}>{title}</Text>
-                    {description ? <Text className={cn("text-xs font-bold", styles.secondaryText)}>{description}</Text> : null}
+                    <Text className={cn("font-jakarta-extrabold text-base", styles.text)}>{title}</Text>
+                    {description ? <Text className={cn("font-jakarta-bold text-xs", styles.secondaryText)}>{description}</Text> : null}
                 </View>
 
                 {onDismiss ? (

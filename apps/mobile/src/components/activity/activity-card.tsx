@@ -1,10 +1,10 @@
-import { CheckCircle2, Sparkles } from "lucide-react-native";
-import { QuestActivity } from "@companion/shared-types";
+import Text from "@/components/ui/text";
 import { useColor } from "@/hooks/custom/use-color";
 import { relativeTime } from "@/utils/formatters";
-import Text from "@/components/ui/text";
-import { View } from "react-native";
+import { QuestActivity } from "@companion/shared-types";
 import { cn } from "cn";
+import { CheckCircle2, Sparkles } from "lucide-react-native";
+import { View } from "react-native";
 
 const DIFFICULTY_BG: Record<string, string> = {
     Tiny: "bg-lime",
@@ -26,15 +26,15 @@ export default function ActivityCard({ activity }: { activity: QuestActivity }) 
                     <Icon size={16} color={color.black} strokeWidth={2.5} />
                 </View>
                 <View className="flex-1">
-                    <Text className="text-foreground text-sm font-bold" numberOfLines={1}>
+                    <Text className="text-foreground font-jakarta-bold text-sm" numberOfLines={1}>
                         {activity.user.name} completed &apos;{activity.quest.title}&apos;
                     </Text>
-                    <Text className="text-muted-foreground text-xs font-bold">
+                    <Text className="text-muted-foreground font-jakarta-bold text-xs">
                         {activity.xpAwarded > 0 ? `+${activity.xpAwarded} XP` : "No XP"} • {activity.quest.party.name}
                     </Text>
                 </View>
             </View>
-            <Text className="text-muted-foreground ml-2 text-[11px] font-bold">{relativeTime(activity.completedAt)}</Text>
+            <Text className="text-muted-foreground font-jakarta-bold ml-2 text-[11px]">{relativeTime(activity.completedAt)}</Text>
         </View>
     );
 }

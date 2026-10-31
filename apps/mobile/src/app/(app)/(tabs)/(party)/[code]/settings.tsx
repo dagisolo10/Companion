@@ -1,17 +1,17 @@
-import { useGetParty, useRegeneratePartyCode, useUpdateParty } from "@/hooks/tan-stack/party";
-import useToast from "@/hooks/custom/use-toast";
-import ConfirmDialog from "@/components/common/confirm-dialog";
-import { router, useLocalSearchParams } from "expo-router";
 import BackButton from "@/components/common/back-button";
-import { SkeletonCard } from "@/components/ui/skeleton";
-import { RefreshCw, Save } from "lucide-react-native";
-import { Party } from "@companion/shared-types";
+import ConfirmDialog from "@/components/common/confirm-dialog";
+import Button from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
-import Button from "@/components/ui/button";
-import { Switch, View } from "react-native";
+import { SkeletonCard } from "@/components/ui/skeleton";
 import Text from "@/components/ui/text";
+import useToast from "@/hooks/custom/use-toast";
+import { useGetParty, useRegeneratePartyCode, useUpdateParty } from "@/hooks/tan-stack/party";
+import { Party } from "@companion/shared-types";
+import { router, useLocalSearchParams } from "expo-router";
+import { RefreshCw, Save } from "lucide-react-native";
 import { useState } from "react";
+import { Switch, View } from "react-native";
 
 export default function PartySettingsScreen() {
     const { code } = useLocalSearchParams<{ code: string }>();
@@ -83,7 +83,7 @@ function PartySettingsForm({ party }: { party: Party }) {
 
             <View className="card flex-row items-center justify-between gap-4">
                 <View className="flex-1 gap-1">
-                    <Text className="text-sm font-bold">Public party</Text>
+                    <Text className="font-jakarta-bold text-sm">Public party</Text>
                     <Text className="text-muted-foreground text-xs">{isPublic ? "Anyone can find this party in Discover." : "This party is hidden from Discover and can only be found by its code."}</Text>
                 </View>
                 <Switch value={isPublic} onValueChange={setIsPublic} disabled={updatePartyMutation.isPending} />
@@ -97,7 +97,7 @@ function PartySettingsForm({ party }: { party: Party }) {
             <View className="border-border border-t-2" />
 
             <View className="gap-2">
-                <Text className="text-lg font-extrabold tracking-tight">Danger Zone</Text>
+                <Text className="font-jakarta-extrabold text-lg tracking-tight">Danger Zone</Text>
 
                 <Button variant="outline" onPress={() => setShowRegenerateDialog(true)} disabled={regenerateCodeMutation.isPending} asChild size={"lg"}>
                     <RefreshCw size={16} color="#000" strokeWidth={2.5} />

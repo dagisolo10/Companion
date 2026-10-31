@@ -1,9 +1,9 @@
-import ProfileView, { SkeletonProfileView } from "@/components/profile/profile";
-import { useFindUser } from "@/hooks/tan-stack/user";
-import { useLocalSearchParams } from "expo-router";
 import BackButton from "@/components/common/back-button";
+import ProfileView, { SkeletonProfileView } from "@/components/profile/profile";
 import Screen from "@/components/ui/screen";
 import Text from "@/components/ui/text";
+import { useFindUser } from "@/hooks/tan-stack/user";
+import { useLocalSearchParams } from "expo-router";
 
 export default function PlayerProfileScreen() {
     const { username } = useLocalSearchParams<{ username: string }>();
@@ -17,7 +17,7 @@ export default function PlayerProfileScreen() {
         return (
             <Screen className="gap-5">
                 <BackButton label="Profile" />
-                <Text className="text-destructive text-sm font-bold">{userQuery.error?.message || "User not found"}</Text>
+                <Text className="text-destructive font-jakarta-bold text-sm">{userQuery.error?.message || "User not found"}</Text>
             </Screen>
         );
     }

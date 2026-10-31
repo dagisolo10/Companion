@@ -15,8 +15,8 @@ export default function MessageActionsDialog({ message, onEdit, onDelete, onCanc
         <Modal visible={message !== null} transparent animationType="fade" onRequestClose={onCancel}>
             <View className="flex-1 items-center justify-center bg-black/50 px-8">
                 <View className="border-foreground bg-card shadow-nb w-full gap-2 border-2 p-6">
-                    <Text className="text-xl font-extrabold">Message options</Text>
-                    <Text className="text-muted-foreground text-sm font-bold" numberOfLines={3}>
+                    <Text className="font-jakarta-extrabold text-xl">Message options</Text>
+                    <Text className="text-muted-foreground font-jakarta-bold text-sm" numberOfLines={3}>
                         {message?.content}
                     </Text>
                     <View className="mt-2 gap-3">

@@ -1,8 +1,8 @@
-import { TextInput, TextInputProps, View } from "react-native";
 import { useColor } from "@/hooks/custom/use-color";
+import { cn } from "cn";
 import { LucideIcon } from "lucide-react-native";
 import { ReactNode } from "react";
-import { cn } from "cn";
+import { TextInput, TextInputProps, View } from "react-native";
 
 type InputProps = TextInputProps & {
     className?: string;
@@ -11,7 +11,7 @@ type InputProps = TextInputProps & {
 export const Input = ({ className, ...props }: InputProps) => {
     const color = useColor();
 
-    return <TextInput placeholderTextColor={color.mutedForeground} className={cn("border-border bg-muted text-foreground caret-muted-foreground h-14 w-full border pr-4 pl-4 font-semibold", className)} {...props} />;
+    return <TextInput placeholderTextColor={color.mutedForeground} className={cn("border-border bg-muted text-foreground caret-muted-foreground font-jakarta-semibold h-14 w-full border pr-4 pl-4", className)} {...props} />;
 };
 
 type InputFieldProps = InputProps & {

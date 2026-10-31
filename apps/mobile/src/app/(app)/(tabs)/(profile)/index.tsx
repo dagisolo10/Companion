@@ -121,7 +121,7 @@ interface SettingRowProps {
 function SettingGroup({ label, children }: PropsWithChildren & { label: string }) {
     return (
         <View className="gap-2">
-            <Text className="text-lg font-extrabold tracking-tight">{label}</Text>
+            <Text className="font-jakarta-extrabold text-lg tracking-tight">{label}</Text>
             <View className="border-foreground bg-card shadow-nb border-2">{children}</View>
         </View>
     );
@@ -134,7 +134,7 @@ function SettingRow({ icon: Icon, label, onPress, rightSide, isLast }: SettingRo
         <View className={cn(!isLast ? "border-border border-b-2" : "", "h-14 flex-row items-center justify-between px-4")}>
             <View className="flex-row items-center gap-3">
                 <Icon size={18} color={color.mutedForeground} strokeWidth={2.5} />
-                <Text className={cn("font-medium")}>{label}</Text>
+                <Text className={cn("font-jakarta-medium")}>{label}</Text>
             </View>
 
             <View className="justify-center">{rightSide ? rightSide : <ChevronRight size={18} color={color.mutedForeground} strokeWidth={2.5} />}</View>

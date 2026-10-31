@@ -1,9 +1,9 @@
-import { LeaderboardEntry } from "@/types/leaderboard";
-import { Pressable, View } from "react-native";
-import { Crown } from "lucide-react-native";
 import Text from "@/components/ui/text";
-import { router } from "expo-router";
+import { LeaderboardEntry } from "@/types/leaderboard";
 import { cn } from "cn";
+import { router } from "expo-router";
+import { Crown } from "lucide-react-native";
+import { Pressable, View } from "react-native";
 
 const AVATAR_COLORS = ["bg-lime", "bg-amber", "bg-pink", "bg-purple"];
 const PODIUM_HEIGHTS: Record<number, string> = { 1: "h-32", 2: "h-24", 3: "h-16" };
@@ -18,18 +18,18 @@ function PodiumSlot({ entry, rank }: { entry: LeaderboardEntry; rank: number }) 
             {isFirst && <Crown size={22} color="#ffba00" fill="#ffba00" strokeWidth={2} />}
 
             <Pressable className={cn("border-foreground h-14 w-14 items-center justify-center border-2", avatarColor)} onPress={() => router.push({ pathname: "/(app)/user/[username]", params: { username: entry.username } })}>
-                <Text className="text-lg font-extrabold text-black">{entry.name.charAt(0).toUpperCase()}</Text>
+                <Text className="font-jakarta-extrabold text-lg text-black">{entry.name.charAt(0).toUpperCase()}</Text>
             </Pressable>
 
             <View className="items-center px-1">
-                <Text className="text-center text-sm font-extrabold" numberOfLines={1}>
+                <Text className="font-jakarta-extrabold text-center text-sm" numberOfLines={1}>
                     {entry.name}
                 </Text>
-                <Text className="text-muted-foreground text-[11px] font-bold">{entry.experience.toLocaleString()} XP</Text>
+                <Text className="text-muted-foreground font-jakarta-bold text-[11px]">{entry.experience.toLocaleString()} XP</Text>
             </View>
 
             <View className={cn("border-foreground w-full items-center justify-center rounded-t-2xl border-2 border-b-0 pt-2", PODIUM_HEIGHTS[rank], PODIUM_COLORS[rank])}>
-                <Text className="text-2xl font-extrabold text-black">{rank}</Text>
+                <Text className="font-jakarta-extrabold text-2xl text-black">{rank}</Text>
             </View>
         </View>
     );

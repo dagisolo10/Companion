@@ -1,14 +1,14 @@
-import { useGetMyQuestActivitiesInfinite } from "@/hooks/tan-stack/quest-activity";
-import { ActivityIndicator, FlatList, View } from "react-native";
-import { Activity as ActivityIcon } from "lucide-react-native";
-import { groupActivities } from "@/utils/helper-functions";
-import { SkeletonCard } from "@/components/ui/skeleton";
 import ActivityCard from "@/components/activity/activity-card";
-import EmptyState from "@/components/ui/empty-state";
 import BackButton from "@/components/common/back-button";
+import EmptyState from "@/components/ui/empty-state";
 import Screen from "@/components/ui/screen";
+import { SkeletonCard } from "@/components/ui/skeleton";
 import Text from "@/components/ui/text";
+import { useGetMyQuestActivitiesInfinite } from "@/hooks/tan-stack/quest-activity";
+import { groupActivities } from "@/utils/helper-functions";
+import { Activity as ActivityIcon } from "lucide-react-native";
 import { useMemo } from "react";
+import { ActivityIndicator, FlatList, View } from "react-native";
 
 const GROUPS = [
     { key: "today" as const, label: "Today" },
@@ -62,7 +62,7 @@ export default function Activity() {
                 }}
                 renderItem={({ item: section }) => (
                     <View className="gap-3">
-                        <Text className="text-muted-foreground text-xs font-extrabold tracking-wider uppercase">{section.label}</Text>
+                        <Text className="text-muted-foreground font-jakarta-extrabold text-xs tracking-wider uppercase">{section.label}</Text>
                         <View className="border-foreground bg-card shadow-nb divide-border/60 rounded-2xl border-2 p-2">
                             {section.items.map((activity, index) => (
                                 <View key={activity.id} className={index !== section.items.length - 1 ? "border-border border-b" : undefined}>

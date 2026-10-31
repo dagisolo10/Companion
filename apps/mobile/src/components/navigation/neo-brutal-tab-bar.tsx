@@ -1,9 +1,9 @@
-import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from "react-native-reanimated";
-import type { BottomTabBarProps } from "expo-router/build/layouts/Tabs";
-import { Pressable, View } from "react-native";
 import Text from "@/components/ui/text";
-import { useState } from "react";
 import { cn } from "cn";
+import type { BottomTabBarProps } from "expo-router/build/layouts/Tabs";
+import { useState } from "react";
+import { Pressable, View } from "react-native";
+import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from "react-native-reanimated";
 
 export default function NeoBrutalTabBar({ state, descriptors, emitter, navigateToTab, insets }: BottomTabBarProps) {
     const [layoutWidth, setLayoutWidth] = useState(0);
@@ -52,10 +52,10 @@ export default function NeoBrutalTabBar({ state, descriptors, emitter, navigateT
                             {icon}
                             {showBadge ? (
                                 <View className="border-foreground bg-destructive absolute top-1 right-2 min-w-5 items-center justify-center rounded-full border-2 px-1">
-                                    <Text className="text-destructive-foreground text-[9px] font-extrabold">{typeof badge === "number" && badge > 99 ? "99+" : badge}</Text>
+                                    <Text className="text-destructive-foreground font-jakarta-extrabold text-[9px]">{typeof badge === "number" && badge > 99 ? "99+" : badge}</Text>
                                 </View>
                             ) : null}
-                            <Text className={cn("text-[10px] font-extrabold uppercase", focused ? "text-black" : "text-muted-foreground")} numberOfLines={1}>
+                            <Text className={cn("font-jakarta-extrabold text-[10px] uppercase", focused ? "text-black" : "text-muted-foreground")} numberOfLines={1}>
                                 {label}
                             </Text>
                         </Pressable>

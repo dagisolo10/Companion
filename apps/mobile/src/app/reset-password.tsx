@@ -1,15 +1,14 @@
-import { useMutation } from "@tanstack/react-query";
-import { useAuth } from "@/contexts/auth-context";
-import { Eye, EyeOff } from "lucide-react-native";
-import { Pressable, View } from "react-native";
+import Button from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
-import Button from "@/components/ui/button";
-import { Link, router } from "expo-router";
-import { supabase } from "@/lib/supabase";
 import Text from "@/components/ui/text";
+import { useAuth } from "@/contexts/auth-context";
+import { supabase } from "@/lib/supabase";
+import { useMutation } from "@tanstack/react-query";
+import { Link, router } from "expo-router";
+import { Eye, EyeOff } from "lucide-react-native";
 import { useState } from "react";
-
+import { Pressable, View } from "react-native";
 
 export default function ResetPassword() {
     const [password, setPassword] = useState("");
@@ -36,13 +35,13 @@ export default function ResetPassword() {
     return (
         <Screen fullscreen className="justify-center gap-8">
             <View className="gap-2">
-                <Text className="text-3xl font-extrabold tracking-tight">Set New Password</Text>
-                <Text className="text-muted-foreground text-sm font-medium">Enter your new password below.</Text>
+                <Text className="font-jakarta-extrabold text-3xl tracking-tight">Set New Password</Text>
+                <Text className="text-muted-foreground font-jakarta-medium text-sm">Enter your new password below.</Text>
             </View>
 
             <View className="gap-5">
                 <View className="gap-1.5">
-                    <Text className="text-sm font-bold">New Password</Text>
+                    <Text className="font-jakarta-bold text-sm">New Password</Text>
                     <View className="relative justify-center">
                         <Input className="pr-12" autoCorrect={false} autoCapitalize="none" placeholder="••••••••" value={password} secureTextEntry={!showPassword} onChangeText={setPassword} />
                         <Pressable onPress={() => setShowPassword(!showPassword)} className="absolute right-4 py-2">
@@ -52,7 +51,7 @@ export default function ResetPassword() {
                 </View>
 
                 <View className="gap-1.5">
-                    <Text className="text-sm font-bold">Confirm New Password</Text>
+                    <Text className="font-jakarta-bold text-sm">Confirm New Password</Text>
                     <View className="relative justify-center">
                         <Input className="pr-12" autoCorrect={false} autoCapitalize="none" placeholder="••••••••" value={confirmPassword} secureTextEntry={!showPassword} onChangeText={setConfirmPassword} />
                         <Pressable onPress={() => setShowPassword(!showPassword)} className="absolute right-4 py-2">
@@ -70,8 +69,8 @@ export default function ResetPassword() {
                 <View className="mt-2 flex-row justify-center">
                     <Link href="/(auth)/sign-in" asChild>
                         <Pressable>
-                            <Text className="text-muted-foreground text-sm font-medium">
-                                Remember your password? <Text className="text-amber font-bold">Sign In</Text>
+                            <Text className="text-muted-foreground font-jakarta-medium text-sm">
+                                Remember your password? <Text className="text-amber font-jakarta-bold">Sign In</Text>
                             </Text>
                         </Pressable>
                     </Link>

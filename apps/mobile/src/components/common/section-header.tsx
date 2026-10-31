@@ -22,13 +22,13 @@ export default function SectionHeader({ title, icon: Icon, iconColor, action, on
         <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
                 {Icon && <Icon size={20} color={iconColor || color.foreground} strokeWidth={2.5} />}
-                <Text className="text-xl font-bold tracking-tight">{title}</Text>
+                <Text className="font-jakarta-bold text-xl tracking-tight">{title}</Text>
             </View>
 
             <View className="flex-row items-center gap-2">
                 {badge !== undefined && (
                     <View className={cn(badgeColor || "bg-muted", "border px-2.5 py-0.5")}>
-                        <Text className="text-xs font-bold">{badge}</Text>
+                        <Text className="font-jakarta-bold text-xs">{badge}</Text>
                     </View>
                 )}
 

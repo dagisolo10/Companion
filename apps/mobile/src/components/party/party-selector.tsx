@@ -1,14 +1,14 @@
-import Animated, { createAnimatedComponent, Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { Check, ChevronDown, Users } from "lucide-react-native";
 import SectionHeader from "@/components/common/section-header";
-import { SkeletonBlock } from "@/components/ui/skeleton";
-import { Party } from "@companion/shared-types";
-import { Pressable, View } from "react-native";
 import Button from "@/components/ui/button";
+import { SkeletonBlock } from "@/components/ui/skeleton";
 import Text from "@/components/ui/text";
-import { router } from "expo-router";
-import { useEffect } from "react";
+import { Party } from "@companion/shared-types";
 import { cn } from "cn";
+import { router } from "expo-router";
+import { Check, ChevronDown, Users } from "lucide-react-native";
+import { useEffect } from "react";
+import { Pressable, View } from "react-native";
+import Animated, { createAnimatedComponent, Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 type PartySelectorProps = {
     parties: Party[];
@@ -45,8 +45,8 @@ export default function PartySelector({ parties, showPartyPicker, selectedPartyC
                         <Users size={18} color="#000" strokeWidth={2.5} />
                     </View>
                     <View className="items-center gap-0.5">
-                        <Text className="text-sm font-bold">No parties yet</Text>
-                        <Text className="text-muted-foreground text-xs font-bold">Create a party to pick one here.</Text>
+                        <Text className="font-jakarta-bold text-sm">No parties yet</Text>
+                        <Text className="text-muted-foreground font-jakarta-bold text-xs">Create a party to pick one here.</Text>
                     </View>
                     <Button size="sm" onPress={() => router.push("/(app)/(tabs)/(party)/create")}>
                         <Text>Create Party</Text>
@@ -61,7 +61,7 @@ export default function PartySelector({ parties, showPartyPicker, selectedPartyC
             <SectionHeader title="Party" />
 
             <Pressable onPress={onPick} className="card flex-row items-center justify-between px-4 py-3.5 active:opacity-90">
-                <Text className={cn("text-sm font-bold", !selectedPartyCode && "text-muted-foreground")}>{selectedParty ? selectedParty.name : "Select a party"}</Text>
+                <Text className={cn("font-jakarta-bold text-sm", !selectedPartyCode && "text-muted-foreground")}>{selectedParty ? selectedParty.name : "Select a party"}</Text>
                 <AnimatedChevron size={18} color="#000" strokeWidth={2.5} style={chevronStyle} />
             </Pressable>
 
@@ -85,8 +85,8 @@ export default function PartySelector({ parties, showPartyPicker, selectedPartyC
                                     className={cn("flex-row items-center justify-between rounded-none px-3.5 py-2.5", !isLast && !isSelected && "border-foreground border-b", isSelected ? "bg-amber" : "active:bg-muted")}
                                 >
                                     <View className="flex-1 flex-row items-center justify-between gap-0.5">
-                                        <Text className={cn("flex-1 text-lg font-extrabold", isSelected ? "text-black" : "text-foreground")}>{party.name}</Text>
-                                        <Text className={cn("text-xs font-bold", isSelected ? "text-black/70" : "text-muted-foreground")}>Code: {party.code}</Text>
+                                        <Text className={cn("font-jakarta-extrabold flex-1 text-lg", isSelected ? "text-black" : "text-foreground")}>{party.name}</Text>
+                                        <Text className={cn("font-jakarta-bold text-xs", isSelected ? "text-black/70" : "text-muted-foreground")}>Code: {party.code}</Text>
                                     </View>
 
                                     {isSelected && <Check size={16} color="#000" strokeWidth={3} />}

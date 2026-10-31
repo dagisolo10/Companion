@@ -1,10 +1,10 @@
-import { ArrowRight, Compass, Swords, Trophy, Users } from "lucide-react-native";
 import BrandMark from "@/components/common/brand-mark";
-import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
+import Screen from "@/components/ui/screen";
 import Text from "@/components/ui/text";
-import { View } from "react-native";
 import { Link } from "expo-router";
+import { ArrowRight, Compass, Swords, Trophy, Users } from "lucide-react-native";
+import { View } from "react-native";
 
 const features = [
     {
@@ -34,7 +34,7 @@ export default function Welcome() {
                 <BrandMark icon={Compass} accent="bg-amber" size="lg" />
                 <View className="items-center gap-2">
                     <Text className="font-bebas text-center text-6xl">Companion</Text>
-                    <Text className="text-muted-foreground text-center text-lg font-medium">Your adventure companion for quests, parties, and leveling up every day.</Text>
+                    <Text className="text-muted-foreground font-jakarta-medium text-center text-lg">Your adventure companion for quests, parties, and leveling up every day.</Text>
                 </View>
             </View>
 
@@ -43,8 +43,8 @@ export default function Welcome() {
                     <View key={title} className="card flex-row items-center gap-3.5">
                         <BrandMark icon={icon} accent={accent} size="sm" />
                         <View className="flex-1">
-                            <Text className="text-xl font-bold">{title}</Text>
-                            <Text className="text-muted-foreground text-sm leading-snug font-medium">{description}</Text>
+                            <Text className="font-jakarta-bold text-xl">{title}</Text>
+                            <Text className="text-muted-foreground font-jakarta-medium text-sm leading-snug">{description}</Text>
                         </View>
                     </View>
                 ))}

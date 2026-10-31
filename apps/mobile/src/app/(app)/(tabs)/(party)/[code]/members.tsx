@@ -1,23 +1,23 @@
-import { useGetMembersInfinite, useRemoveMember } from "@/hooks/tan-stack/party-member";
-import { useGetParty, useTransferParty } from "@/hooks/tan-stack/party";
-import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
-import useToast from "@/hooks/custom/use-toast";
-import { Crown, Shield, UserMinus, Users } from "lucide-react-native";
-import { useFindUser, useGetUser } from "@/hooks/tan-stack/user";
-import { useGetChatPresence } from "@/hooks/tan-stack/chat";
-import { router, useLocalSearchParams } from "expo-router";
-import ConfirmDialog from "@/components/common/confirm-dialog";
-import { SkeletonCard } from "@/components/ui/skeleton";
-import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
-import EmptyState from "@/components/ui/empty-state";
 import BackButton from "@/components/common/back-button";
-import { relativeTime } from "@/utils/formatters";
+import ConfirmDialog from "@/components/common/confirm-dialog";
+import Button from "@/components/ui/button";
+import EmptyState from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
-import Button from "@/components/ui/button";
+import { SkeletonCard } from "@/components/ui/skeleton";
 import Text from "@/components/ui/text";
-import { useState } from "react";
+import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
+import useToast from "@/hooks/custom/use-toast";
+import { useGetChatPresence } from "@/hooks/tan-stack/chat";
+import { useGetParty, useTransferParty } from "@/hooks/tan-stack/party";
+import { useGetMembersInfinite, useRemoveMember } from "@/hooks/tan-stack/party-member";
+import { useFindUser, useGetUser } from "@/hooks/tan-stack/user";
+import { relativeTime } from "@/utils/formatters";
 import { cn } from "cn";
+import { router, useLocalSearchParams } from "expo-router";
+import { Crown, Shield, UserMinus, Users } from "lucide-react-native";
+import { useState } from "react";
+import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
 
 const AVATAR_COLORS = ["bg-lime", "bg-pink", "bg-amber", "bg-purple"];
 
@@ -112,7 +112,7 @@ export default function PartyMembersScreen() {
                             <View className="gap-3">
                                 <Button variant="outline" asChild onPress={() => setShowTransferInput(!showTransferInput)}>
                                     <Shield size={16} color="#000000" strokeWidth={2.5} />
-                                    <Text className="text-sm font-bold">Transfer Ownership</Text>
+                                    <Text className="font-jakarta-bold text-sm">Transfer Ownership</Text>
                                 </Button>
 
                                 {showTransferInput && (
@@ -120,7 +120,7 @@ export default function PartyMembersScreen() {
                                         <Input placeholder="Enter username to transfer to" value={transferUsername} onChangeText={setTransferUsername} autoCapitalize="none" autoCorrect={false} />
                                         {searchResult && matchedMember && (
                                             <View className="border-lime bg-card flex-row items-center justify-between border-2 p-3">
-                                                <Text className="text-sm font-bold">
+                                                <Text className="font-jakarta-bold text-sm">
                                                     {searchResult.name} (@{searchResult.username})
                                                 </Text>
                                                 <Button size="sm" onPress={handleTransferByUsername} disabled={transferPartyMutation.isPending}>
@@ -128,7 +128,7 @@ export default function PartyMembersScreen() {
                                                 </Button>
                                             </View>
                                         )}
-                                        {searchResult && !matchedMember && <Text className="text-muted-foreground text-xs font-bold">User is not in this party.</Text>}
+                                        {searchResult && !matchedMember && <Text className="text-muted-foreground font-jakarta-bold text-xs">User is not in this party.</Text>}
                                     </View>
                                 )}
                             </View>
@@ -146,16 +146,16 @@ export default function PartyMembersScreen() {
                             <Pressable onPress={() => router.push({ pathname: "/(app)/user/[username]", params: { username: member.user.username } })} className="flex-row items-center gap-3">
                                 <View className="relative">
                                     <View className={cn(bgColor, "border-foreground shadow-nb-sm h-12 w-12 items-center justify-center border-2")}>
-                                        <Text className="text-lg font-extrabold text-black">{initial}</Text>
+                                        <Text className="font-jakarta-extrabold text-lg text-black">{initial}</Text>
                                     </View>
                                     {isOnline ? <View className="border-foreground bg-lime absolute -right-0.5 -bottom-0.5 size-3.5 rounded-full border-2" /> : null}
                                 </View>
                                 <View className="flex-1">
                                     <View className="flex-row items-center gap-1.5">
-                                        <Text className="text-sm font-extrabold">{member.user.name}</Text>
+                                        <Text className="font-jakarta-extrabold text-sm">{member.user.name}</Text>
                                         {isCreator && <Crown size={12} color="#f59e0b" strokeWidth={2.5} />}
                                     </View>
-                                    <Text className="text-muted-foreground text-xs font-bold">
+                                    <Text className="text-muted-foreground font-jakarta-bold text-xs">
                                         @{member.user.username} · Joined {relativeTime(member.joinedAt)}
                                     </Text>
                                 </View>
@@ -165,11 +165,11 @@ export default function PartyMembersScreen() {
                                 <View className="border-border mt-3 flex-row gap-2 border-t-2 pt-3">
                                     <Button size="sm" variant="destructive" asChild onPress={() => setRemoveTarget(member.id)}>
                                         <UserMinus size={14} color="#fff" strokeWidth={2.5} />
-                                        <Text className="text-xs font-bold text-white">Remove</Text>
+                                        <Text className="font-jakarta-bold text-xs text-white">Remove</Text>
                                     </Button>
                                     <Button size="sm" variant="outline" asChild onPress={() => handleTransfer(member.id)} disabled={transferPartyMutation.isPending}>
                                         <Shield size={14} color="#000000" strokeWidth={2.5} />
-                                        <Text className="text-xs font-bold">Transfer</Text>
+                                        <Text className="font-jakarta-bold text-xs">Transfer</Text>
                                     </Button>
                                 </View>
                             )}
