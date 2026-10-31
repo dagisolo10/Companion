@@ -1,16 +1,17 @@
 import "@/app/global.css";
 
-import { fonts } from "@/constants/fonts";
-import { useAuth } from "@/contexts/auth-context";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { router, Stack, usePathname, useSegments } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import SocketIoProvider from "@/providers/socket.io-provider";
 import { ToastProvider } from "@/hooks/custom/use-toast";
 import AuthProvider from "@/providers/auth-providers";
-import SocketIoProvider from "@/providers/socket.io-provider";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useFonts } from "expo-font";
-import { router, Stack, usePathname, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import { useAuth } from "@/contexts/auth-context";
+import { fonts } from "@/constants/fonts";
+import { useFonts } from "expo-font";
 import { useEffect } from "react";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -27,7 +28,7 @@ function RootNavigator() {
     useEffect(() => {
         if (isLoading || isPasswordRecovery || !isSignedIn) return;
 
-        router.replace("/(app)");
+        router.replace({ pathname: "/(app)/(tabs)/(home)" });
     }, [isLoading, isSignedIn, isPasswordRecovery]);
 
     useEffect(() => {
