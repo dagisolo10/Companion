@@ -19,8 +19,8 @@ export default function ConfirmDialog({ visible, title, description, confirmLabe
         <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
             <View className="flex-1 items-center justify-center bg-black/50 px-8">
                 <View className="border-foreground bg-card shadow-nb w-full gap-2 border-2 p-6">
-                    <Text className="text-xl font-extrabold">{title}</Text>
-                    <Text className="text-muted-foreground text-sm font-bold">{description}</Text>
+                    <Text className="font-jakarta-extrabold text-xl">{title}</Text>
+                    <Text className="text-muted-foreground font-jakarta-bold text-sm">{description}</Text>
                     <View className="mt-2 gap-3">
                         <Button variant={destructive ? "destructive" : "default"} onPress={onConfirm} disabled={loading}>
                             <Text>{confirmLabel}</Text>

@@ -1,19 +1,19 @@
-import { ArrowRight, AtSign, Eye, EyeOff, Lock, Mail, User2 } from "lucide-react-native";
-import { rememberAccount } from "@/lib/auth/remembered-accounts";
-import { Platform, Pressable, Switch, View } from "react-native";
 import ErrorMessage from "@/components/common/error-message";
-import { useMutation } from "@tanstack/react-query";
-import { useColor } from "@/hooks/custom/use-color";
-import { requestApi } from "@/lib/api/request-api";
+import Button from "@/components/ui/button";
 import { InputField } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
-import Button from "@/components/ui/button";
-import { Link, router } from "expo-router";
-import * as Linking from "expo-linking";
-import { supabase } from "@/lib/supabase";
 import Text from "@/components/ui/text";
+import { useColor } from "@/hooks/custom/use-color";
 import { api } from "@/lib/api/axios";
+import { requestApi } from "@/lib/api/request-api";
+import { rememberAccount } from "@/lib/auth/remembered-accounts";
+import { supabase } from "@/lib/supabase";
+import { useMutation } from "@tanstack/react-query";
+import * as Linking from "expo-linking";
+import { Link, router } from "expo-router";
+import { ArrowRight, AtSign, Eye, EyeOff, Lock, Mail, User2 } from "lucide-react-native";
 import { useState } from "react";
+import { Platform, Pressable, Switch, View } from "react-native";
 import { z } from "zod";
 
 const signUpSchema = z.object({
@@ -72,7 +72,7 @@ export default function SignUp() {
         <Screen fullscreen className="justify-center gap-8">
             <View className="max-w-86 items-start gap-1">
                 <Text className="font-bebas text-6xl">Create Your Account</Text>
-                <Text className="text-muted-foreground text-xl font-medium">Sign up to get started with your account</Text>
+                <Text className="text-muted-foreground font-jakarta-medium text-xl">Sign up to get started with your account</Text>
             </View>
 
             <View className="gap-5">
@@ -96,7 +96,7 @@ export default function SignUp() {
 
                 <View className="card flex-row items-center justify-between gap-4">
                     <View className="flex-1 gap-1">
-                        <Text className="text-sm font-bold">Remember this account</Text>
+                        <Text className="font-jakarta-bold text-sm">Remember this account</Text>
                         <Text className="text-muted-foreground text-xs">{Platform.OS === "web" ? "Secure account switching is available in the mobile app." : "Save it securely on this device for account switching."}</Text>
                     </View>
                     <Switch value={rememberThisAccount} onValueChange={setRememberThisAccount} disabled={signUpNewUserMt.isPending || Platform.OS === "web"} />
@@ -111,8 +111,8 @@ export default function SignUp() {
                 <View className="mt-2 flex-row justify-center">
                     <Link href="/(auth)/sign-in" asChild>
                         <Pressable>
-                            <Text className="text-muted-foreground text-lg font-medium">
-                                Already have an account? <Text className="font-bold underline">Sign In</Text>
+                            <Text className="text-muted-foreground font-jakarta-medium text-lg">
+                                Already have an account? <Text className="font-jakarta-bold underline">Sign In</Text>
                             </Text>
                         </Pressable>
                     </Link>

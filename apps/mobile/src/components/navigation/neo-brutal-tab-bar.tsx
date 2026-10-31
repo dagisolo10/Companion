@@ -1,9 +1,9 @@
-import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from "react-native-reanimated";
-import type { BottomTabBarProps } from "expo-router/build/layouts/Tabs";
-import { Pressable, View } from "react-native";
 import Text from "@/components/ui/text";
-import { useState } from "react";
 import { cn } from "cn";
+import type { BottomTabBarProps } from "expo-router/build/layouts/Tabs";
+import { useState } from "react";
+import { Pressable, View } from "react-native";
+import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from "react-native-reanimated";
 
 export default function NeoBrutalTabBar({ state, descriptors, emitter, navigateToTab, insets }: BottomTabBarProps) {
     const [layoutWidth, setLayoutWidth] = useState(0);
@@ -30,6 +30,8 @@ export default function NeoBrutalTabBar({ state, descriptors, emitter, navigateT
                     const focused = state.index === index;
                     const color = focused ? "#000" : (options.tabBarInactiveTintColor ?? "#737373");
                     const icon = options.tabBarIcon?.({ focused, color, size: 19 });
+                    const badge = options.tabBarBadge;
+                    const showBadge = badge !== undefined && badge !== null && badge !== 0 && badge !== "";
 
                     function onPress() {
                         const event = emitter.emit({ type: "tabPress", target: route.key, canPreventDefault: true });
@@ -48,7 +50,12 @@ export default function NeoBrutalTabBar({ state, descriptors, emitter, navigateT
                             className="z-10 min-h-14 flex-1 items-center justify-center gap-0.5 border-2 border-transparent px-1 py-1.5"
                         >
                             {icon}
-                            <Text className={cn("text-[10px] font-extrabold uppercase", focused ? "text-black" : "text-muted-foreground")} numberOfLines={1}>
+                            {showBadge ? (
+                                <View className="border-foreground bg-destructive absolute top-1 right-2 min-w-5 items-center justify-center rounded-full border-2 px-1">
+                                    <Text className="text-destructive-foreground font-jakarta-extrabold text-[9px]">{typeof badge === "number" && badge > 99 ? "99+" : badge}</Text>
+                                </View>
+                            ) : null}
+                            <Text className={cn("font-jakarta-extrabold text-[10px] uppercase", focused ? "text-black" : "text-muted-foreground")} numberOfLines={1}>
                                 {label}
                             </Text>
                         </Pressable>

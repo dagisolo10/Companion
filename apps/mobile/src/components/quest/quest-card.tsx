@@ -1,11 +1,11 @@
-import QuestStatusBadge from "@/components/quest/quest-status-badge";
 import DifficultyBadge from "@/components/quest/difficulty-badge";
-import { Award, CheckCircle2 } from "lucide-react-native";
-import { useColor } from "@/hooks/custom/use-color";
-import { Quest } from "@companion/shared-types";
-import { Pressable, View } from "react-native";
+import QuestStatusBadge from "@/components/quest/quest-status-badge";
 import Button from "@/components/ui/button";
 import Text from "@/components/ui/text";
+import { useColor } from "@/hooks/custom/use-color";
+import { Quest } from "@companion/shared-types";
+import { Award, CheckCircle2 } from "lucide-react-native";
+import { Pressable, View } from "react-native";
 
 type QuestCardProps = {
     quest: Quest;
@@ -21,8 +21,8 @@ export default function QuestCard({ quest, onPress, onComplete, showComplete = t
         <Pressable onPress={onPress} className="shadow-nb border-foreground gap-3 border-2 p-4">
             <View className="flex-row items-start justify-between gap-2">
                 <View className="flex-1 gap-1">
-                    <Text className="text-base font-extrabold">{quest.title}</Text>
-                    <Text className="text-muted-foreground text-xs font-bold">
+                    <Text className="font-jakarta-extrabold text-base">{quest.title}</Text>
+                    <Text className="text-muted-foreground font-jakarta-bold text-xs">
                         By <Text className="text-primary">{quest.creator.name}</Text>
                     </Text>
                 </View>
@@ -34,12 +34,12 @@ export default function QuestCard({ quest, onPress, onComplete, showComplete = t
             <View className="flex-row items-center justify-between border-t-2 border-zinc-800 pt-2">
                 <View className="flex-row items-center gap-1.5">
                     <Award size={16} color={color.lime} strokeWidth={2.5} />
-                    <Text className="text-lime text-sm font-extrabold">+{quest.reward} XP</Text>
+                    <Text className="text-lime font-jakarta-extrabold text-sm">+{quest.reward} XP</Text>
                 </View>
                 {showComplete && quest.status === "Active" && onComplete && (
                     <Button onPress={onComplete} size="sm" asChild>
                         <CheckCircle2 size={14} color="#000000" strokeWidth={2.5} />
-                        <Text className="text-xs font-extrabold text-black">Complete</Text>
+                        <Text className="font-jakarta-extrabold text-xs text-black">Complete</Text>
                     </Button>
                 )}
             </View>

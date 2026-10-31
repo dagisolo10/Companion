@@ -1,25 +1,25 @@
-import { AlertTriangle, Check, CheckCircle2, Copy, Globe, LockKeyhole, LogOut, Plus, ScrollText, Settings, Share2, Target, Trophy, UserPlus, Users } from "lucide-react-native";
-import { useGetMembers, useJoinParty, useLeaveParty } from "@/hooks/tan-stack/party-member";
-import * as Clipboard from "expo-clipboard";
-import useToast from "@/hooks/custom/use-toast";
-import { SkeletonCard, SkeletonQuestList } from "@/components/ui/skeleton";
-import { useDeleteParty, useGetParty } from "@/hooks/tan-stack/party";
-import { useGetPartyQuests } from "@/hooks/tan-stack/quest";
-import { router, useLocalSearchParams } from "expo-router";
-import SectionHeader from "@/components/common/section-header";
-import ConfirmDialog from "@/components/common/confirm-dialog";
-import EmptyState from "@/components/ui/empty-state";
-import { useGetUser } from "@/hooks/tan-stack/user";
-import { useColor } from "@/hooks/custom/use-color";
 import BackButton from "@/components/common/back-button";
-import { relativeTime } from "@/utils/formatters";
+import ConfirmDialog from "@/components/common/confirm-dialog";
+import SectionHeader from "@/components/common/section-header";
 import QuestCard from "@/components/quest/quest-card";
-import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
+import EmptyState from "@/components/ui/empty-state";
+import Screen from "@/components/ui/screen";
+import { SkeletonCard, SkeletonQuestList } from "@/components/ui/skeleton";
 import Text from "@/components/ui/text";
-import { Share, View } from "react-native";
-import { useEffect, useState } from "react";
+import { useColor } from "@/hooks/custom/use-color";
+import useToast from "@/hooks/custom/use-toast";
+import { useDeleteParty, useGetParty } from "@/hooks/tan-stack/party";
+import { useGetMembers, useJoinParty, useLeaveParty } from "@/hooks/tan-stack/party-member";
+import { useGetPartyQuests } from "@/hooks/tan-stack/quest";
+import { useGetUser } from "@/hooks/tan-stack/user";
+import { relativeTime } from "@/utils/formatters";
 import { cn } from "cn";
+import * as Clipboard from "expo-clipboard";
+import { router, useLocalSearchParams } from "expo-router";
+import { AlertTriangle, Check, CheckCircle2, Copy, Globe, LockKeyhole, LogOut, MessageCircle, Plus, ScrollText, Settings, Share2, Target, Trophy, UserPlus, Users } from "lucide-react-native";
+import { useEffect, useState } from "react";
+import { Share, View } from "react-native";
 
 const AVATAR_COLORS = ["bg-lime", "bg-pink", "bg-amber", "bg-purple"];
 
@@ -118,13 +118,13 @@ export default function PartyDetailScreen() {
             <View className="card flex-row items-center justify-between gap-3">
                 <View className="flex-1 gap-1">
                     <View className="flex-row items-center gap-2">
-                        <Text className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">Party Code</Text>
+                        <Text className="text-muted-foreground font-jakarta-bold text-[10px] tracking-widest uppercase">Party Code</Text>
                         <View className={cn("flex-row items-center gap-1 px-2 py-1", party.public ? "bg-lime" : "bg-muted")}>
                             {party.public ? <Globe size={11} color="#000" strokeWidth={2.5} /> : <LockKeyhole size={11} color={color.foreground} strokeWidth={2.5} />}
-                            <Text className={cn("text-[10px] font-bold uppercase", party.public && "text-black")}>{party.public ? "Public" : "Private"}</Text>
+                            <Text className={cn("font-jakarta-bold text-[10px] uppercase", party.public && "text-black")}>{party.public ? "Public" : "Private"}</Text>
                         </View>
                     </View>
-                    <Text selectable className="text-2xl font-extrabold tracking-widest">
+                    <Text selectable className="font-jakarta-extrabold text-2xl tracking-widest">
                         {party.code}
                     </Text>
                 </View>
@@ -144,7 +144,7 @@ export default function PartyDetailScreen() {
                 <View className="flex-row items-center justify-between">
                     <View className="flex-row items-center gap-2">
                         <Users size={18} color="#a855f7" strokeWidth={2.5} />
-                        <Text className="text-base font-extrabold">
+                        <Text className="font-jakarta-extrabold text-base">
                             {members.length} Member{members.length !== 1 ? "s" : ""}
                         </Text>
                     </View>
@@ -155,17 +155,22 @@ export default function PartyDetailScreen() {
                     <View className="flex-row items-center gap-2">
                         {memberPreview.map((m, i) => (
                             <View key={m.id} className={cn(AVATAR_COLORS[i % AVATAR_COLORS.length], "border-foreground size-9 items-center justify-center border-2")}>
-                                <Text className="text-xs font-extrabold text-black">{m.userId.charAt(0).toUpperCase()}</Text>
+                                <Text className="font-jakarta-extrabold text-xs text-black">{m.userId.charAt(0).toUpperCase()}</Text>
                             </View>
                         ))}
                         {members.length > 5 && (
                             <View className="border-foreground bg-muted size-9 items-center justify-center border-2">
-                                <Text className="text-xs font-extrabold">+{members.length - 5}</Text>
+                                <Text className="font-jakarta-extrabold text-xs">+{members.length - 5}</Text>
                             </View>
                         )}
                     </View>
                 )}
             </View>
+
+            <Button asChild onPress={() => router.push({ pathname: "/(app)/(tabs)/(chat)/[code]", params: { code } })}>
+                <MessageCircle size={16} color="#000000" strokeWidth={2.5} />
+                <Text className="font-jakarta-bold text-sm">Party Chat</Text>
+            </Button>
 
             <View className="gap-2">
                 <View className="flex-row gap-3">
@@ -241,7 +246,7 @@ export default function PartyDetailScreen() {
             ) : (
                 <Button variant="success" onPress={handleJoin} disabled={joinPartyMutation.isPending} asChild>
                     <UserPlus size={16} color="#000" strokeWidth={2.5} />
-                    <Text className="font-extrabold text-black">{joinPartyMutation.isPending ? "Joining..." : "Join Party"}</Text>
+                    <Text className="font-jakarta-extrabold text-black">{joinPartyMutation.isPending ? "Joining..." : "Join Party"}</Text>
                 </Button>
             )}
 

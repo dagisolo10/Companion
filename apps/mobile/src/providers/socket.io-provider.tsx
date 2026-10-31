@@ -1,25 +1,37 @@
 import { applyLeaderboard, applyPartyCodeChange, applyPartyDelete, applyPartyMemberChange, applyPartyUpdate, applyQuestChange, applyQuestCompletion, applyUserUpdate } from "@/lib/socket-cache";
-import { Dispatch, PropsWithChildren, SetStateAction, useEffect, useRef, useState } from "react";
+import { applyChatMessage, applyChatMessageDelete, applyChatMessageUpdate, applyChatPresence, applyChatRead } from "@/lib/chat-cache";
+import { Dispatch, PropsWithChildren, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
+import useChatNotificationSound from "@/hooks/custom/use-chat-notification-sound";
 import { SocketIoContext, TypedSocket } from "@/contexts/socket.io-context";
 import { router, useGlobalSearchParams } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
-import useToast from "@/hooks/custom/use-toast";
-import { useAuth } from "@/contexts/auth-context";
 import { leavePartyCaches } from "@/lib/query-cache";
+import { useAuth } from "@/contexts/auth-context";
+import useToast from "@/hooks/custom/use-toast";
 import { io } from "socket.io-client";
+
+
+function messagePreview(content: string) {
+    const singleLine = content.replace(/\s+/g, " ").trim();
+    return singleLine.length > 80 ? `${singleLine.slice(0, 80)}...` : singleLine;
+}
 
 export default function SocketIoProvider({ children }: PropsWithChildren) {
     const [connected, setConnected] = useState(false);
     const [socket, setSocket] = useState<TypedSocket | null>(null);
+    const [activeChatCode, setActiveChatCode] = useState<string | null>(null);
 
     const { token, user } = useAuth();
     const queryClient = useQueryClient();
     const { showToast } = useToast();
+    const playNotificationSound = useChatNotificationSound();
     const { code: currentPartyCode } = useGlobalSearchParams<{ code?: string }>();
 
     const socketRef = useRef<Dispatch<SetStateAction<TypedSocket | null>>>(null);
     const partyCodeRef = useRef(currentPartyCode);
     const showToastRef = useRef(showToast);
+    const playNotificationSoundRef = useRef(playNotificationSound);
+    const activeChatCodeRef = useRef(activeChatCode);
     useEffect(() => {
         socketRef.current = setSocket;
     }, []);
@@ -29,6 +41,12 @@ export default function SocketIoProvider({ children }: PropsWithChildren) {
     useEffect(() => {
         showToastRef.current = showToast;
     }, [showToast]);
+    useEffect(() => {
+        playNotificationSoundRef.current = playNotificationSound;
+    }, [playNotificationSound]);
+    useEffect(() => {
+        activeChatCodeRef.current = activeChatCode;
+    }, [activeChatCode]);
 
     useEffect(() => {
         if (!token) {
@@ -104,6 +122,28 @@ export default function SocketIoProvider({ children }: PropsWithChildren) {
         socketInstance.on("quest:member-completed", (event) => applyQuestCompletion(queryClient, event));
         socketInstance.on("party:leaderboard-updated", (event) => applyLeaderboard(queryClient, event.partyCode, event.leaderboard));
 
+        socketInstance.on("chat:message", (event) => {
+            // Always apply the message to the cache — the chat room's scroll logic handles marking read
+            applyChatMessage(queryClient, event.partyCode, event.message, user?.id, activeChatCodeRef.current);
+
+            // Don't notify for your own messages
+            if (event.message.senderId === user?.id) return;
+
+            // Always show toast and play sound for incoming messages from others.
+            // If the user is inside the chat and the message is visible, the chat room will mark it as read.
+            // If the user is scrolled up, the message stays unread and the notification alerts them.
+            playNotificationSoundRef.current();
+            showToastRef.current({
+                variant: "info",
+                title: event.message.sender.name,
+                description: messagePreview(event.message.content),
+            });
+        });
+        socketInstance.on("chat:message-updated", (event) => applyChatMessageUpdate(queryClient, event.partyCode, event.message));
+        socketInstance.on("chat:message-deleted", (event) => applyChatMessageDelete(queryClient, event.partyCode, event.messageId));
+        socketInstance.on("chat:read", (event) => applyChatRead(queryClient, event.partyCode, event.lastReadAt));
+        socketInstance.on("chat:presence", (event) => applyChatPresence(queryClient, event));
+
         socketRef.current?.(socketInstance);
 
         return () => {
@@ -124,6 +164,11 @@ export default function SocketIoProvider({ children }: PropsWithChildren) {
             socketInstance.off("quest:expired");
             socketInstance.off("quest:completed");
             socketInstance.off("quest:member-completed");
+            socketInstance.off("chat:message");
+            socketInstance.off("chat:message-updated");
+            socketInstance.off("chat:message-deleted");
+            socketInstance.off("chat:read");
+            socketInstance.off("chat:presence");
             socketInstance.disconnect();
             socketRef.current?.((currentSocket) => (currentSocket === socketInstance ? null : currentSocket));
             setConnected(false);
@@ -131,5 +176,7 @@ export default function SocketIoProvider({ children }: PropsWithChildren) {
         };
     }, [queryClient, token, user?.id]);
 
-    return <SocketIoContext.Provider value={{ socket, connected: Boolean(token && connected) }}>{children}</SocketIoContext.Provider>;
+    const handleSetActiveChatCode = useCallback((code: string | null) => setActiveChatCode(code), []);
+
+    return <SocketIoContext.Provider value={{ socket, connected: Boolean(token && connected), activeChatCode, setActiveChatCode: handleSetActiveChatCode }}>{children}</SocketIoContext.Provider>;
 }

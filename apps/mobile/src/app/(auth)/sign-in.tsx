@@ -1,17 +1,17 @@
-import { getRememberedAccounts, rememberAccount, RememberedAccount, restoreRememberedAccount } from "@/lib/auth/remembered-accounts";
-import { ActivityIndicator, Platform, Pressable, Switch, View } from "react-native";
-import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react-native";
-import { useMutation } from "@tanstack/react-query";
-import { Link, router, useFocusEffect } from "expo-router";
 import ErrorMessage from "@/components/common/error-message";
+import Button from "@/components/ui/button";
+import { InputField } from "@/components/ui/input";
+import Screen from "@/components/ui/screen";
+import Text from "@/components/ui/text";
 import { useAuth } from "@/contexts/auth-context";
 import { useColor } from "@/hooks/custom/use-color";
-import { InputField } from "@/components/ui/input";
-import { useCallback, useState } from "react";
-import Screen from "@/components/ui/screen";
-import Button from "@/components/ui/button";
+import { getRememberedAccounts, rememberAccount, RememberedAccount, restoreRememberedAccount } from "@/lib/auth/remembered-accounts";
 import { supabase } from "@/lib/supabase";
-import Text from "@/components/ui/text";
+import { useMutation } from "@tanstack/react-query";
+import { Link, router, useFocusEffect } from "expo-router";
+import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react-native";
+import { useCallback, useState } from "react";
+import { ActivityIndicator, Platform, Pressable, Switch, View } from "react-native";
 import { z } from "zod";
 
 const signInSchema = z.object({
@@ -61,12 +61,12 @@ export default function SignIn() {
         <Screen fullscreen className="justify-center gap-8">
             <View className="max-w-86 items-start">
                 <Text className="font-bebas text-6xl">Welcome Back</Text>
-                <Text className="text-muted-foreground text-xl font-medium">Sign in to your account to continue</Text>
+                <Text className="text-muted-foreground font-jakarta-medium text-xl">Sign in to your account to continue</Text>
             </View>
 
             {savedAccounts.length > 0 && (
                 <View className="gap-2">
-                    <Text className="text-sm font-extrabold">Continue as</Text>
+                    <Text className="font-jakarta-extrabold text-sm">Continue as</Text>
                     {savedAccounts.map((account) => {
                         const isRestoring = restoreAccountMutation.isPending && restoreAccountMutation.variables?.userId === account.userId;
                         return (
@@ -84,10 +84,10 @@ export default function SignIn() {
                                 className="card flex-row items-center gap-3 px-4 py-3 active:opacity-80"
                             >
                                 <View className="bg-lime border-foreground h-10 w-10 items-center justify-center border-2">
-                                    <Text className="font-extrabold text-black">{account.name.slice(0, 1).toUpperCase()}</Text>
+                                    <Text className="font-jakarta-extrabold text-black">{account.name.slice(0, 1).toUpperCase()}</Text>
                                 </View>
                                 <View className="flex-1">
-                                    <Text className="text-sm font-extrabold" numberOfLines={1}>
+                                    <Text className="font-jakarta-extrabold text-sm" numberOfLines={1}>
                                         {account.name}
                                     </Text>
                                     <Text className="text-muted-foreground text-xs" numberOfLines={1}>
@@ -130,7 +130,7 @@ export default function SignIn() {
 
                 <View className="card flex-row items-center justify-between gap-4">
                     <View className="flex-1 gap-1">
-                        <Text className="text-sm font-bold">Remember this account</Text>
+                        <Text className="font-jakarta-bold text-sm">Remember this account</Text>
                         <Text className="text-muted-foreground text-xs">{Platform.OS === "web" ? "Secure account switching is available in the mobile app." : "Save it securely on this device for account switching."}</Text>
                     </View>
                     <Switch value={rememberThisAccount} onValueChange={setRememberThisAccount} disabled={signInWithPasswordMt.isPending || Platform.OS === "web"} />
@@ -145,8 +145,8 @@ export default function SignIn() {
                 <View className="mt-2 flex-row justify-center">
                     <Link href="/(auth)/sign-up" asChild>
                         <Pressable>
-                            <Text className="text-muted-foreground text-lg font-medium">
-                                Don&apos;t have an account? <Text className="font-bold underline">Sign Up</Text>
+                            <Text className="text-muted-foreground font-jakarta-medium text-lg">
+                                Don&apos;t have an account? <Text className="font-jakarta-bold underline">Sign Up</Text>
                             </Text>
                         </Pressable>
                     </Link>

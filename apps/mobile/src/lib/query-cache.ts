@@ -2,6 +2,7 @@ import type { Party, PartyDetail, PartyMember, Quest, QuestDetail, User } from "
 import type { QueryClient, QueryKey } from "@tanstack/react-query";
 import type { PartyLeaderboardMember } from "@/types/leaderboard";
 import { queryKeys, queryRoots } from "@/constants/query-keys";
+import { removeChatCaches, upsertConversation } from "@/lib/chat-cache";
 
 type PaginatedItems<T> = { pages: { items: T[] }[]; pageParams: unknown[] };
 
@@ -147,6 +148,7 @@ export async function createPartyCaches(queryClient: QueryClient, party: Party) 
     const detail: PartyDetail = { ...party, _count: { members: 1 }, isMember: true };
 
     queryClient.setQueryData(queryKeys.party.byCode(party.code), detail);
+    upsertConversation(queryClient, detail);
 
     queryClient.setQueriesData<PartyDetail[]>({ queryKey: queryKeys.party.my() }, (list) => {
         if (!list) return list;
@@ -233,8 +235,12 @@ export async function joinPartyCaches(queryClient: QueryClient, code: string, me
             if (!list) return list;
             return list.some((item) => item.id === detail.id) ? list.map((item) => (item.id === detail.id ? detail : item)) : [detail, ...list];
         });
+        upsertConversation(queryClient, { ...detail, isMember: true });
     } else if (queryClient.getQueryData<PartyDetail[]>(queryKeys.party.my())) {
         await queryClient.invalidateQueries({ queryKey: queryKeys.party.my() });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.chat.conversations() });
+    } else {
+        await queryClient.invalidateQueries({ queryKey: queryKeys.chat.conversations() });
     }
 
     await queryClient.invalidateQueries({ queryKey: [...queryRoots.quest, "my"] });
@@ -258,6 +264,7 @@ export async function leavePartyCaches(queryClient: QueryClient, code: string, m
     queryClient.setQueriesData<PartyDetail[]>({ queryKey: queryKeys.party.my() }, (list) => list?.filter((party) => party.code !== code));
     removeQuestsByParty(queryClient, code);
     removePartyFromPaginatedCaches(queryClient, code);
+    removeChatCaches(queryClient, code);
     await queryClient.invalidateQueries({ queryKey: [...queryRoots.questActivity, "my"] });
     await queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.partyMember] });
 }
@@ -277,6 +284,7 @@ export async function deletePartyCaches(queryClient: QueryClient, party: Party) 
     queryClient.removeQueries({ queryKey: queryKeys.party.leaderboard(party.code) });
     queryClient.removeQueries({ queryKey: queryKeys.partyMember.members(party.code) });
     removeQuestsByParty(queryClient, party.code);
+    removeChatCaches(queryClient, party.code);
     await queryClient.invalidateQueries({ queryKey: [...queryRoots.questActivity, "my"] });
     await queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() });
     await queryClient.invalidateQueries({ queryKey: ["paginated", ...queryRoots.party] });

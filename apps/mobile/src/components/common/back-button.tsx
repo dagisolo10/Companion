@@ -1,9 +1,9 @@
+import Text from "@/components/ui/text";
 import { useColor } from "@/hooks/custom/use-color";
+import { cn } from "cn";
+import { router } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { Pressable, View } from "react-native";
-import Text from "@/components/ui/text";
-import { router } from "expo-router";
-import { cn } from "cn";
 
 export default function BackButton({ onPress, className, label }: { onPress?: () => void; label: string; className?: string }) {
     const color = useColor();
@@ -14,7 +14,7 @@ export default function BackButton({ onPress, className, label }: { onPress?: ()
                 <ChevronLeft size={20} color={color.foreground} strokeWidth={2.5} />
             </Pressable>
 
-            <Text className={cn("text-3xl font-bold tracking-tight", className)}>{label}</Text>
+            <Text className={cn("font-jakarta-bold text-3xl tracking-tight", className)}>{label}</Text>
         </View>
     );
 }

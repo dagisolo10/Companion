@@ -1,20 +1,20 @@
-import { useCompleteQuest, useGetMyQuestsInfinite } from "@/hooks/tan-stack/quest";
-import { ActivityIndicator, FlatList, ScrollView, View } from "react-native";
-import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
-import ErrorMessage from "@/components/common/error-message";
-import { SkeletonQuestCard } from "@/components/ui/skeleton";
-import { CheckCircle2, Sparkles } from "lucide-react-native";
 import BackButton from "@/components/common/back-button";
-import { Filter, Quest } from "@companion/shared-types";
+import ErrorMessage from "@/components/common/error-message";
 import QuestCard from "@/components/quest/quest-card";
-import EmptyState from "@/components/ui/empty-state";
-import useToast from "@/hooks/custom/use-toast";
-import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
+import EmptyState from "@/components/ui/empty-state";
+import Screen from "@/components/ui/screen";
+import { SkeletonQuestCard } from "@/components/ui/skeleton";
 import Text from "@/components/ui/text";
-import { router } from "expo-router";
-import { useState } from "react";
+import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
+import useToast from "@/hooks/custom/use-toast";
+import { useCompleteQuest, useGetMyQuestsInfinite } from "@/hooks/tan-stack/quest";
+import { Filter, Quest } from "@companion/shared-types";
 import { cn } from "cn";
+import { router } from "expo-router";
+import { CheckCircle2, Sparkles } from "lucide-react-native";
+import { useState } from "react";
+import { ActivityIndicator, FlatList, ScrollView, View } from "react-native";
 
 export default function MyQuests() {
     const [filter, setFilter] = useState<Filter>("All");
@@ -71,7 +71,7 @@ export default function MyQuests() {
                             <View className="flex-row gap-2 pb-2">
                                 {tabs.map((tab) => (
                                     <Button key={tab} variant={filter === tab ? "default" : "secondary"} onPress={() => setFilter(tab)} className="px-4">
-                                        <Text className={cn("text-center text-sm font-extrabold", filter === tab ? "text-black" : "text-foreground")}>{tab}</Text>
+                                        <Text className={cn("font-jakarta-extrabold text-center text-sm", filter === tab ? "text-black" : "text-foreground")}>{tab}</Text>
                                     </Button>
                                 ))}
                             </View>

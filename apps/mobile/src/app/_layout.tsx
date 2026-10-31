@@ -1,13 +1,19 @@
 import "@/app/global.css";
 
-import { useAuth } from "@/contexts/auth-context";
-import { ToastProvider } from "@/hooks/custom/use-toast";
-import AuthProvider from "@/providers/auth-providers";
-import SocketIoProvider from "@/providers/socket.io-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { router, Stack, usePathname, useSegments } from "expo-router";
-import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import SocketIoProvider from "@/providers/socket.io-provider";
+import { ToastProvider } from "@/hooks/custom/use-toast";
+import AuthProvider from "@/providers/auth-providers";
+import * as SplashScreen from "expo-splash-screen";
+import { useAuth } from "@/contexts/auth-context";
+import { fonts } from "@/constants/fonts";
+import { useFonts } from "expo-font";
+import { useEffect } from "react";
+
+
+void SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 2 } } });
 
@@ -22,7 +28,7 @@ function RootNavigator() {
     useEffect(() => {
         if (isLoading || isPasswordRecovery || !isSignedIn) return;
 
-        router.replace("/(app)");
+        router.replace({ pathname: "/(app)/(tabs)/(home)" });
     }, [isLoading, isSignedIn, isPasswordRecovery]);
 
     useEffect(() => {
@@ -50,6 +56,18 @@ function RootNavigator() {
 }
 
 export default function RootLayout() {
+    const [loaded, error] = useFonts(fonts);
+
+    useEffect(() => {
+        if (loaded || error) {
+            void SplashScreen.hideAsync();
+        }
+    }, [loaded, error]);
+
+    if (!loaded && !error) {
+        return null;
+    }
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <QueryClientProvider client={queryClient}>

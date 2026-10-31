@@ -14,11 +14,11 @@ export default function StatCard({ label, value, accent, loading }: StatCardProp
     return (
         <View className="card flex-1 justify-between gap-3">
             <View className={cn(accent, "border-foreground self-start border px-2 py-0.5")}>
-                <Text className="text-[10px] font-bold text-black uppercase">{label}</Text>
+                <Text className="font-jakarta-bold text-[10px] text-black uppercase">{label}</Text>
             </View>
             <View>
-                <Text className="text-2xl font-bold tracking-tight">{loadValue(loading, value)}</Text>
-                <Text className="text-muted-foreground text-xs font-bold">{label}</Text>
+                <Text className="font-jakarta-bold text-2xl tracking-tight">{loadValue(loading, value)}</Text>
+                <Text className="text-muted-foreground font-jakarta-bold text-xs">{label}</Text>
             </View>
         </View>
     );

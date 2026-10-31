@@ -1,16 +1,16 @@
-import { useGetParty, useGetPartyLeaderboard } from "@/hooks/tan-stack/party";
+import BackButton from "@/components/common/back-button";
 import LeaderboardPodium from "@/components/leaderboard/leaderboard-podium";
 import LeaderboardRow from "@/components/leaderboard/leaderboard-row";
+import EmptyState from "@/components/ui/empty-state";
+import Screen from "@/components/ui/screen";
+import { SkeletonCard } from "@/components/ui/skeleton";
+import Text from "@/components/ui/text";
+import { useGetParty, useGetPartyLeaderboard } from "@/hooks/tan-stack/party";
+import { useGetUser } from "@/hooks/tan-stack/user";
 import { toLeaderboardEntry } from "@/utils/helper-functions";
 import { router, useLocalSearchParams } from "expo-router";
-import { SkeletonCard } from "@/components/ui/skeleton";
-import EmptyState from "@/components/ui/empty-state";
-import { useGetUser } from "@/hooks/tan-stack/user";
-import BackButton from "@/components/common/back-button";
-import { Pressable, View } from "react-native";
 import { Trophy } from "lucide-react-native";
-import Screen from "@/components/ui/screen";
-import Text from "@/components/ui/text";
+import { Pressable, View } from "react-native";
 
 export default function PartyLeaderboardScreen() {
     const { code } = useLocalSearchParams<{ code: string }>();
@@ -33,7 +33,7 @@ export default function PartyLeaderboardScreen() {
                 <View className="flex-1">
                     <View className="flex-row items-center gap-2">
                         <Trophy size={20} color="#ffba00" strokeWidth={2.5} />
-                        <Text className="text-2xl font-extrabold tracking-tight">Leaderboard</Text>
+                        <Text className="font-jakarta-extrabold text-2xl tracking-tight">Leaderboard</Text>
                     </View>
                     <Text className="text-muted-foreground text-xs">{partyQuery.data?.name ?? "Party"}</Text>
                 </View>
@@ -56,7 +56,7 @@ export default function PartyLeaderboardScreen() {
                     )}
 
                     <View className="gap-3">
-                        <Text className="text-lg font-extrabold tracking-tight">Rankings</Text>
+                        <Text className="font-jakarta-extrabold text-lg tracking-tight">Rankings</Text>
 
                         {rows.map((entry, index) => (
                             <Pressable key={entry.id} onPress={() => router.push({ pathname: "/(app)/user/[username]", params: { username: entry.username } })}>

@@ -1,17 +1,17 @@
-import { AlertCircle, AtSign, CheckCircle2, Save, User2, XCircle } from "lucide-react-native";
-import { useGetUser, useIsUsernameAvailable, useUpdateUser } from "@/hooks/tan-stack/user";
-import { slugifyUsername } from "@/utils/helper-functions";
 import BackButton from "@/components/common/back-button";
+import Button from "@/components/ui/button";
+import { InputField } from "@/components/ui/input";
+import Screen from "@/components/ui/screen";
 import { SkeletonCard } from "@/components/ui/skeleton";
+import Text from "@/components/ui/text";
 import useDebounce from "@/hooks/custom/use-debounce";
 import useToast from "@/hooks/custom/use-toast";
-import { InputField } from "@/components/ui/input";
+import { useGetUser, useIsUsernameAvailable, useUpdateUser } from "@/hooks/tan-stack/user";
+import { slugifyUsername } from "@/utils/helper-functions";
 import { User } from "@companion/shared-types";
-import Screen from "@/components/ui/screen";
-import Button from "@/components/ui/button";
-import { Switch, View } from "react-native";
+import { AlertCircle, AtSign, CheckCircle2, Save, User2, XCircle } from "lucide-react-native";
 import { useState } from "react";
-import Text from "@/components/ui/text";
+import { Switch, View } from "react-native";
 
 export default function EditProfile() {
     const userQuery = useGetUser();
@@ -120,8 +120,8 @@ function EditProfileForm({ user }: { user: User }) {
                     clearButtonMode="while-editing"
                 />
                 {username.length > 0 && (
-                    <Text className="text-muted-foreground px-1 text-xs font-medium">
-                        Will be saved as: <Text className="text-foreground font-bold">@{slugValue}</Text>
+                    <Text className="text-muted-foreground font-jakarta-medium px-1 text-xs">
+                        Will be saved as: <Text className="text-foreground font-jakarta-bold">@{slugValue}</Text>
                     </Text>
                 )}
             </View>
@@ -129,16 +129,16 @@ function EditProfileForm({ user }: { user: User }) {
             {slugValue.length >= 3 && slugValue !== user.username && (
                 <View className="mt-1 flex-row items-center gap-1.5">
                     {usernameAvailableQuery.isFetching ? (
-                        <Text className="text-muted-foreground text-xs font-bold">Checking availability...</Text>
+                        <Text className="text-muted-foreground font-jakarta-bold text-xs">Checking availability...</Text>
                     ) : usernameAvailableQuery.data ? (
                         <View className="flex-row items-center gap-1">
                             <CheckCircle2 size={14} color="#22C55E" strokeWidth={2.5} />
-                            <Text className="text-lime text-xs font-bold">Username available</Text>
+                            <Text className="text-lime font-jakarta-bold text-xs">Username available</Text>
                         </View>
                     ) : (
                         <View className="flex-row items-center gap-1">
                             <XCircle size={14} color="#DC2626" strokeWidth={2.5} />
-                            <Text className="text-destructive text-xs font-bold">Username taken</Text>
+                            <Text className="text-destructive font-jakarta-bold text-xs">Username taken</Text>
                         </View>
                     )}
                 </View>
@@ -148,8 +148,8 @@ function EditProfileForm({ user }: { user: User }) {
 
             <View className="card flex-row items-center justify-between">
                 <View className="flex-1 gap-0.5 pr-3">
-                    <Text className="text-sm font-bold">Public profile</Text>
-                    <Text className="text-muted-foreground max-w-48 text-xs font-bold">Allow others to find you in search and view your profile.</Text>
+                    <Text className="font-jakarta-bold text-sm">Public profile</Text>
+                    <Text className="text-muted-foreground font-jakarta-bold max-w-48 text-xs">Allow others to find you in search and view your profile.</Text>
                 </View>
                 <View className="justify-center">
                     <Switch value={isPublic} onValueChange={handlePublicToggle} disabled={updateUserMutation.isPending} />
@@ -168,14 +168,14 @@ function LiveErrorCard({ errors }: { errors: string[] }) {
         <View className="bg-destructive/10 border-destructive shadow-nb gap-3 border-2 p-4">
             <View className="border-destructive/30 flex-row items-center gap-2 border-b pb-2">
                 <AlertCircle size={18} color="#DC2626" strokeWidth={2.5} />
-                <Text className="text-destructive text-xs font-extrabold tracking-wider uppercase">Please fix the following issue{errors.length > 1 ? "s" : ""}</Text>
+                <Text className="text-destructive font-jakarta-extrabold text-xs tracking-wider uppercase">Please fix the following issue{errors.length > 1 ? "s" : ""}</Text>
             </View>
 
             <View className="gap-1.5">
                 {errors.map((error, idx) => (
                     <View key={idx} className="flex-row items-start gap-2">
-                        <Text className="text-destructive text-xs leading-5 font-extrabold">•</Text>
-                        <Text className="text-destructive flex-1 text-xs leading-5 font-bold">{error}</Text>
+                        <Text className="text-destructive font-jakarta-extrabold text-xs leading-5">•</Text>
+                        <Text className="text-destructive font-jakarta-bold flex-1 text-xs leading-5">{error}</Text>
                     </View>
                 ))}
             </View>

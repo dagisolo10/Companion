@@ -1,9 +1,9 @@
-import { Flame, Medal, Zap } from "lucide-react-native";
-import { LeaderboardEntry } from "@/types/leaderboard";
-import { useColor } from "@/hooks/custom/use-color";
 import Text from "@/components/ui/text";
-import { View } from "react-native";
+import { useColor } from "@/hooks/custom/use-color";
+import { LeaderboardEntry } from "@/types/leaderboard";
 import { cn } from "cn";
+import { Flame, Medal, Zap } from "lucide-react-native";
+import { View } from "react-native";
 
 const AVATAR_COLORS = ["bg-lime", "bg-pink", "bg-amber", "bg-purple"];
 
@@ -32,30 +32,30 @@ export default function LeaderboardRow({ entry, rank, isCurrentUser = false }: L
                 </View>
             ) : (
                 <View className="border-border bg-muted h-11 w-11 items-center justify-center border-2">
-                    <Text className="text-muted-foreground text-base font-extrabold">{rank}</Text>
+                    <Text className="text-muted-foreground font-jakarta-extrabold text-base">{rank}</Text>
                 </View>
             )}
 
             <View className={cn("border-foreground h-11 w-11 items-center justify-center border-2", avatarColor)}>
-                <Text className="text-sm font-extrabold text-black">{entry.name.charAt(0).toUpperCase()}</Text>
+                <Text className="font-jakarta-extrabold text-sm text-black">{entry.name.charAt(0).toUpperCase()}</Text>
             </View>
 
             <View className="flex-1">
                 <View className="flex-row items-center gap-1.5">
-                    <Text className="text-base font-extrabold" numberOfLines={1}>
+                    <Text className="font-jakarta-extrabold text-base" numberOfLines={1}>
                         {entry.name}
                     </Text>
                     {isCurrentUser && (
                         <View className="border-foreground bg-amber rounded-md border px-1.5 py-0.5">
-                            <Text className="text-[10px] font-extrabold text-black uppercase">You</Text>
+                            <Text className="font-jakarta-extrabold text-[10px] text-black uppercase">You</Text>
                         </View>
                     )}
                 </View>
                 <View className="flex-row items-center gap-2">
-                    <Text className="text-muted-foreground text-xs font-bold">@{entry.username}</Text>
+                    <Text className="text-muted-foreground font-jakarta-bold text-xs">@{entry.username}</Text>
                     <View className="flex-row items-center gap-0.5">
                         <Flame size={11} color="#f97316" strokeWidth={2.5} />
-                        <Text className="text-muted-foreground text-[11px] font-bold">{entry.streak}</Text>
+                        <Text className="text-muted-foreground font-jakarta-bold text-[11px]">{entry.streak}</Text>
                     </View>
                 </View>
             </View>
@@ -63,9 +63,9 @@ export default function LeaderboardRow({ entry, rank, isCurrentUser = false }: L
             <View className="items-end gap-0.5">
                 <View className="flex-row items-center gap-1">
                     <Zap size={14} color={color.purple} strokeWidth={2.5} />
-                    <Text className="text-base font-extrabold">{entry.experience.toLocaleString()}</Text>
+                    <Text className="font-jakarta-extrabold text-base">{entry.experience.toLocaleString()}</Text>
                 </View>
-                <Text className="text-muted-foreground text-[11px] font-bold">
+                <Text className="text-muted-foreground font-jakarta-bold text-[11px]">
                     Lv {entry.level} · {entry.label}
                 </Text>
             </View>

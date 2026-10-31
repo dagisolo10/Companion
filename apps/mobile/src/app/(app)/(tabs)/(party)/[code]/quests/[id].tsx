@@ -1,25 +1,25 @@
-import { AlertCircle, Award, CheckCircle2, Edit3, Flame, Save, Users, Zap } from "lucide-react-native";
-import { useCompleteQuest, useGetQuest, useUpdateQuest } from "@/hooks/tan-stack/quest";
+import BackButton from "@/components/common/back-button";
+import DifficultyBadge from "@/components/quest/difficulty-badge";
 import QuestScheduleCard from "@/components/quest/quest-schedule-card";
 import QuestStatusBadge from "@/components/quest/quest-status-badge";
-import DifficultyBadge from "@/components/quest/difficulty-badge";
-import { formatDateTime, relativeTime } from "@/utils/formatters";
-import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
-import { Difficulty, Mode } from "@companion/shared-types";
-import BackButton from "@/components/common/back-button";
-import { SkeletonCard } from "@/components/ui/skeleton";
-import { useColor } from "@/hooks/custom/use-color";
-import { useLocalSearchParams } from "expo-router";
-import { useAuth } from "@/contexts/auth-context";
-import useToast from "@/hooks/custom/use-toast";
-import { Pressable, View } from "react-native";
-import { Input } from "@/components/ui/input";
-import { UpdateQuestDto } from "@/types/dto";
-import Screen from "@/components/ui/screen";
 import Button from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import Screen from "@/components/ui/screen";
+import { SkeletonCard } from "@/components/ui/skeleton";
 import Text from "@/components/ui/text";
-import { useState } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { useColor } from "@/hooks/custom/use-color";
+import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
+import useToast from "@/hooks/custom/use-toast";
+import { useCompleteQuest, useGetQuest, useUpdateQuest } from "@/hooks/tan-stack/quest";
+import { UpdateQuestDto } from "@/types/dto";
+import { formatDateTime, relativeTime } from "@/utils/formatters";
+import { Difficulty, Mode } from "@companion/shared-types";
 import { cn } from "cn";
+import { useLocalSearchParams } from "expo-router";
+import { AlertCircle, Award, CheckCircle2, Edit3, Flame, Save, Users, Zap } from "lucide-react-native";
+import { useState } from "react";
+import { Pressable, View } from "react-native";
 
 import { DIFFICULTIES, REWARD_MAP } from "./create";
 
@@ -142,7 +142,7 @@ export default function QuestDetail() {
             {errors.general && (
                 <View className="border-foreground shadow-nb flex-row items-center gap-2.5 border-2 bg-red-100 p-3.5">
                     <AlertCircle size={18} color="#DC2626" strokeWidth={2.5} />
-                    <Text className="flex-1 text-xs font-bold text-red-700">{errors.general}</Text>
+                    <Text className="font-jakarta-bold flex-1 text-xs text-red-700">{errors.general}</Text>
                 </View>
             )}
 
@@ -151,7 +151,7 @@ export default function QuestDetail() {
             {editing ? (
                 <>
                     <View className="gap-1.5">
-                        <Text className="text-sm font-bold">Title</Text>
+                        <Text className="font-jakarta-bold text-sm">Title</Text>
                         <Input
                             placeholder="Quest title"
                             value={editTitle}
@@ -164,7 +164,7 @@ export default function QuestDetail() {
                     </View>
 
                     <View className="gap-1.5">
-                        <Text className="text-sm font-bold">Description</Text>
+                        <Text className="font-jakarta-bold text-sm">Description</Text>
                         <Input
                             placeholder="Describe the quest..."
                             value={editDescription}
@@ -181,12 +181,12 @@ export default function QuestDetail() {
                     </View>
 
                     <View className="gap-1.5">
-                        <Text className="text-sm font-bold">Mode</Text>
+                        <Text className="font-jakarta-bold text-sm">Mode</Text>
                         <View className="flex-row gap-2">
                             {(["Normal", "Rush"] as Mode[]).map((m) => (
                                 <View key={m} className="flex-1">
                                     <Pressable onPress={() => setEditMode(m)} className={cn("border-foreground border-2 py-3", editMode === m ? "bg-amber shadow-nb" : "bg-card")}>
-                                        <Text className={cn("text-center text-xs font-extrabold uppercase", editMode === m && "text-black")}>{m}</Text>
+                                        <Text className={cn("font-jakarta-extrabold text-center text-xs uppercase", editMode === m && "text-black")}>{m}</Text>
                                     </Pressable>
                                 </View>
                             ))}
@@ -194,15 +194,15 @@ export default function QuestDetail() {
                     </View>
 
                     <View className="gap-1.5">
-                        <Text className="text-sm font-bold">Difficulty</Text>
+                        <Text className="font-jakarta-bold text-sm">Difficulty</Text>
                         <View className="flex-row flex-wrap gap-2">
                             {DIFFICULTIES.map((d) => {
                                 const selected = editDifficulty === d;
                                 return (
                                     <Pressable key={d} onPress={() => setEditDifficulty(d)} className={cn("w-[31.5%] items-center gap-2 border-2 px-2 py-3", selected ? "border-foreground bg-amber shadow-nb" : "border-border bg-card")}>
                                         <DifficultyBadge difficulty={d} size="icon" />
-                                        <Text className={cn("text-xs font-extrabold", selected ? "text-black" : "text-foreground")}>{d}</Text>
-                                        <Text className={cn("text-xl font-extrabold", selected ? "text-black/80" : "text-muted-foreground")}>{REWARD_MAP[d]} XP</Text>
+                                        <Text className={cn("font-jakarta-extrabold text-xs", selected ? "text-black" : "text-foreground")}>{d}</Text>
+                                        <Text className={cn("font-jakarta-extrabold text-xl", selected ? "text-black/80" : "text-muted-foreground")}>{REWARD_MAP[d]} XP</Text>
                                     </Pressable>
                                 );
                             })}
@@ -212,13 +212,13 @@ export default function QuestDetail() {
                     <View className="flex-row gap-3">
                         <View className="flex-1">
                             <Button variant="outline" onPress={cancelEditing}>
-                                <Text className="text-sm font-bold">Cancel</Text>
+                                <Text className="font-jakarta-bold text-sm">Cancel</Text>
                             </Button>
                         </View>
                         <View className="flex-1">
                             <Button onPress={handleSave} disabled={updateQuestMutation.isPending}>
                                 <Save size={16} color="#000" strokeWidth={2.5} />
-                                <Text className="text-sm font-bold">{updateQuestMutation.isPending ? "Saving..." : "Save"}</Text>
+                                <Text className="font-jakarta-bold text-sm">{updateQuestMutation.isPending ? "Saving..." : "Save"}</Text>
                             </Button>
                         </View>
                     </View>
@@ -228,19 +228,19 @@ export default function QuestDetail() {
                     <View className="shadow-nb border-foreground gap-4 border-2 p-4">
                         <View className="flex-row items-start justify-between gap-2">
                             <View className="flex-1 gap-1">
-                                <Text className="text-lg font-extrabold">{quest.title}</Text>
-                                <Text className="text-muted-foreground text-xs font-bold">By {quest.creator.name}</Text>
+                                <Text className="font-jakarta-extrabold text-lg">{quest.title}</Text>
+                                <Text className="text-muted-foreground font-jakarta-bold text-xs">By {quest.creator.name}</Text>
                             </View>
                             <DifficultyBadge difficulty={quest.difficulty} size="lg" />
                         </View>
 
-                        <Text className="text-muted-foreground text-sm font-bold">{quest.description}</Text>
+                        <Text className="text-muted-foreground font-jakarta-bold text-sm">{quest.description}</Text>
 
                         <View className="flex-row flex-wrap gap-2">
                             <QuestStatusBadge status={quest.status} />
                             <View className="border-foreground bg-card flex-row items-center gap-1 rounded-full border px-2.5 py-0.5">
                                 <ModeIcon size={12} color={color.foreground} strokeWidth={2.5} />
-                                <Text className="text-xs font-bold">{quest.mode}</Text>
+                                <Text className="font-jakarta-bold text-xs">{quest.mode}</Text>
                             </View>
                         </View>
                     </View>
@@ -248,32 +248,32 @@ export default function QuestDetail() {
                     <View className="shadow-nb border-foreground gap-3 border-2 p-4">
                         <View className="flex-row items-center gap-2">
                             <Users size={18} color={color.foreground} strokeWidth={2.5} />
-                            <Text className="text-sm font-extrabold">Details</Text>
+                            <Text className="font-jakarta-extrabold text-sm">Details</Text>
                         </View>
 
                         <View className="gap-2.5">
                             <View className="flex-row items-center justify-between">
-                                <Text className="text-muted-foreground text-xs font-bold">Party</Text>
-                                <Text className="text-xs font-extrabold">{quest.party.name}</Text>
+                                <Text className="text-muted-foreground font-jakarta-bold text-xs">Party</Text>
+                                <Text className="font-jakarta-extrabold text-xs">{quest.party.name}</Text>
                             </View>
                             <View className="flex-row items-center justify-between">
-                                <Text className="text-muted-foreground text-xs font-bold">Code</Text>
-                                <Text className="text-xs font-extrabold">{quest.party.code}</Text>
+                                <Text className="text-muted-foreground font-jakarta-bold text-xs">Code</Text>
+                                <Text className="font-jakarta-extrabold text-xs">{quest.party.code}</Text>
                             </View>
                             <View className="flex-row items-center justify-between">
-                                <Text className="text-muted-foreground text-xs font-bold">Completed</Text>
-                                <Text className="text-xs font-extrabold">
+                                <Text className="text-muted-foreground font-jakarta-bold text-xs">Completed</Text>
+                                <Text className="font-jakarta-extrabold text-xs">
                                     {quest._count.questActivities} {quest._count.questActivities === 1 ? "member" : "members"}
                                 </Text>
                             </View>
                             <View className="flex-row items-center justify-between">
-                                <Text className="text-muted-foreground text-xs font-bold">Created</Text>
-                                <Text className="text-xs font-bold">{formatDateTime(quest.createdAt)}</Text>
+                                <Text className="text-muted-foreground font-jakarta-bold text-xs">Created</Text>
+                                <Text className="font-jakarta-bold text-xs">{formatDateTime(quest.createdAt)}</Text>
                             </View>
                             {quest.completedAt && (
                                 <View className="flex-row items-center justify-between">
-                                    <Text className="text-muted-foreground text-xs font-bold">Finished</Text>
-                                    <Text className="text-xs font-bold">{formatDateTime(quest.completedAt)}</Text>
+                                    <Text className="text-muted-foreground font-jakarta-bold text-xs">Finished</Text>
+                                    <Text className="font-jakarta-bold text-xs">{formatDateTime(quest.completedAt)}</Text>
                                 </View>
                             )}
                         </View>
@@ -284,17 +284,17 @@ export default function QuestDetail() {
                     <View className="shadow-nb border-foreground gap-3 border-2 p-4">
                         <View className="flex-row items-center gap-2">
                             <CheckCircle2 size={18} color={color.foreground} strokeWidth={2.5} />
-                            <Text className="text-sm font-extrabold">Completions</Text>
+                            <Text className="font-jakarta-extrabold text-sm">Completions</Text>
                         </View>
 
                         {questActivities.length === 0 ? (
-                            <Text className="text-muted-foreground text-xs font-bold">No one has completed this quest yet.</Text>
+                            <Text className="text-muted-foreground font-jakarta-bold text-xs">No one has completed this quest yet.</Text>
                         ) : (
                             <View className="gap-2.5">
                                 {questActivities.map((activity) => (
                                     <View key={activity.id} className="flex-row items-center justify-between">
-                                        <Text className="text-xs font-extrabold">{activity.user.name}</Text>
-                                        <Text className="text-muted-foreground text-[11px] font-bold">{relativeTime(activity.completedAt)}</Text>
+                                        <Text className="font-jakarta-extrabold text-xs">{activity.user.name}</Text>
+                                        <Text className="text-muted-foreground font-jakarta-bold text-[11px]">{relativeTime(activity.completedAt)}</Text>
                                     </View>
                                 ))}
                             </View>
@@ -303,22 +303,22 @@ export default function QuestDetail() {
 
                     <View className="border-foreground bg-lime shadow-nb flex-row items-center gap-2 border-2 p-3.5">
                         <Award size={20} color="#000" strokeWidth={2.5} />
-                        <Text className="text-sm font-extrabold text-black">+{quest.reward} XP</Text>
+                        <Text className="font-jakarta-extrabold text-sm text-black">+{quest.reward} XP</Text>
                     </View>
 
                     {isActive && quest.canParticipate !== false && (
                         <Button variant="success" onPress={handleComplete} disabled={completeQuestMutation.isPending || hasCompleted} asChild>
                             <CheckCircle2 size={18} color="#000" strokeWidth={2.5} />
-                            <Text className="font-extrabold text-black">{hasCompleted ? "Quest Completed" : completeQuestMutation.isPending ? "Completing..." : "Complete Quest"}</Text>
+                            <Text className="font-jakarta-extrabold text-black">{hasCompleted ? "Quest Completed" : completeQuestMutation.isPending ? "Completing..." : "Complete Quest"}</Text>
                         </Button>
                     )}
 
-                    {isActive && quest.canParticipate === false && <Text className="text-muted-foreground text-center text-xs font-bold">You joined after this quest started, so you can’t participate.</Text>}
+                    {isActive && quest.canParticipate === false && <Text className="text-muted-foreground font-jakarta-bold text-center text-xs">You joined after this quest started, so you can’t participate.</Text>}
 
                     {isCreator && canEdit && (
                         <Button variant="outline" onPress={startEditing} asChild>
                             <Edit3 size={16} color="#000" strokeWidth={2.5} />
-                            <Text className="text-sm font-bold">Edit Quest</Text>
+                            <Text className="font-jakarta-bold text-sm">Edit Quest</Text>
                         </Button>
                     )}
                 </>
@@ -330,5 +330,5 @@ export default function QuestDetail() {
 function FieldError({ message }: { message?: string }) {
     if (!message) return null;
 
-    return <Text className="mt-0.5 text-sm font-bold text-red-600">{message}</Text>;
+    return <Text className="font-jakarta-bold mt-0.5 text-sm text-red-600">{message}</Text>;
 }

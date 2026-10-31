@@ -1,19 +1,19 @@
-import { useGetAllPartiesInfinite, useGetMyParties } from "@/hooks/tan-stack/party";
-import { Compass, Plus, Search, UserPlus, Users } from "lucide-react-native";
-import { ActivityIndicator, FlatList, View } from "react-native";
-import SectionHeader from "@/components/common/section-header";
-import { SkeletonPartyList } from "@/components/ui/skeleton";
-import LargeHeader from "@/components/common/large-header";
 import BackButton from "@/components/common/back-button";
-import useDebounce from "@/hooks/custom/use-debounce";
+import LargeHeader from "@/components/common/large-header";
+import SectionHeader from "@/components/common/section-header";
 import PartyCard from "@/components/party/party-card";
+import Button from "@/components/ui/button";
 import EmptyState from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
-import Button from "@/components/ui/button";
-import { useMemo, useState } from "react";
+import { SkeletonPartyList } from "@/components/ui/skeleton";
 import Text from "@/components/ui/text";
+import useDebounce from "@/hooks/custom/use-debounce";
+import { useGetAllPartiesInfinite, useGetMyParties } from "@/hooks/tan-stack/party";
 import { router } from "expo-router";
+import { Compass, Plus, Search, UserPlus, Users } from "lucide-react-native";
+import { useMemo, useState } from "react";
+import { ActivityIndicator, FlatList, View } from "react-native";
 
 export default function PartiesScreen() {
     const [search, setSearch] = useState("");
@@ -54,12 +54,12 @@ export default function PartiesScreen() {
                         <View className="flex-row gap-3">
                             <Button className="flex-1" asChild onPress={() => router.push("/(app)/(tabs)/(party)/create")}>
                                 <Plus size={16} color="#000000" strokeWidth={2.5} />
-                                <Text className="text-sm font-bold">Create Party</Text>
+                                <Text className="font-jakarta-bold text-sm">Create Party</Text>
                             </Button>
 
                             <Button className="flex-1" variant="outline" asChild onPress={() => router.push("/(app)/(tabs)/(party)/join")}>
                                 <UserPlus size={16} color="#000000" strokeWidth={2.5} />
-                                <Text className="text-sm font-bold">Join Party</Text>
+                                <Text className="font-jakarta-bold text-sm">Join Party</Text>
                             </Button>
                         </View>
                         <View className="gap-4">

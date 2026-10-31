@@ -33,3 +33,24 @@ export function relativeTime(date: string | Date): string {
     if (weeks < 4) return `${weeks}w ago`;
     return formatDateTime(date);
 }
+
+export function getDateString(dateStr: string): string {
+    const d = new Date(dateStr);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+export function formatDateSeparator(dateStr: string): string {
+    const d = new Date(dateStr);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const dateOnly = getDateString(dateStr);
+    const todayOnly = getDateString(today.toISOString());
+    const yesterdayOnly = getDateString(yesterday.toISOString());
+
+    if (dateOnly === todayOnly) return "Today";
+    if (dateOnly === yesterdayOnly) return "Yesterday";
+
+    return d.toLocaleDateString([], { month: "long", day: "numeric", year: "numeric" });
+}

@@ -1,4 +1,4 @@
-import type { Party, PartyMember, Quest, QuestCompleter, User } from "./models";
+import type { ChatMessage, Party, PartyMember, Quest, QuestCompleter, User } from "./models.js";
 
 
 export interface PartyUpdatedEvent {
@@ -52,8 +52,44 @@ export interface PartyLeaderboardUpdatedEvent {
     leaderboard: PartyLeaderboardMember[];
 }
 
+export interface ChatMessageEvent {
+    partyCode: string;
+    message: ChatMessage;
+    clientId?: string;
+}
+
+export interface ChatMessageDeletedEvent {
+    partyId: string;
+    partyCode: string;
+    messageId: string;
+}
+
+export interface ChatTypingEvent {
+    partyCode: string;
+    userId: string;
+    name: string;
+    isTyping: boolean;
+}
+
+export interface ChatReadEvent {
+    partyCode: string;
+    userId: string;
+    lastReadAt: string;
+}
+
+export interface ChatPresenceEvent {
+    partyCode: string;
+    onlineUserIds: string[];
+}
+
 export interface ServerToClientEvents {
     "user:updated": (event: UserUpdatedEvent) => void;
+    "chat:message": (event: ChatMessageEvent) => void;
+    "chat:message-updated": (event: ChatMessageEvent) => void;
+    "chat:message-deleted": (event: ChatMessageDeletedEvent) => void;
+    "chat:typing": (event: ChatTypingEvent) => void;
+    "chat:read": (event: ChatReadEvent) => void;
+    "chat:presence": (event: ChatPresenceEvent) => void;
     "party:updated": (event: PartyUpdatedEvent) => void;
     "party:deleted": (event: PartyDeletedEvent) => void;
     "quest:created": (event: QuestChangedEvent) => void;

@@ -1,17 +1,17 @@
-import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react-native";
-import { useMutation } from "@tanstack/react-query";
-import { getRememberedAccounts, rememberAccount } from "@/lib/auth/remembered-accounts";
-import { useAuth } from "@/contexts/auth-context";
-import { Platform, Pressable, Switch, View } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
-import ErrorMessage from "@/components/common/error-message";
-import { InputField } from "@/components/ui/input";
 import BackButton from "@/components/common/back-button";
-import Screen from "@/components/ui/screen";
+import ErrorMessage from "@/components/common/error-message";
 import Button from "@/components/ui/button";
-import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { InputField } from "@/components/ui/input";
+import Screen from "@/components/ui/screen";
 import Text from "@/components/ui/text";
+import { useAuth } from "@/contexts/auth-context";
+import { getRememberedAccounts, rememberAccount } from "@/lib/auth/remembered-accounts";
+import { supabase } from "@/lib/supabase";
+import { useMutation } from "@tanstack/react-query";
+import { router, useLocalSearchParams } from "expo-router";
+import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react-native";
+import { useState } from "react";
+import { Platform, Pressable, Switch, View } from "react-native";
 
 export default function AddAccountScreen() {
     const { email: initialEmail } = useLocalSearchParams<{ email?: string }>();
@@ -49,7 +49,7 @@ export default function AddAccountScreen() {
             <BackButton label="Add Account" />
             <View className="gap-1">
                 <Text className="font-bebas text-5xl">Add an account</Text>
-                <Text className="text-muted-foreground text-base font-medium">Sign in here without signing out of your other accounts.</Text>
+                <Text className="text-muted-foreground font-jakarta-medium text-base">Sign in here without signing out of your other accounts.</Text>
             </View>
 
             <View className="gap-4">
@@ -71,7 +71,7 @@ export default function AddAccountScreen() {
 
                 <View className="card flex-row items-center justify-between gap-4">
                     <View className="flex-1 gap-1">
-                        <Text className="text-sm font-bold">Remember this account</Text>
+                        <Text className="font-jakarta-bold text-sm">Remember this account</Text>
                         <Text className="text-muted-foreground text-xs">{Platform.OS === "web" ? "Secure account switching is available in the mobile app." : "Save its refresh token securely on this device."}</Text>
                     </View>
                     <Switch value={rememberThisAccount} onValueChange={setRememberThisAccount} disabled={addAccountMutation.isPending || Platform.OS === "web"} />

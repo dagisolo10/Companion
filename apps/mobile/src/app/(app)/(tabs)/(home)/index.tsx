@@ -1,23 +1,23 @@
-import { Activity, Map, Plus, Target, Trophy, Users, Zap } from "lucide-react-native";
-import { useGetMyQuestActivities } from "@/hooks/tan-stack/quest-activity";
+import ActivityCard from "@/components/activity/activity-card";
+import ErrorMessage from "@/components/common/error-message";
+import SectionHeader from "@/components/common/section-header";
+import LevelCard from "@/components/profile/level-card";
+import StatCard from "@/components/profile/stat-card";
+import StreakCard from "@/components/profile/streak-card";
+import QuestCard from "@/components/quest/quest-card";
+import Button from "@/components/ui/button";
+import EmptyState from "@/components/ui/empty-state";
+import Screen from "@/components/ui/screen";
+import Text from "@/components/ui/text";
+import { useColor } from "@/hooks/custom/use-color";
 import { useGetDashboard } from "@/hooks/tan-stack/dashboard";
 import { useGetMyParties } from "@/hooks/tan-stack/party";
 import { useGetMyQuests } from "@/hooks/tan-stack/quest";
-import SectionHeader from "@/components/common/section-header";
-import ErrorMessage from "@/components/common/error-message";
-import ActivityCard from "@/components/activity/activity-card";
-import EmptyState from "@/components/ui/empty-state";
-import { loadValue } from "@/utils/helper-functions";
+import { useGetMyQuestActivities } from "@/hooks/tan-stack/quest-activity";
 import { useGetUser } from "@/hooks/tan-stack/user";
-import { useColor } from "@/hooks/custom/use-color";
-import StreakCard from "@/components/profile/streak-card";
-import QuestCard from "@/components/quest/quest-card";
-import LevelCard from "@/components/profile/level-card";
-import StatCard from "@/components/profile/stat-card";
-import Screen from "@/components/ui/screen";
-import Button from "@/components/ui/button";
-import Text from "@/components/ui/text";
+import { loadValue } from "@/utils/helper-functions";
 import { router } from "expo-router";
+import { Activity, Map, Plus, Target, Trophy, Users, Zap } from "lucide-react-native";
 import { View } from "react-native";
 
 export default function Home() {
@@ -41,7 +41,7 @@ export default function Home() {
         <Screen className="gap-6">
             <View>
                 <Text className="font-bebas text-5xl">{loadValue(userQuery.isPending, userQuery.data?.name ?? "")} 👋</Text>
-                <Text className="text-muted-foreground text-sm font-bold">Ready to level up today?</Text>
+                <Text className="text-muted-foreground font-jakarta-bold text-sm">Ready to level up today?</Text>
             </View>
 
             <StreakCard loading={userQuery.isPending} streak={userQuery.data?.streak ?? 0} longestStreak={userQuery.data?.longestStreak ?? 0} />
@@ -85,12 +85,12 @@ export default function Home() {
                         }}
                     >
                         <Plus size={18} color={color.black} strokeWidth={3} />
-                        <Text className="font-extrabold text-black">Create Quest</Text>
+                        <Text className="font-jakarta-extrabold text-black">Create Quest</Text>
                     </Button>
 
                     <Button size="lg" variant="outline" asChild className="flex-1" onPress={() => router.push("/(app)/(tabs)/(party)/create")}>
                         <Users size={18} color={color.foreground} strokeWidth={2.5} />
-                        <Text className="font-extrabold">Create Party</Text>
+                        <Text className="font-jakarta-extrabold">Create Party</Text>
                     </Button>
                 </View>
             </View>
@@ -129,7 +129,7 @@ export default function Home() {
                     ))
                 ) : (
                     <View className="py-8">
-                        <Text className="text-muted-foreground text-center text-sm font-bold">No activity yet</Text>
+                        <Text className="text-muted-foreground font-jakarta-bold text-center text-sm">No activity yet</Text>
                     </View>
                 )}
             </View>

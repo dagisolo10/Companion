@@ -1,15 +1,14 @@
-import { router, useLocalSearchParams } from "expo-router";
-import { useMutation } from "@tanstack/react-query";
-import { useAuth } from "@/contexts/auth-context";
-import * as Linking from "expo-linking";
+import Button from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
-import Button from "@/components/ui/button";
-import { supabase } from "@/lib/supabase";
 import Text from "@/components/ui/text";
-import { View } from "react-native";
+import { useAuth } from "@/contexts/auth-context";
+import { supabase } from "@/lib/supabase";
+import { useMutation } from "@tanstack/react-query";
+import * as Linking from "expo-linking";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-
+import { View } from "react-native";
 
 export default function VerifyReset() {
     const [token, setToken] = useState("");
@@ -44,13 +43,13 @@ export default function VerifyReset() {
     return (
         <Screen fullscreen className="justify-center gap-8">
             <View className="gap-2">
-                <Text className="text-3xl font-extrabold tracking-tight">Verify Code</Text>
-                <Text className="text-muted-foreground text-sm font-medium">Enter the code sent to {email}.</Text>
+                <Text className="font-jakarta-extrabold text-3xl tracking-tight">Verify Code</Text>
+                <Text className="text-muted-foreground font-jakarta-medium text-sm">Enter the code sent to {email}.</Text>
             </View>
 
             <View className="gap-5">
                 <View className="gap-1.5">
-                    <Text className="text-sm font-bold">Code</Text>
+                    <Text className="font-jakarta-bold text-sm">Code</Text>
                     <Input value={token} onChangeText={setToken} placeholder="123456" keyboardType="number-pad" autoCapitalize="none" />
                 </View>
 

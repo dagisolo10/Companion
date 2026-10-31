@@ -28,5 +28,5 @@ export default function QuestCountdown({ target, reachedLabel }: QuestCountdownP
               ? `${hours}h ${String(minutes).padStart(2, "0")}m ${String(seconds).padStart(2, "0")}s`
               : `${String(minutes).padStart(2, "0")}m ${String(seconds).padStart(2, "0")}s`;
 
-    return <Text className="font-jakarta-extrabold text-foreground text-sm tabular-nums">{remaining > 0 ? timeLeft : reachedLabel}</Text>;
+    return <Text className="font-jakarta-jakarta-extrabold text-foreground text-sm tabular-nums">{remaining > 0 ? timeLeft : reachedLabel}</Text>;
 }

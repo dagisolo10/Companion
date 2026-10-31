@@ -1,19 +1,18 @@
-import { forgetAccount, getRememberedAccounts, RememberedAccount, restoreRememberedAccount } from "@/lib/auth/remembered-accounts";
-import Animated, { createAnimatedComponent, Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { Check, ChevronDown, LogIn, Trash2, UserPlus, UsersRound } from "lucide-react-native";
-import { ActivityIndicator, Pressable, View } from "react-native";
-import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
 import SectionHeader from "@/components/common/section-header";
-import { useCallback, useEffect, useState } from "react";
-import { router, useFocusEffect } from "expo-router";
-import { useMutation } from "@tanstack/react-query";
-import { useColor } from "@/hooks/custom/use-color";
-import { useAuth } from "@/contexts/auth-context";
-import useToast from "@/hooks/custom/use-toast";
 import Button from "@/components/ui/button";
 import Text from "@/components/ui/text";
+import { useAuth } from "@/contexts/auth-context";
+import { useColor } from "@/hooks/custom/use-color";
+import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
+import useToast from "@/hooks/custom/use-toast";
+import { forgetAccount, getRememberedAccounts, RememberedAccount, restoreRememberedAccount } from "@/lib/auth/remembered-accounts";
+import { useMutation } from "@tanstack/react-query";
 import { cn } from "cn";
-
+import { router, useFocusEffect } from "expo-router";
+import { Check, ChevronDown, LogIn, Trash2, UserPlus, UsersRound } from "lucide-react-native";
+import { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, Pressable, View } from "react-native";
+import Animated, { createAnimatedComponent, Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 const AnimatedChevron = createAnimatedComponent(ChevronDown);
 
@@ -103,12 +102,12 @@ export default function AccountSwitcher({ currentUserId, onExpand }: { currentUs
                         <UsersRound size={18} color="#000" strokeWidth={2.5} />
                     </View>
                     <View className="items-center gap-0.5">
-                        <Text className="text-sm font-bold">No saved accounts</Text>
-                        <Text className="text-muted-foreground text-center text-xs font-bold">Choose &quot;Remember this account&quot; when signing in to switch easily.</Text>
+                        <Text className="font-jakarta-bold text-sm">No saved accounts</Text>
+                        <Text className="text-muted-foreground font-jakarta-bold text-center text-xs">Choose &quot;Remember this account&quot; when signing in to switch easily.</Text>
                     </View>
                     <Button size="sm" onPress={() => router.push("/(app)/(tabs)/(profile)/add-account")}>
                         <UserPlus size={14} color="#000" strokeWidth={2.5} />
-                        <Text className="text-xs font-bold">Add Account</Text>
+                        <Text className="font-jakarta-bold text-xs">Add Account</Text>
                     </Button>
                 </View>
             </View>
@@ -123,13 +122,13 @@ export default function AccountSwitcher({ currentUserId, onExpand }: { currentUs
             <Pressable onPress={() => setShowDropdown((prev) => !prev)} className="card flex-row items-center justify-between px-4 py-3 active:opacity-90">
                 <View className="flex-1 flex-row items-center gap-3">
                     <View className="bg-lime border-foreground h-9 w-9 items-center justify-center border-2">
-                        <Text className="font-extrabold text-black">{currentAccount ? currentAccount.name.slice(0, 1).toUpperCase() : "?"}</Text>
+                        <Text className="font-jakarta-extrabold text-black">{currentAccount ? currentAccount.name.slice(0, 1).toUpperCase() : "?"}</Text>
                     </View>
                     <View className="flex-1">
-                        <Text className="text-sm font-extrabold" numberOfLines={1}>
+                        <Text className="font-jakarta-extrabold text-sm" numberOfLines={1}>
                             {currentAccount ? currentAccount.name : "Select an account"}
                         </Text>
-                        <Text className="text-muted-foreground text-xs font-bold" numberOfLines={1}>
+                        <Text className="text-muted-foreground font-jakarta-bold text-xs" numberOfLines={1}>
                             {currentAccount ? currentAccount.email : "Tap to expand accounts"}
                         </Text>
                     </View>
@@ -148,13 +147,13 @@ export default function AccountSwitcher({ currentUserId, onExpand }: { currentUs
                             <View key={account.userId} className={cn("flex-row items-center justify-between px-3 py-2.5", !isLast && "border-border border-b", isCurrent ? "bg-amber" : "active:bg-muted")}>
                                 <Pressable onPress={() => switchAccountMutation.mutate(account)} disabled={isCurrent || switchAccountMutation.isPending || forgetAccountMutation.isPending} className="mr-2 flex-1 flex-row items-center gap-3">
                                     <View className="bg-lime border-foreground h-8 w-8 items-center justify-center border-2">
-                                        <Text className="text-xs font-extrabold text-black">{account.name.slice(0, 1).toUpperCase()}</Text>
+                                        <Text className="font-jakarta-extrabold text-xs text-black">{account.name.slice(0, 1).toUpperCase()}</Text>
                                     </View>
                                     <View className="flex-1">
-                                        <Text className={cn("font-extrabold", isCurrent ? "text-black" : "text-foreground")} numberOfLines={1}>
+                                        <Text className={cn("font-jakarta-extrabold", isCurrent ? "text-black" : "text-foreground")} numberOfLines={1}>
                                             {account.name}
                                         </Text>
-                                        <Text className={cn("text-xs font-bold", isCurrent ? "text-black/70" : "text-muted-foreground")} numberOfLines={1}>
+                                        <Text className={cn("font-jakarta-bold text-xs", isCurrent ? "text-black/70" : "text-muted-foreground")} numberOfLines={1}>
                                             {account.email}
                                         </Text>
                                     </View>
@@ -178,7 +177,7 @@ export default function AccountSwitcher({ currentUserId, onExpand }: { currentUs
                     })}
                     <Button variant="outline" onPress={() => router.push("/(app)/(tabs)/(profile)/add-account")} className="mt-2">
                         <UserPlus size={14} color="#000" strokeWidth={2.5} />
-                        <Text className="font-bold">Add Account</Text>
+                        <Text className="font-jakarta-bold">Add Account</Text>
                     </Button>
                 </View>
             </Animated.View>

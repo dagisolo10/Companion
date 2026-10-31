@@ -1,13 +1,13 @@
-import { useCreateParty } from "@/hooks/tan-stack/party";
 import BackButton from "@/components/common/back-button";
-import useToast from "@/hooks/custom/use-toast";
+import Button from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Screen from "@/components/ui/screen";
-import Button from "@/components/ui/button";
 import Text from "@/components/ui/text";
+import useToast from "@/hooks/custom/use-toast";
+import { useCreateParty } from "@/hooks/tan-stack/party";
 import { router } from "expo-router";
-import { View } from "react-native";
 import { useState } from "react";
+import { View } from "react-native";
 
 export default function CreatePartyScreen() {
     const [name, setName] = useState("");
@@ -32,7 +32,7 @@ export default function CreatePartyScreen() {
             <View>
                 <View className="gap-5">
                     <View className="gap-2">
-                        <Text className="text-sm font-bold">Party Name</Text>
+                        <Text className="font-jakarta-bold text-sm">Party Name</Text>
                         <Input value={name} returnKeyType="done" autoCapitalize="words" onChangeText={setName} placeholder="e.g. Night Owls" onSubmitEditing={handleCreate} />
                     </View>
 

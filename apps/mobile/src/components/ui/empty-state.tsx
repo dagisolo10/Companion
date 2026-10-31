@@ -22,8 +22,8 @@ export default function EmptyState({ icon: Icon, title, description, actionLabel
             </View>
 
             <View className="items-center gap-1.5 px-4">
-                <Text className="text-center text-lg font-extrabold">{title}</Text>
-                <Text className="text-muted-foreground text-center text-sm font-bold">{description}</Text>
+                <Text className="font-jakarta-extrabold text-center text-lg">{title}</Text>
+                <Text className="text-muted-foreground font-jakarta-bold text-center text-sm">{description}</Text>
             </View>
 
             {actionLabel && onAction && (
