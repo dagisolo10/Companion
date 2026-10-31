@@ -75,6 +75,28 @@ export type Filter = "All" | QuestStatus;
 export type QuestStatus = "Upcoming" | "Active" | "Completed" | "Expired";
 export type Difficulty = "Tiny" | "Easy" | "Normal" | "Hard" | "Major";
 
+export type ChatMessage = {
+    id: string;
+    partyId: string;
+    senderId: string;
+    content: string;
+    editedAt: string | null;
+    createdAt: string;
+    sender: Pick<User, "id" | "name" | "username">;
+};
+
+export type ChatConversation = {
+    party: PartyDetail;
+    lastMessage: ChatMessage | null;
+    unreadCount: number;
+    lastReadAt: string | null;
+};
+
+export type ChatPresence = {
+    partyCode: string;
+    onlineUserIds: string[];
+};
+
 export type DashboardData = {
     weekXp: number;
     todayXp: number;

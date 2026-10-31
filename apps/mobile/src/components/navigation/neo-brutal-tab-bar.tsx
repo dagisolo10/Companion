@@ -30,6 +30,8 @@ export default function NeoBrutalTabBar({ state, descriptors, emitter, navigateT
                     const focused = state.index === index;
                     const color = focused ? "#000" : (options.tabBarInactiveTintColor ?? "#737373");
                     const icon = options.tabBarIcon?.({ focused, color, size: 19 });
+                    const badge = options.tabBarBadge;
+                    const showBadge = badge !== undefined && badge !== null && badge !== 0 && badge !== "";
 
                     function onPress() {
                         const event = emitter.emit({ type: "tabPress", target: route.key, canPreventDefault: true });
@@ -48,6 +50,11 @@ export default function NeoBrutalTabBar({ state, descriptors, emitter, navigateT
                             className="z-10 min-h-14 flex-1 items-center justify-center gap-0.5 border-2 border-transparent px-1 py-1.5"
                         >
                             {icon}
+                            {showBadge ? (
+                                <View className="border-foreground bg-destructive absolute top-1 right-2 min-w-5 items-center justify-center rounded-full border-2 px-1">
+                                    <Text className="text-destructive-foreground text-[9px] font-extrabold">{typeof badge === "number" && badge > 99 ? "99+" : badge}</Text>
+                                </View>
+                            ) : null}
                             <Text className={cn("text-[10px] font-extrabold uppercase", focused ? "text-black" : "text-muted-foreground")} numberOfLines={1}>
                                 {label}
                             </Text>

@@ -1,4 +1,4 @@
-import { AlertTriangle, Check, CheckCircle2, Copy, Globe, LockKeyhole, LogOut, Plus, ScrollText, Settings, Share2, Target, Trophy, UserPlus, Users } from "lucide-react-native";
+import { AlertTriangle, Check, CheckCircle2, Copy, Globe, LockKeyhole, LogOut, MessageCircle, Plus, ScrollText, Settings, Share2, Target, Trophy, UserPlus, Users } from "lucide-react-native";
 import { useGetMembers, useJoinParty, useLeaveParty } from "@/hooks/tan-stack/party-member";
 import * as Clipboard from "expo-clipboard";
 import useToast from "@/hooks/custom/use-toast";
@@ -166,6 +166,11 @@ export default function PartyDetailScreen() {
                     </View>
                 )}
             </View>
+
+            <Button asChild onPress={() => router.push({ pathname: "/(app)/(tabs)/(chat)/[code]", params: { code } })}>
+                <MessageCircle size={16} color="#000000" strokeWidth={2.5} />
+                <Text className="text-sm font-bold">Party Chat</Text>
+            </Button>
 
             <View className="gap-2">
                 <View className="flex-row gap-3">

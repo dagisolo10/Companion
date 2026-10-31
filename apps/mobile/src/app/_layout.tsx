@@ -1,13 +1,18 @@
 import "@/app/global.css";
 
+import { fonts } from "@/constants/fonts";
 import { useAuth } from "@/contexts/auth-context";
 import { ToastProvider } from "@/hooks/custom/use-toast";
 import AuthProvider from "@/providers/auth-providers";
 import SocketIoProvider from "@/providers/socket.io-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useFonts } from "expo-font";
 import { router, Stack, usePathname, useSegments } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+
+void SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 2 } } });
 
@@ -50,6 +55,18 @@ function RootNavigator() {
 }
 
 export default function RootLayout() {
+    const [loaded, error] = useFonts(fonts);
+
+    useEffect(() => {
+        if (loaded || error) {
+            void SplashScreen.hideAsync();
+        }
+    }, [loaded, error]);
+
+    if (!loaded && !error) {
+        return null;
+    }
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <QueryClientProvider client={queryClient}>

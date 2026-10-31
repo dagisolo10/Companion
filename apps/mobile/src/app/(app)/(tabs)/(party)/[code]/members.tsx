@@ -4,6 +4,7 @@ import useConfirmDialog from "@/hooks/custom/use-confirm-dialog";
 import useToast from "@/hooks/custom/use-toast";
 import { Crown, Shield, UserMinus, Users } from "lucide-react-native";
 import { useFindUser, useGetUser } from "@/hooks/tan-stack/user";
+import { useGetChatPresence } from "@/hooks/tan-stack/chat";
 import { router, useLocalSearchParams } from "expo-router";
 import ConfirmDialog from "@/components/common/confirm-dialog";
 import { SkeletonCard } from "@/components/ui/skeleton";
@@ -31,6 +32,7 @@ export default function PartyMembersScreen() {
     const userQuery = useGetUser();
     const partyQuery = useGetParty(code!);
     const membersQuery = useGetMembersInfinite(code!);
+    const presenceQuery = useGetChatPresence(code!);
     const searchingUserQuery = useFindUser(transferUsername, { enabled: transferUsername.length > 2 });
     const removeMemberMutation = useRemoveMember({
         onSuccess: () => {
@@ -137,12 +139,16 @@ export default function PartyMembersScreen() {
                     const isCreator = member.userId === party?.creatorId;
                     const bgColor = AVATAR_COLORS[index % AVATAR_COLORS.length];
                     const initial = member.user.name.charAt(0).toUpperCase();
+                    const isOnline = presenceQuery.data.onlineUserIds.includes(member.userId);
 
                     return (
                         <View key={member.id} className="shadow-nb-sm border-foreground border-2 p-4">
                             <Pressable onPress={() => router.push({ pathname: "/(app)/user/[username]", params: { username: member.user.username } })} className="flex-row items-center gap-3">
-                                <View className={cn(bgColor, "border-foreground shadow-nb-sm h-12 w-12 items-center justify-center border-2")}>
-                                    <Text className="text-lg font-extrabold text-black">{initial}</Text>
+                                <View className="relative">
+                                    <View className={cn(bgColor, "border-foreground shadow-nb-sm h-12 w-12 items-center justify-center border-2")}>
+                                        <Text className="text-lg font-extrabold text-black">{initial}</Text>
+                                    </View>
+                                    {isOnline ? <View className="border-foreground bg-lime absolute -right-0.5 -bottom-0.5 size-3.5 rounded-full border-2" /> : null}
                                 </View>
                                 <View className="flex-1">
                                     <View className="flex-row items-center gap-1.5">

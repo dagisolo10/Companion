@@ -9,6 +9,7 @@ export const queryRoots = {
     dashboard: ["dashboard"] as const,
     partyMember: ["party-member"] as const,
     questActivity: ["quest-activity"] as const,
+    chat: ["chat"] as const,
 };
 
 export const queryKeys = {
@@ -36,6 +37,11 @@ export const queryKeys = {
     },
     questActivity: {
         my: (take?: number) => [...queryRoots.questActivity, "my", take] as const,
+    },
+    chat: {
+        conversations: () => [...queryRoots.chat, "conversations"] as const,
+        messages: (code: string) => [...queryRoots.chat, "messages", code] as const,
+        presence: (code: string) => [...queryRoots.chat, "presence", code] as const,
     },
     dashboard: () => queryRoots.dashboard,
 };

@@ -15,7 +15,8 @@
         "dev": "nest start --watch",
         "reset": "prisma migrate reset",
         "seed": "bun prisma/seed/main.ts",
-        "lint": "oxlint --type-aware src/ test/",
+        "lint": "oxlint --type-aware src/ test/ scripts/",
+        "smoke:chat": "bun scripts/chat-smoke.ts",
         "start:debug": "nest start --debug --watch",
         "dep": "clear && bun x prisma migrate deploy"
     },
@@ -51,6 +52,7 @@
         "oxlint-tsgolint": "^7.0.2001",
         "prettier": "^3.4.2",
         "prisma": "7.10.0",
+        "socket.io-client": "^4.8.4",
         "typescript": "^6.0.2",
         "vite-tsconfig-paths": "^5.1.4",
         "vitest": "^4.1.2"

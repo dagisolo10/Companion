@@ -2,6 +2,8 @@ import type { Party, PartyDetail, PartyLeaderboardMember, PartyMember, Quest, Qu
 import type { InfiniteData, QueryClient, QueryKey } from "@tanstack/react-query";
 import type { PaginatedResult } from "@/types/response";
 import { queryKeys, queryRoots } from "@/constants/query-keys";
+import { migrateChatPartyCode, removeChatCaches, updateConversationParty } from "@/lib/chat-cache";
+import { findCurrentUser } from "@/lib/query-cache";
 
 function updateInfinite<T extends { id: string }>(queryClient: QueryClient, root: QueryKey, update: (items: T[]) => T[]) {
     for (const [key, data] of queryClient.getQueriesData<InfiniteData<PaginatedResult<T>>>({ queryKey: root })) {
@@ -31,6 +33,7 @@ export function applyPartyUpdate(queryClient: QueryClient, party: Party, memberC
             : previous,
     );
     patchPartyLists(queryClient, party, memberCount);
+    updateConversationParty(queryClient, party);
 }
 
 export function applyPartyDelete(queryClient: QueryClient, partyId: string, partyCode: string) {
@@ -43,6 +46,7 @@ export function applyPartyDelete(queryClient: QueryClient, partyId: string, part
     queryClient.removeQueries({ queryKey: queryKeys.partyMember.members(partyCode) });
     queryClient.removeQueries({ queryKey: ["paginated", ...queryKeys.partyMember.members(partyCode)] });
     removeQuestsByParty(queryClient, partyCode);
+    removeChatCaches(queryClient, partyCode);
     queryClient.setQueriesData<QuestActivity[]>({ queryKey: queryRoots.questActivity }, (activities) => activities?.filter((activity) => activity.quest.party.code !== partyCode));
     updateInfinite<QuestActivity>(queryClient, ["paginated", ...queryRoots.questActivity], (activities) => activities.filter((activity) => activity.quest.party.code !== partyCode));
 }
@@ -61,9 +65,16 @@ export function applyPartyCodeChange(queryClient: QueryClient, previousCode: str
     queryClient.removeQueries({ queryKey: queryKeys.partyMember.members(previousCode) });
     queryClient.removeQueries({ queryKey: ["paginated", ...queryKeys.partyMember.members(previousCode)] });
     migrateQuestPartyCode(queryClient, previousCode, party);
+    migrateChatPartyCode(queryClient, previousCode, party);
 }
 
 export function applyPartyMemberChange(queryClient: QueryClient, partyCode: string, memberCount: number, member: PartyMember, joined: boolean) {
+    if (joined) {
+        void queryClient.invalidateQueries({ queryKey: queryKeys.chat.conversations() });
+    } else if (findCurrentUser(queryClient)?.id === member.userId) {
+        removeChatCaches(queryClient, partyCode);
+    }
+
     queryClient.setQueryData<PartyDetail>(queryKeys.party.byCode(partyCode), (party) => (party ? { ...party, _count: { members: memberCount } } : party));
     queryClient.setQueriesData<PartyDetail[]>({ queryKey: queryKeys.party.my() }, (parties) => parties?.map((party) => (party.code === partyCode ? { ...party, _count: { members: memberCount } } : party)));
     queryClient.setQueriesData<PartyDetail[]>({ queryKey: [...queryRoots.party, "all"] }, (parties) => parties?.map((party) => (party.code === partyCode ? { ...party, _count: { members: memberCount } } : party)));

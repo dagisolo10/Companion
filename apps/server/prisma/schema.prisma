@@ -19,6 +19,8 @@ model User {
     createdQuests   Quest[]         @relation("CreatedQuests")
     createdParties  Party[]         @relation("CreatedParties")
     questActivities QuestActivity[]
+    chatMessages    ChatMessage[]
+    chatReads       PartyChatRead[]
 }
 
 model Party {
@@ -31,6 +33,8 @@ model Party {
     quests    Quest[]
     members   PartyMember[]
     creator   User          @relation("CreatedParties", fields: [creatorId], references: [id])
+    messages  ChatMessage[]
+    chatReads PartyChatRead[]
 }
 
 model PartyMember {
@@ -76,6 +80,32 @@ model QuestActivity {
 
     @@unique([questId, userId])
     @@index([questId])
+    @@index([userId])
+}
+
+model ChatMessage {
+    id        String   @id @default(uuid())
+    partyId   String
+    senderId  String
+    content   String
+    editedAt  DateTime?
+    createdAt DateTime @default(now())
+    party     Party    @relation(fields: [partyId], references: [id], onDelete: Cascade)
+    sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+    @@index([partyId, createdAt])
+    @@index([senderId])
+}
+
+model PartyChatRead {
+    id         String   @id @default(uuid())
+    partyId    String
+    userId     String
+    lastReadAt DateTime @default(now())
+    party      Party    @relation(fields: [partyId], references: [id], onDelete: Cascade)
+    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([partyId, userId])
     @@index([userId])
 }
 
