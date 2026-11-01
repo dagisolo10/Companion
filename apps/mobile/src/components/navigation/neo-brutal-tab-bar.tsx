@@ -1,19 +1,21 @@
-import Animated, { createAnimatedComponent, interpolate, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from "react-native-reanimated";
-import { GestureDetector, usePanGesture } from "react-native-gesture-handler";
+import TabItem from "@/components/navigation/tab-item";
+import Text from "@/components/ui/text";
+import { useColor } from "@/hooks/custom/use-color";
+import { cn } from "cn";
+import * as GlassEffect from "expo-glass-effect";
+import * as Haptics from "expo-haptics";
 import type { BottomTabBarProps } from "expo-router/build/layouts/Tabs";
 import { useCallback, useEffect, useState } from "react";
-import TabItem from "@/components/navigation/tab-item";
-import { scheduleOnRN } from "react-native-worklets";
-import * as GlassEffect from "expo-glass-effect";
 import { Pressable, View } from "react-native";
-import Text from "@/components/ui/text";
-import * as Haptics from "expo-haptics";
-import { cn } from "cn";
-
+import { GestureDetector, usePanGesture } from "react-native-gesture-handler";
+import Animated, { createAnimatedComponent, interpolate, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 
 const AnimatedGlassView = createAnimatedComponent(GlassEffect.GlassView);
 
 export default function NeoBrutalTabBar({ state, descriptors, emitter, navigateToTab, insets }: BottomTabBarProps) {
+    const color = useColor();
+
     const [layoutWidth, setLayoutWidth] = useState(0);
     const numTabs = state.routes.length;
     const padding = 12;
@@ -84,7 +86,7 @@ export default function NeoBrutalTabBar({ state, descriptors, emitter, navigateT
     const indicatorStyle = useAnimatedStyle(() => {
         const pos = position.value;
         const clampedPos = Math.max(0, Math.min(numTabs - 1, pos));
-        const x = clampedPos * widthPerTab;
+        const x = clampedPos * widthPerTab - 2;
 
         const distanceFromCenter = Math.abs(pos - Math.round(pos));
         const stretch = interpolate(distanceFromCenter, [0, 0.5, 1], [1, 1.04, 1.08], {
@@ -139,7 +141,7 @@ export default function NeoBrutalTabBar({ state, descriptors, emitter, navigateT
                         const { options } = descriptors[route.key];
                         const label = options.title ?? route.name;
                         const focused = state.index === index;
-                        const icon = options.tabBarIcon?.({ focused, color: "#000", size: 19 });
+                        const icon = options.tabBarIcon?.({ focused, color: color.foreground, size: 19 });
                         const badge = options.tabBarBadge;
                         const showBadge = badge !== undefined && badge !== null && badge !== 0 && badge !== "";
 
@@ -165,7 +167,7 @@ export default function NeoBrutalTabBar({ state, descriptors, emitter, navigateT
                                             <Text className="text-destructive-foreground font-jakarta-extrabold text-[9px]">{typeof badge === "number" && badge > 99 ? "99+" : badge}</Text>
                                         </View>
                                     ) : null}
-                                    <Text className={cn("font-jakarta-extrabold text-[10px] text-black uppercase")} numberOfLines={1}>
+                                    <Text className={cn("font-jakarta-extrabold text-[10px] uppercase")} numberOfLines={1}>
                                         {label}
                                     </Text>
                                 </Pressable>
