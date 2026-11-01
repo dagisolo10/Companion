@@ -1,9 +1,11 @@
 import BrandMark from "@/components/common/brand-mark";
+import CompanionIcon from "@/components/icons/logo";
 import Button from "@/components/ui/button";
 import Screen from "@/components/ui/screen";
 import Text from "@/components/ui/text";
+import { useColor } from "@/hooks/custom/use-color";
 import { Link } from "expo-router";
-import { ArrowRight, Compass, Swords, Trophy, Users } from "lucide-react-native";
+import { ArrowRight, Swords, Trophy, Users } from "lucide-react-native";
 import { View } from "react-native";
 
 const features = [
@@ -28,10 +30,13 @@ const features = [
 ] as const;
 
 export default function Welcome() {
+    const color = useColor();
+
     return (
         <Screen nonScrollable fullscreen className="justify-between gap-8 py-16">
             <View className="items-center justify-center gap-4">
-                <BrandMark icon={Compass} accent="bg-amber" size="lg" />
+                <CompanionIcon fillColor={color.black} color={color.foreground} left={color.lime} right={color.amber} center={color.white} />
+
                 <View className="items-center gap-2">
                     <Text className="font-bebas text-center text-6xl">Companion</Text>
                     <Text className="text-muted-foreground font-jakarta-medium text-center text-lg">Your adventure companion for quests, parties, and leveling up every day.</Text>

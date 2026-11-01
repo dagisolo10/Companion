@@ -5,7 +5,7 @@
         "version": "1.0.0",
         "scheme": "companion",
         "orientation": "portrait",
-        "icon": "./assets/images/icon.png",
+        "icon": "./assets/images/logo.png",
         "userInterfaceStyle": "automatic",
         "ios": {
             "icon": "./assets/expo.icon",
@@ -13,10 +13,8 @@
         },
         "android": {
             "adaptiveIcon": {
-                "backgroundColor": "#E6F4FE",
-                "foregroundImage": "./assets/images/android-icon-foreground.png",
-                "backgroundImage": "./assets/images/android-icon-background.png",
-                "monochromeImage": "./assets/images/android-icon-monochrome.png"
+                "backgroundColor": "#0A0A0A",
+                "foregroundImage": "./assets/images/logo.png"
             },
             "predictiveBackGestureEnabled": false,
             "package": "com.dagisolo.Companion"
@@ -30,9 +28,9 @@
             [
                 "expo-splash-screen",
                 {
-                    "imageWidth": 76,
+                    "imageWidth": 160,
                     "backgroundColor": "#208AEF",
-                    "image": "./assets/images/splash-icon.png"
+                    "image": "./assets/images/logo.png"
                 }
             ],
             "expo-sqlite",
